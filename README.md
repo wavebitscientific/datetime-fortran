@@ -1,12 +1,14 @@
 datetime-fortran
 ================
 
-### Description
+## Description
 
 A Fortran library that provides time and date manipulation facilities.
 It is freely available under the GNU General Public License v3.
 
-### Derived types
+## API
+
+### Derived Types
 
 *datetime-fortran* library provides the following derived types:
 
@@ -87,6 +89,17 @@ TYPE,BIND(c) :: tm_struct
 
 ENDTYPE tm_struct
 ```
+### Type-bound procedures
+
+### Public functions
+
+* *date2num*
+* *daysInMonth*
+* *daysInYear*
+* *isLeapYear*
+* *num2date*
+* *strftime*
+* *strptime*
 
 #### Tested with the following compilers:
 ---
