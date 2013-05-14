@@ -8,10 +8,12 @@ It is freely available under the GNU General Public License v3.
 
 ## API
 
+<a id='top'></a>
+
 * <a href='#derived_types'>Derived Types</a></li>
-  * <li><a href='#datetime'>*datetime*</a></li>
-  * <li><a href='#timedelta'><i>timedelta</i></a></li>
-  * <li><a href='#tm_struct'><i>tm_struct</i></a></li>
+    * <li><a href='#datetime'>*datetime*</a></li>
+    * <li><a href='#timedelta'><i>timedelta</i></a></li>
+    * <li><a href='#tm_struct'><i>tm_struct</i></a></li>
 * <a href='#public_procedures'>Public procedures</a></li>
 
 
@@ -96,6 +98,10 @@ TYPE,BIND(c) :: tm_struct
 
 ENDTYPE tm_struct
 ```
+
+<a id='public_procedures'><h3>Public procedures</h3></a>
+
+[Back to top](#top)
 
 #### Tested with the following compilers:
 ---
