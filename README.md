@@ -8,7 +8,16 @@ It is freely available under the GNU General Public License v3.
 
 ## API
 
-### Derived Types
+<ul>
+  <li><a href='#derived_types'>1. Derived Types</a></li>
+  <ul>
+    <li><a href='#datetime'>1.1 datetime</a></li>
+    <li><a href='#timedelta'>1.2 timedelta</a></li>
+    <li><a href='#tm_struct'>1.3 tm_struct</a></li>
+  </ul>
+</ul>
+
+<a id='derived_types'><h3>1. Derived Types</h3></a>
 
 *datetime-fortran* library provides the following derived types:
 
