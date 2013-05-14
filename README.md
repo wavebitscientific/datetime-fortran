@@ -10,11 +10,26 @@ It is freely available under the GNU General Public License v3.
 
 <a id='top'></a>
 
-* <a href='#derived_types'>Derived Types</a></li>
-    * <li><a href='#datetime'>*datetime*</a></li>
-    * <li><a href='#timedelta'><i>timedelta</i></a></li>
-    * <li><a href='#tm_struct'><i>tm_struct</i></a></li>
-* <a href='#public_procedures'>Public procedures</a></li>
+* <a href='#derived_types'>Derived Types</a>
+    * <a href='#datetime'>*datetime*</a>
+        * <a href='#'>*addMilliseconds*</a>
+        * <a href='#'>*addSeconds*</a>
+        * <a href='#'>*addMinutes*</a>
+        * <a href='#'>*addHours*</a>
+        * <a href='#'>*addDays*</a>
+        * <a href='#'>*isocalendar*</a>
+        * <a href='#'>*isoformat*</a>
+        * <a href='#'>*isValid*</a>
+        * <a href='#'>*now*</a>
+        * <a href='#'>*secondsSinceEpoch*</a>
+        * <a href='#'>*tm*</a>
+        * <a href='#'>*weekday*</a>
+        * <a href='#'>*weekdayLong*</a>
+        * <a href='#'>*weekdayShort*</a>
+        * <a href='#'>*yearday*</a>
+    * <a href='#timedelta'>*timedelta*</a>
+    * <a href='#tm_struct'>*tm_struct*</a>
+* <a href='#public'>Public procedures</a>
 
 
 <a id='derived_types'><h3>Derived Types</h3></a>
@@ -99,7 +114,7 @@ TYPE,BIND(c) :: tm_struct
 ENDTYPE tm_struct
 ```
 
-<a id='public_procedures'><h3>Public procedures</h3></a>
+<a id='public'><h3>Public procedures</h3></a>
 
 [Back to top](#top)
 
