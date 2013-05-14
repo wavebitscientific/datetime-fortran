@@ -8,16 +8,14 @@ It is freely available under the GNU General Public License v3.
 
 ## API
 
-<ul>
-  <li><a href='#derived_types'>1. Derived Types</a></li>
-  <ul>
-    <li><a href='#datetime'>1.1 datetime</a></li>
-    <li><a href='#timedelta'>1.2 timedelta</a></li>
-    <li><a href='#tm_struct'>1.3 tm_struct</a></li>
-  </ul>
-</ul>
+* <a href='#derived_types'>Derived Types</a></li>
+  * <li><a href='#datetime'>*datetime*</a></li>
+  * <li><a href='#timedelta'><i>timedelta</i></a></li>
+  * <li><a href='#tm_struct'><i>tm_struct</i></a></li>
+* <a href='#public_procedures'>Public procedures</a></li>
 
-<a id='derived_types'><h3>1. Derived Types</h3></a>
+
+<a id='derived_types'><h3>Derived Types</h3></a>
 
 *datetime-fortran* library provides the following derived types:
 
@@ -98,17 +96,6 @@ TYPE,BIND(c) :: tm_struct
 
 ENDTYPE tm_struct
 ```
-### Type-bound procedures
-
-### Public functions
-
-* *date2num*
-* *daysInMonth*
-* *daysInYear*
-* *isLeapYear*
-* *num2date*
-* *strftime*
-* *strptime*
 
 #### Tested with the following compilers:
 ---

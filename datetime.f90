@@ -220,11 +220,13 @@ ENDTYPE tm_struct
 
 INTERFACE OPERATOR(+)
   MODULE PROCEDURE datetime_plus_timedelta
+  MODULE PROCEDURE timedelta_plus_timedelta
 ENDINTERFACE
 
 INTERFACE OPERATOR(-)
   MODULE PROCEDURE datetime_minus_datetime
   MODULE PROCEDURE datetime_minus_timedelta
+  MODULE PROCEDURE timedelta_minus_timedelta
   MODULE PROCEDURE unary_minus_timedelta
 ENDINTERFACE
 
@@ -328,9 +330,8 @@ CONTAINS
 PURE ELEMENTAL SUBROUTINE addMilliseconds(self,ms)
 !======================================================================>
 !
-! datetime-bound procedure. It adds an integer number of 
-! milliseconds to self. Called by datetime addition (+) and subtraction
-! (-) operators.
+! datetime-bound procedure. It adds an integer number of milliseconds to 
+! self. Called by datetime addition (+) and subtraction (-) operators.
 !
 !======================================================================>
 
@@ -355,9 +356,8 @@ ENDSUBROUTINE addMilliseconds
 PURE ELEMENTAL SUBROUTINE addSeconds(self,s)
 !======================================================================>
 !
-! datetime-bound procedure. It adds an integer number of 
-! seconds to self. Called by datetime addition (+) and subtraction (-) 
-! operators.
+! datetime-bound procedure. It adds an integer number of seconds to 
+! self. Called by datetime addition (+) and subtraction (-) operators.
 !
 !======================================================================>
 
@@ -381,9 +381,8 @@ ENDSUBROUTINE addSeconds
 PURE ELEMENTAL SUBROUTINE addMinutes(self,m)
 !======================================================================>
 !
-! datetime-bound procedure. It adds an integer number of 
-! minutes to self. Called by datetime addition (+) and subtraction (-) 
-! operators.
+! datetime-bound procedure. It adds an integer number of minutes to 
+! self. Called by datetime addition (+) and subtraction (-) operators.
 !
 !======================================================================>
 
@@ -407,9 +406,8 @@ ENDSUBROUTINE addMinutes
 PURE ELEMENTAL SUBROUTINE addHours(self,h)
 !======================================================================>
 !
-! datetime-bound procedure. It adds an integer number of 
-! hours to self. Called by datetime addition (+) and subtraction (-) 
-! operators.
+! datetime-bound procedure. It adds an integer number of hours to self. 
+! Called by datetime addition (+) and subtraction (-) operators.
 !
 !======================================================================>
   
@@ -433,9 +431,8 @@ ENDSUBROUTINE addHours
 PURE ELEMENTAL SUBROUTINE addDays(self,d)
 !======================================================================>
 !
-! datetime-bound procedure. It adds an integer number of 
-! days to self. Called by datetime addition (+) and subtraction (-) 
-! operators.
+! datetime-bound procedure. It adds an integer number of days to self. 
+! Called by datetime addition (+) and subtraction (-) operators.
 !
 !======================================================================>
 
@@ -478,8 +475,9 @@ PURE ELEMENTAL CHARACTER(LEN=23) FUNCTION isoformat(self,sep)
 !
 !======================================================================>
 
-  CLASS(datetime),INTENT(IN)           :: self
+  CLASS(datetime), INTENT(IN)          :: self
   CHARACTER(LEN=1),INTENT(IN),OPTIONAL :: sep
+
   CHARACTER(LEN=1)                     :: separator
 
   IF(PRESENT(sep))THEN
@@ -841,6 +839,47 @@ PURE ELEMENTAL FUNCTION datetime_minus_datetime(d0,d1) RESULT(t)
                 sign_*milliseconds)
 
 ENDFUNCTION datetime_minus_datetime
+!======================================================================>
+
+
+
+PURE ELEMENTAL FUNCTION timedelta_plus_timedelta(t0,t1) RESULT(t)
+!======================================================================>
+! 
+! Adds two timedelta instances together. Returns a timedelta instance. 
+! Overloads the operator +.
+!
+!======================================================================>
+
+  TYPE(timedelta),INTENT(IN) :: t0
+  TYPE(timedelta),INTENT(IN) :: t1
+  TYPE(timedelta)            :: t
+
+  t = timedelta(days         = t0%days+t1%days,      &
+                hours        = t0%hours+t1%hours,    &
+                minutes      = t0%minutes+t1%minutes,&
+                seconds      = t0%seconds+t1%seconds,&
+                milliseconds = t0%milliseconds+t1%milliseconds)
+
+ENDFUNCTION timedelta_plus_timedelta
+!======================================================================>
+
+
+PURE ELEMENTAL FUNCTION timedelta_minus_timedelta(t0,t1) RESULT(t)
+!======================================================================>
+! 
+! Subtracts a timedelta instance from another. Returns a timedelta 
+! instance. Overloads the operator +.
+!
+!======================================================================>
+
+  TYPE(timedelta),INTENT(IN) :: t0
+  TYPE(timedelta),INTENT(IN) :: t1
+  TYPE(timedelta)            :: t
+
+  t = t0 + (-t1)
+
+ENDFUNCTION timedelta_minus_timedelta
 !======================================================================>
 
 
