@@ -121,16 +121,14 @@ REAL(KIND=real_dp),PARAMETER :: s2m = 1d0/m2s  ! second -> minute
 
 ! Derived types:
 
-!======================================================================>
-!
-! TYPE: datetime
-!
-! DESCRIPTION: A main datetime class for date and time representation.
-! It is modeled after Python's datetime.datetime class, and has similar
-! components and methods (but not all).
-!
-!======================================================================>
 TYPE :: datetime
+!======================================================================>
+!
+! A main datetime class for date and time representation. It is modeled 
+! after Python's datetime.datetime class, and has similar components 
+! and methods (but not all).
+!
+!======================================================================>
 
   ! COMPONENTS:
   INTEGER :: year        = 1 ! Year                   [1-HUGE(year)]
@@ -165,17 +163,13 @@ ENDTYPE datetime
 
 
 
-!======================================================================>
-!
-! TYPE: timedelta
-!
-! DESCRIPTION: Class of objects that define difference between two
-! datetime instances. Modeled after Python's datetime.timedelta class.
-! Currently, timedelta components are implemented as integers (Python's
-! timedelta allows floats),
-!
-!======================================================================>
 TYPE :: timedelta
+!======================================================================>
+!
+! Class of objects that define difference between two datetime 
+! instances. Modeled after Python's datetime.timedelta class.
+!
+!======================================================================>
 
   ! COMPONENTS:
   INTEGER :: days         = 0
@@ -194,16 +188,14 @@ ENDTYPE timedelta
 
 
 
-!======================================================================>
-!
-! TYPE: tm_struct
-!
-! DESCRIPTION: A derived type provided for compatibility with C/C++ 
-! time struct. Allows for calling strftime and strptime procedures 
-! through the iso_c_binding.
-!
-!======================================================================>
 TYPE,BIND(c) :: tm_struct
+!======================================================================>
+!
+! A derived type provided for compatibility with C/C++ time struct. 
+! Allows for calling strftime and strptime procedures through the 
+! iso_c_binding.
+!
+!======================================================================>
 
   ! COMPONENTS:
   INTEGER(KIND=c_int) :: tm_sec   ! Seconds      [0-60] (1 leap second)
@@ -270,16 +262,13 @@ INTERFACE
 
 
 
+  FUNCTION strftime(str,slen,format,tm)BIND(c,name='strftime')RESULT(rc)
   !====================================================================>
   !
-  ! FUNCTION: strftime
-  ! 
-  ! DESCRIPTION: Returns a formatted time string, given input time
-  ! struct and format. Refer to C standard library documentation for
-  ! more information. 
+  ! Returns a formatted time string, given input time struct and format. 
+  ! Refer to C standard library documentation for more information. 
   ! 
   !====================================================================>
-  FUNCTION strftime(str,slen,format,tm)BIND(c,name='strftime')RESULT(rc)
     USE,INTRINSIC :: iso_c_binding
     TYPE,BIND(c) :: tm_struct
       INTEGER(KIND=c_int) :: tm_sec
@@ -302,16 +291,14 @@ INTERFACE
 
 
 
+  FUNCTION strptime(str,format,tm)BIND(c,name='strptime')RESULT(rc)
   !====================================================================>
   !
-  ! FUNCTION: strptime
-  ! 
-  ! DESCRIPTION: Returns a time struct object based on the input time 
-  ! string str, formatted using format. Refer to C standard library
-  ! documentation for more information.
+  ! Returns a time struct object based on the input time string str, 
+  ! formatted using format. Refer to C standard library documentation 
+  ! for more information.
   ! 
   !====================================================================>
-  FUNCTION strptime(str,format,tm)BIND(c,name='strptime')RESULT(rc)
     USE,INTRINSIC :: iso_c_binding
     TYPE,BIND(c) :: tm_struct
       INTEGER(KIND=c_int) :: tm_sec
@@ -338,16 +325,14 @@ CONTAINS
 
 
 
+PURE ELEMENTAL SUBROUTINE addMilliseconds(self,ms)
 !======================================================================>
 !
-! SUBROUTINE: addMilliseconds
-!
-! DESCRIPTION: datetime-bound procedure. It adds an integer number of 
+! datetime-bound procedure. It adds an integer number of 
 ! milliseconds to self. Called by datetime addition (+) and subtraction
 ! (-) operators.
 !
 !======================================================================>
-PURE ELEMENTAL SUBROUTINE addMilliseconds(self,ms)
 
   CLASS(datetime),INTENT(INOUT) :: self
   INTEGER,        INTENT(IN)    :: ms
@@ -367,16 +352,14 @@ ENDSUBROUTINE addMilliseconds
 
 
 
+PURE ELEMENTAL SUBROUTINE addSeconds(self,s)
 !======================================================================>
 !
-! SUBROUTINE: addSeconds
-!
-! DESCRIPTION: datetime-bound procedure. It adds an integer number of 
+! datetime-bound procedure. It adds an integer number of 
 ! seconds to self. Called by datetime addition (+) and subtraction (-) 
 ! operators.
 !
 !======================================================================>
-PURE ELEMENTAL SUBROUTINE addSeconds(self,s)
 
   CLASS(datetime),INTENT(INOUT) :: self
   INTEGER,        INTENT(IN)    :: s
@@ -395,16 +378,14 @@ ENDSUBROUTINE addSeconds
 
 
 
+PURE ELEMENTAL SUBROUTINE addMinutes(self,m)
 !======================================================================>
 !
-! SUBROUTINE: addMinutes
-!
-! DESCRIPTION: datetime-bound procedure. It adds an integer number of 
+! datetime-bound procedure. It adds an integer number of 
 ! minutes to self. Called by datetime addition (+) and subtraction (-) 
 ! operators.
 !
 !======================================================================>
-PURE ELEMENTAL SUBROUTINE addMinutes(self,m)
 
   CLASS(datetime),INTENT(INOUT) :: self
   INTEGER,        INTENT(IN)    :: m
@@ -423,16 +404,14 @@ ENDSUBROUTINE addMinutes
 
 
 
+PURE ELEMENTAL SUBROUTINE addHours(self,h)
 !======================================================================>
 !
-! SUBROUTINE: addHours
-!
-! DESCRIPTION: datetime-bound procedure. It adds an integer number of 
+! datetime-bound procedure. It adds an integer number of 
 ! hours to self. Called by datetime addition (+) and subtraction (-) 
 ! operators.
 !
 !======================================================================>
-PURE ELEMENTAL SUBROUTINE addHours(self,h)
   
   CLASS(datetime),INTENT(INOUT) :: self
   INTEGER,        INTENT(IN)    :: h
@@ -451,16 +430,14 @@ ENDSUBROUTINE addHours
 
 
 
+PURE ELEMENTAL SUBROUTINE addDays(self,d)
 !======================================================================>
 !
-! SUBROUTINE: addDays
-!
-! DESCRIPTION: datetime-bound procedure. It adds an integer number of 
+! datetime-bound procedure. It adds an integer number of 
 ! days to self. Called by datetime addition (+) and subtraction (-) 
 ! operators.
 !
 !======================================================================>
-PURE ELEMENTAL SUBROUTINE addDays(self,d)
 
   CLASS(datetime),INTENT(INOUT) :: self
   INTEGER,        INTENT(IN)    :: d
@@ -494,14 +471,12 @@ ENDSUBROUTINE addDays
 
 
 
-!======================================================================>
-!
-! FUNCTION: isoformat
-!
-! DESCRIPTION:
-!
-!======================================================================>
 PURE ELEMENTAL CHARACTER(LEN=23) FUNCTION isoformat(self,sep)
+!======================================================================>
+!
+! Returns character string with time in ISO 8601 format.
+!
+!======================================================================>
 
   CLASS(datetime),INTENT(IN)           :: self
   CHARACTER(LEN=1),INTENT(IN),OPTIONAL :: sep
@@ -526,16 +501,14 @@ ENDFUNCTION isoformat
 
 
 
+PURE ELEMENTAL LOGICAL FUNCTION isValid(self)
 !======================================================================>
 !
-! FUNCTION: isValid
-!
-! DESCRIPTION: datetime-bound method that checks whether the datetime
+! datetime-bound method that checks whether the datetime
 ! instance has valid component values. Returns .TRUE. if the datetime
 ! instance is valid, and .FALSE. otherwise.
 !
 !======================================================================>
-PURE ELEMENTAL LOGICAL FUNCTION isValid(self)
 
   CLASS(datetime),INTENT(IN) :: self
 
@@ -582,14 +555,12 @@ ENDFUNCTION isValid
 
 
 
-!======================================================================>
-!
-! FUNCTION: now
-!
-! DESCRIPTION: datetime-bound procedure. Returns current time.
-!
-!======================================================================>
 TYPE(datetime) FUNCTION now(self)
+!======================================================================>
+!
+! datetime-bound procedure. Returns current time.
+!
+!======================================================================>
 
   CLASS(datetime),INTENT(IN) :: self
 
@@ -609,16 +580,14 @@ ENDFUNCTION now
 
 
 
+PURE ELEMENTAL INTEGER FUNCTION weekday(self)
 !======================================================================>
 !
-! FUNCTION: weekday
-!
-! DESCRIPTION: datetime-bound method to calculate day of the week using
+! datetime-bound method to calculate day of the week using
 ! Zeller's congruence. Returns an integer scalar in the range of [0-6], 
 ! starting from Sunday.
 !
 !======================================================================>
-PURE ELEMENTAL INTEGER FUNCTION weekday(self)
 
   CLASS(datetime),INTENT(IN) :: self
 
@@ -645,15 +614,13 @@ ENDFUNCTION weekday
 
 
 
+PURE ELEMENTAL CHARACTER(LEN=9) FUNCTION weekdayLong(self)
 !======================================================================>
 !
-! FUNCTION: weekdayLong
-!
-! DESCRIPTION: datetime-bound procedure. Returns the name of the day
+! datetime-bound procedure. Returns the name of the day
 ! of the week.
 !
 !======================================================================>
-PURE ELEMENTAL CHARACTER(LEN=9) FUNCTION weekdayLong(self)
 
   CLASS(datetime),INTENT(IN) :: self
 
@@ -668,15 +635,13 @@ ENDFUNCTION weekdayLong
 
 
 
+PURE ELEMENTAL CHARACTER(LEN=3) FUNCTION weekdayShort(self)
 !======================================================================>
 !
-! FUNCTION: weekDayShort
-!
-! DESCRIPTION: datetime-bound procedure. Returns a 3-character 
+! datetime-bound procedure. Returns a 3-character 
 ! representation of the name of the day of the week.
 !
 !======================================================================>
-PURE ELEMENTAL CHARACTER(LEN=3) FUNCTION weekdayShort(self)
 
   CLASS(datetime),INTENT(IN) :: self
 
@@ -690,16 +655,14 @@ ENDFUNCTION weekdayShort
 
 
 
+FUNCTION isocalendar(self)
 !======================================================================>
 !
-! FUNCTION: isocalendar
-!
-! DESCRIPTION: datetime-bound procedure. Returns an array of 3 integers,
+! datetime-bound procedure. Returns an array of 3 integers,
 ! year, week number, and week day, as defined by ISO 8601 week date.
 ! Essentially a wrapper around C strftime() function.
 !
 !======================================================================>
-FUNCTION isocalendar(self)
 
   CLASS(datetime),INTENT(IN) :: self
 
@@ -721,15 +684,13 @@ ENDFUNCTION isocalendar
 
 
 
+INTEGER FUNCTION secondsSinceEpoch(self)
 !======================================================================>
 !
-! FUNCTION: secondsSinceEpoch
-!
-! DESCRIPTION: datetime-bound procedure. Returns an integer number of 
+! datetime-bound procedure. Returns an integer number of 
 ! seconds since the UNIX Epoch, 1970-01-01 00:00:00 +0000 (UTC).
 !
 !======================================================================>
-INTEGER FUNCTION secondsSinceEpoch(self)
 
   CLASS(datetime),INTENT(IN) :: self
 
@@ -745,15 +706,13 @@ ENDFUNCTION secondsSinceEpoch
 
 
 
+PURE ELEMENTAL TYPE(tm_struct) FUNCTION tm(self)
 !======================================================================>
 !
-! FUNCTION: tm
-!
-! DESCRIPTION: datetime-bound procedure. Returns a respective tm_struct 
+! datetime-bound procedure. Returns a respective tm_struct 
 ! instance.
 !
 !======================================================================>
-PURE ELEMENTAL TYPE(tm_struct) FUNCTION tm(self)
 
   CLASS(datetime),INTENT(IN) :: self
 
@@ -772,15 +731,13 @@ ENDFUNCTION tm
 
 
 
+PURE ELEMENTAL INTEGER FUNCTION yearday(self)
 !======================================================================>
 !
-! FUNCTION: yearday
-!
-! DESCRIPTION: datetime-bound procedure. Returns integer day of the
+! datetime-bound procedure. Returns integer day of the
 ! year (ordinal date).
 !
 !======================================================================>
-PURE ELEMENTAL INTEGER FUNCTION yearday(self)
 
   CLASS(datetime),INTENT(IN) :: self
 
@@ -797,15 +754,13 @@ ENDFUNCTION yearday
 
 
 
+PURE ELEMENTAL FUNCTION datetime_plus_timedelta(d0,t) RESULT(d)
 !======================================================================>
 !
-! FUNCTION: datetime_plus_timedelta
-!
-! DESCRIPTION: Adds a timedelta instance to a datetime instance.
+! Adds a timedelta instance to a datetime instance.
 ! Returns a new datetime instance. Overloads the operator +.
 !
 !======================================================================>
-PURE ELEMENTAL FUNCTION datetime_plus_timedelta(d0,t) RESULT(d)
 
   TYPE(datetime), INTENT(IN) :: d0
   TYPE(timedelta),INTENT(IN) :: t
@@ -825,15 +780,13 @@ ENDFUNCTION datetime_plus_timedelta
 
 
 
+PURE ELEMENTAL FUNCTION datetime_minus_timedelta(d0,t) RESULT(d)
 !======================================================================>
 !
-! FUNCTION: datetime_minus_timedelta
-!
-! DESCRIPTION: Subtracts a timedelta instance from a datetime instance.
+! Subtracts a timedelta instance from a datetime instance.
 ! Returns a new datetime instance. Overloads the operator -.
 !
 !======================================================================>
-PURE ELEMENTAL FUNCTION datetime_minus_timedelta(d0,t) RESULT(d)
 
   TYPE(datetime), INTENT(IN) :: d0
   TYPE(timedelta),INTENT(IN) :: t
@@ -853,15 +806,13 @@ ENDFUNCTION datetime_minus_timedelta
 
 
 
+PURE ELEMENTAL FUNCTION datetime_minus_datetime(d0,d1) RESULT(t)
 !======================================================================>
 !
-! FUNCTION: datetime_minus_datetime
-!
-! DESCRIPTION: Subtracts a datetime instance from another datetime 
+! Subtracts a datetime instance from another datetime 
 ! instance. Returns a timedelta instance. Overloads the operator -.
 !
 !======================================================================>
-PURE ELEMENTAL FUNCTION datetime_minus_datetime(d0,d1) RESULT(t)
 
   TYPE(datetime),INTENT(IN) :: d0,d1
   TYPE(timedelta)           :: t
@@ -894,16 +845,14 @@ ENDFUNCTION datetime_minus_datetime
 
 
 
+PURE ELEMENTAL LOGICAL FUNCTION gt(d0,d1)
 !======================================================================>
 !
-! FUNCTION: gt
-!
-! DESCRIPTION: datetime object comparison operator. Returns .TRUE. if
+! datetime object comparison operator. Returns .TRUE. if
 ! d0 is greater than d1, and .FALSE. otherwise. Overloads the 
 ! operator >.
 !
 !======================================================================>
-PURE ELEMENTAL LOGICAL FUNCTION gt(d0,d1)
 
   TYPE(datetime),INTENT(IN) :: d0,d1
 
@@ -968,15 +917,13 @@ ENDFUNCTION gt
 
 
 
+PURE ELEMENTAL LOGICAL FUNCTION lt(d0,d1)
 !======================================================================>
 !
-! FUNCTION: lt
-!
-! DESCRIPTION: datetime object comparison operator. Returns .TRUE. if
+! datetime object comparison operator. Returns .TRUE. if
 ! d0 is less than d1, and .FALSE. otherwise. Overloads the operator <.
 !
 !======================================================================>
-PURE ELEMENTAL LOGICAL FUNCTION lt(d0,d1)
 
   TYPE(datetime),INTENT(IN) :: d0,d1
 
@@ -987,15 +934,13 @@ ENDFUNCTION lt
 
 
 
+PURE ELEMENTAL LOGICAL FUNCTION eq(d0,d1)
 !======================================================================>
 !
-! FUNCTION: eq
-!
-! DESCRIPTION: datetime object comparison operator. Returns .TRUE. if
+! datetime object comparison operator. Returns .TRUE. if
 ! d0 is equal to d1, and .FALSE. otherwise. Overloads the operator ==.
 !
 !======================================================================>
-PURE ELEMENTAL LOGICAL FUNCTION eq(d0,d1)
 
   TYPE(datetime),INTENT(IN) :: d0,d1
 
@@ -1012,16 +957,14 @@ ENDFUNCTION eq
 
 
 
+PURE ELEMENTAL LOGICAL FUNCTION ge(d0,d1)
 !======================================================================>
 !
-! FUNCTION: ge
-!
-! DESCRIPTION: datetime object comparison operator. Returns .TRUE. if
+! datetime object comparison operator. Returns .TRUE. if
 ! d0 is greater or equal than d1, and .FALSE. otherwise. Overloads the 
 ! operator >=.
 !
 !======================================================================>
-PURE ELEMENTAL LOGICAL FUNCTION ge(d0,d1)
 
   TYPE(datetime),INTENT(IN) :: d0,d1
 
@@ -1034,9 +977,7 @@ ENDFUNCTION ge
 
 !======================================================================>
 !
-! FUNCTION: le
-!
-! DESCRIPTION: datetime object comparison operator. Returns .TRUE. if
+! datetime object comparison operator. Returns .TRUE. if
 ! d0 is less or equal than d1, and .FALSE. otherwise. Overloads the 
 ! operator <=.
 !
@@ -1052,15 +993,13 @@ ENDFUNCTION le
 
 
 
+PURE ELEMENTAL REAL FUNCTION total_seconds(self)
 !======================================================================>
 !
-! FUNCTION: total_seconds
-!
-! DESCRIPTION: timedelta-bound procedure. Returns a total number of 
+! timedelta-bound procedure. Returns a total number of 
 ! seconds contained in a timedelta instance.
 !
 !======================================================================>
-PURE ELEMENTAL REAL FUNCTION total_seconds(self)
 
   CLASS(timedelta),INTENT(IN) :: self
 
@@ -1075,15 +1014,13 @@ ENDFUNCTION total_seconds
 
 
 
+PURE ELEMENTAL FUNCTION unary_minus_timedelta(t0) RESULT(t)
 !======================================================================>
 !
-! FUNCTION: unary_minus_timedelta
-!
-! DESCRIPTION: Takes a negative of a timedelta instance. Overloads the 
+! Takes a negative of a timedelta instance. Overloads the 
 ! operator -.
 !
 !======================================================================>
-PURE ELEMENTAL FUNCTION unary_minus_timedelta(t0) RESULT(t)
 
   TYPE(timedelta),INTENT(IN) :: t0
   TYPE(timedelta)            :: t
@@ -1099,15 +1036,13 @@ ENDFUNCTION unary_minus_timedelta
   
 
 
+PURE ELEMENTAL LOGICAL FUNCTION isLeapYear(year)
 !======================================================================>
 !
-! FUNCTION: isLeapYear
-!
-! DESCRIPTION: Given an integer year, returns .TRUE. if year is leap
+! Given an integer year, returns .TRUE. if year is leap
 ! year, and .FALSE. otherwise.
 !
 !======================================================================>
-PURE ELEMENTAL LOGICAL FUNCTION isLeapYear(year)
 
   INTEGER,INTENT(IN) :: year
 
@@ -1119,15 +1054,13 @@ ENDFUNCTION isLeapYear
 
 
 
+PURE ELEMENTAL INTEGER FUNCTION daysInMonth(month,year)
 !======================================================================>
 !
-! FUNCTION: daysInMonth
-!
-! DESCRIPTION: Given integer month and year, returns an integer number
+! Given integer month and year, returns an integer number
 ! of days in that particular month.
 !
 !======================================================================>
-PURE ELEMENTAL INTEGER FUNCTION daysInMonth(month,year)
 
   INTEGER,INTENT(IN) :: month,year
 
@@ -1150,15 +1083,13 @@ ENDFUNCTION daysInMonth
 
 
 
+PURE ELEMENTAL INTEGER FUNCTION daysInYear(year)
 !======================================================================>
 !
-! FUNCTION: daysInYear
-!
-! DESCRIPTION: Given an integer year, returns an integer number of days
+! Given an integer year, returns an integer number of days
 ! in that year.
 !
 !======================================================================>
-PURE ELEMENTAL INTEGER FUNCTION daysInYear(year)
 
   INTEGER,INTENT(IN) :: year
 
@@ -1173,15 +1104,13 @@ ENDFUNCTION daysInYear
 
 
 
+PURE ELEMENTAL REAL(KIND=real_dp) FUNCTION date2num(d)
 !======================================================================>
 !
-! FUNCTION: date2num
-! 
-! DESCRIPTION: Given a datetime instance d, returns number of days
+! Given a datetime instance d, returns number of days
 ! since 0001-01-01 00:00:00.
 !
 !======================================================================>
-PURE ELEMENTAL REAL(KIND=real_dp) FUNCTION date2num(d)
 
   TYPE(datetime),INTENT(IN) :: d
 
@@ -1200,15 +1129,13 @@ ENDFUNCTION date2num
 
 
 
+PURE ELEMENTAL TYPE(datetime) FUNCTION num2date(num)
 !======================================================================>
 !
-! FUNCTION: num2date
-! 
-! DESCRIPTION: Given number of days since 0001-01-01 00:00:00, returns a 
+! Given number of days since 0001-01-01 00:00:00, returns a 
 ! correspoding datetime instance.
 !
 !======================================================================>
-PURE ELEMENTAL TYPE(datetime) FUNCTION num2date(num)
 
   REAL(KIND=real_dp),INTENT(IN) :: num
   REAL(KIND=real_dp)            :: days,totseconds
@@ -1251,15 +1178,13 @@ ENDFUNCTION num2date
 
 
 
-!======================================================================>
-!
-! FUNCTION: int2str
-!
-! DESCRIPTION: Converts an integer i into a character string of 
-! requested length, by pre-pending zeros if necessary.
-!
-!======================================================================>
 PURE FUNCTION int2str(i,length)
+!======================================================================>
+!
+! Converts an integer i into a character string of requested length, 
+! by pre-pending zeros if necessary.
+!
+!======================================================================>
 
   INTEGER,INTENT(IN)    :: i,length
   CHARACTER(LEN=length) :: int2str
