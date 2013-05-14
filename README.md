@@ -3,7 +3,7 @@ datetime-fortran
 
 ## Description
 
-A Fortran library that provides time and date manipulation facilities.
+Time and date manipulation library for Fortran.
 It is freely available under the GNU General Public License v3.
 
 ## API
@@ -14,7 +14,7 @@ It is freely available under the GNU General Public License v3.
 
 * **datetime** - Main time object, modeled after Python's *datetime.datetime* class:
 
-```
+```fortran
 TYPE :: datetime
 
   ! COMPONENTS:
@@ -50,7 +50,7 @@ ENDTYPE datetime
 
 * **timedelta** - Main time difference object, modeled after Python's *datetime.timedelta* class:
 
-```
+```fortran
 TYPE :: timedelta
 
   ! COMPONENTS:
@@ -71,7 +71,7 @@ ENDTYPE timedelta
 * **tm_struct** - Time object compatible with C/C++ *tm* struct. Available mainly 
 for the purpose of calling *strftime()* and *strptime()* procedures.
 
-```
+```fortran
 TYPE,BIND(c) :: tm_struct
 
   ! COMPONENTS:
