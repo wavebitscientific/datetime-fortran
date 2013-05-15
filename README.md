@@ -30,7 +30,7 @@ It is freely available under the [GNU General Public License](http://www.gnu.org
     * <a href='#timedelta'>*timedelta*</a>
         * <a href='#total_seconds'>*total_seconds*</a>
     * <a href='#tm_struct'>*tm_struct*</a>
-* <a href='#public'>Public procedures</a>
+* <a href='#public_procedures'>Public procedures</a>
     * <a href='#date2num'>*date2num*</a>
     * <a href='#daysinmonth'>*daysInMonth*</a>
     * <a href='#daysinyear'>*daysInYear*</a>
@@ -132,7 +132,15 @@ ENDTYPE tm_struct
 
 [Back to top](#top)
 
-<a id='public'><h3>Public procedures</h3></a>
+<a id='public_procedures'><h3>Public procedures</h3></a>
+    
+<a id='date2num'><h4>date2num</a><h4>
+<a id='daysinmonth'><h4>daysInMonth</a><h4>
+<a id='daysinyear'><h4>daysInYear</a><h4>
+<a id='isleapyear'><h4>isLeapYear</a><h4>
+<a id='num2date'><h4>num2date</a><h4>
+<a id='strftime'><h4>strftime</a><h4>
+<a id='strptime'><h4>strptime</a><h4>
 
 [Back to top](#top)
 
