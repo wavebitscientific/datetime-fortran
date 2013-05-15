@@ -4,7 +4,7 @@ datetime-fortran
 ## Description
 
 Time and date manipulation library for Fortran.
-It is freely available under the GNU General Public License v3.
+It is freely available under the [GNU General Public License](http://www.gnu.org/licenses/gpl.html).
 
 ## API
 
@@ -12,31 +12,41 @@ It is freely available under the GNU General Public License v3.
 
 * <a href='#derived_types'>Derived Types</a>
     * <a href='#datetime'>*datetime*</a>
-        * <a href='#'>*addMilliseconds*</a>
-        * <a href='#'>*addSeconds*</a>
-        * <a href='#'>*addMinutes*</a>
-        * <a href='#'>*addHours*</a>
-        * <a href='#'>*addDays*</a>
-        * <a href='#'>*isocalendar*</a>
-        * <a href='#'>*isoformat*</a>
-        * <a href='#'>*isValid*</a>
-        * <a href='#'>*now*</a>
-        * <a href='#'>*secondsSinceEpoch*</a>
-        * <a href='#'>*tm*</a>
-        * <a href='#'>*weekday*</a>
-        * <a href='#'>*weekdayLong*</a>
-        * <a href='#'>*weekdayShort*</a>
-        * <a href='#'>*yearday*</a>
+        * <a href='#addmilliseconds'>*addMilliseconds*</a>
+        * <a href='#addseconds'>*addSeconds*</a>
+        * <a href='#addminutes'>*addMinutes*</a>
+        * <a href='#addhours'>*addHours*</a>
+        * <a href='#adddays'>*addDays*</a>
+        * <a href='#isocalendar'>*isocalendar*</a>
+        * <a href='#isoformat'>*isoformat*</a>
+        * <a href='#isvalid'>*isValid*</a>
+        * <a href='#now'>*now*</a>
+        * <a href='#secondsSinceEpoch'>*secondsSinceEpoch*</a>
+        * <a href='#tm'>*tm*</a>
+        * <a href='#weekday'>*weekday*</a>
+        * <a href='#weekdayLong'>*weekdayLong*</a>
+        * <a href='#weekdayShort'>*weekdayShort*</a>
+        * <a href='#yearday'>*yearday*</a>
     * <a href='#timedelta'>*timedelta*</a>
+        * <a href='#total_seconds'>*total_seconds*</a>
     * <a href='#tm_struct'>*tm_struct*</a>
 * <a href='#public'>Public procedures</a>
+    * <a href='#date2num'>*date2num*</a>
+    * <a href='#daysinmonth'>*daysInMonth*</a>
+    * <a href='#daysinyear'>*daysInYear*</a>
+    * <a href='#isleapyear'>*isLeapYear*</a>
+    * <a href='#num2date'>*num2date*</a>
+    * <a href='#strftime'>*strftime*</a>
+    * <a href='#strptime'>*strptime*</a>
 
 
 <a id='derived_types'><h3>Derived Types</h3></a>
 
 *datetime-fortran* library provides the following derived types:
 
-* **datetime** - Main time object, modeled after Python's *datetime.datetime* class:
+<a id='datetime'><h4>**datetime**</h4></a>
+
+Main time object, modeled after Python's *datetime.datetime* class:
 
 ```fortran
 TYPE :: datetime
@@ -71,8 +81,11 @@ TYPE :: datetime
 
 ENDTYPE datetime
 ```
+[Back to top](#top)
 
-* **timedelta** - Main time difference object, modeled after Python's *datetime.timedelta* class:
+<a id='timedelta'><h4>**timedelta**</h4></a>
+
+Main time difference object, modeled after Python's *datetime.timedelta* class:
 
 ```fortran
 TYPE :: timedelta
@@ -91,8 +104,11 @@ TYPE :: timedelta
 
 ENDTYPE timedelta
 ```
+[Back to top](#top)
 
-* **tm_struct** - Time object compatible with C/C++ *tm* struct. Available mainly 
+<a id='tm_struct'><h4>**tm_struct**</h4></a>
+
+Time object compatible with C/C++ *tm* struct. Available mainly 
 for the purpose of calling *strftime()* and *strptime()* procedures.
 
 ```fortran
@@ -113,6 +129,8 @@ TYPE,BIND(c) :: tm_struct
 
 ENDTYPE tm_struct
 ```
+
+[Back to top](#top)
 
 <a id='public'><h3>Public procedures</h3></a>
 
