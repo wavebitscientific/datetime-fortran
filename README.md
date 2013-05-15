@@ -132,7 +132,7 @@ ENDTYPE tm_struct
 
 [Back to top](#top)
 
-<a id='#public_procedures'><h3>Public procedures</h3></a>
+<a id='#public-procedures'><h3>Public procedures</h3></a>
     
 <a id='date2num'><h4>date2num</a></h4>
 <a id='daysinmonth'><h4>daysInMonth</a></h4>
