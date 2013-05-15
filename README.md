@@ -96,38 +96,38 @@ USE datetime_module,ONLY:datetime
 TYPE(datetime) :: a
 
 ! Initialize as default:
-a = datetime()                                  ! 0001-01-01 00:00:00
+a = datetime()                                     ! 0001-01-01 00:00:00
 
 ! Components can be specified by position:
-a = datetime(1984,12,10)                        ! 1984-12-10 00:00:00
+a = datetime(1984,12,10)                           ! 1984-12-10 00:00:00
 
 ! Or by keyword:
-a = datetime(month=1,day=1,year=1970)           ! 1970-01-01 00:00:00
+a = datetime(month=1,day=1,year=1970)              ! 1970-01-01 00:00:00
 
 ! Or combined:
-a = datetime(2013,2,minute=23,day=12,month=5)   ! 2013-02-05 00:23:00
+a = datetime(2013,2,minute=23,day=12,month=5)      ! 2013-02-05 00:23:00
 
-! Initialize as current local time:
-a = a%now()
+! Do not do this:
+a = datetime(year=2013,2,minute=23,day=12,month=5) ! ILLEGAL
 ```
 
 <h3>*datetime*-bound procedures</h3>
 
-<a id='addmilliseconds'><h4>*addMilliseconds*</h4></a>
-<a id='addseconds'><h4>*addSeconds*</h4></a>
-<a id='addminutes'><h4>*addMinutes*</h4></a>
-<a id='addhours'><h4>*addHours*</h4></a>
-<a id='adddays'><h4>*addDays*</h4></a>
-<a id='isocalendar'><h4>*isocalendar*</h4></a>
-<a id='isoformat'><h4>*isoformat*</h4></a>
-<a id='isValid'><h4>*isValid*</h4></a>
-<a id='now'><h4>*now*</h4></a>
-<a id='secondssinceepoch'><h4>*secondsSinceEpoch*</h4></a>
-<a id='tm'><h4>*tm*</h4></a>
-<a id='weekday'><h4>*weekday*</h4></a>
-<a id='weekdayLong'><h4>*weekdayLong*</h4></a>
-<a id='weekdayShort'><h4>*weekdayShort*</h4></a>
-<a id='yearday'><h4>*yearday*</h4></a>
+<a id='addmilliseconds'><h4>addMilliseconds</h4></a>
+<a id='addseconds'><h4>addSeconds</h4></a>
+<a id='addminutes'><h4>addMinutes</h4></a>
+<a id='addhours'><h4>addHours</h4></a>
+<a id='adddays'><h4>addDays</h4></a>
+<a id='isocalendar'><h4>isocalendar</h4></a>
+<a id='isoformat'><h4>isoformat</h4></a>
+<a id='isValid'><h4>isValid</h4></a>
+<a id='now'><h4>now</h4></a>
+<a id='secondssinceepoch'><h4>secondsSinceEpoch</h4></a>
+<a id='tm'><h4>tm</h4></a>
+<a id='weekday'><h4>weekday</h4></a>
+<a id='weekdayLong'><h4>weekdayLong</h4></a>
+<a id='weekdayShort'><h4>weekdayShort</h4></a>
+<a id='yearday'><h4>yearday</h4></a>
 
 [Back to top](#top)
 
