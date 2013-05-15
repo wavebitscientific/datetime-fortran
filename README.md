@@ -40,13 +40,14 @@ It is freely available under the [GNU General Public License](http://www.gnu.org
     * <a href='#strptime'>*strptime*</a>
 
 
-<a id='derived-types'><h3>Derived Types</h3></a>
+<a id='derived-types'><h2>Derived Types</h2></a>
 
 *datetime-fortran* library provides the following derived types:
+[*datetime*](#datetime), [*timedelta*](#timedelta), and [*tm_struct*](#tm_struct).
 
-<a id='datetime'><h4>**datetime**</h4></a>
+<a id='datetime'><h3>**datetime**</h3></a>
 
-Main date and time object, modeled after Python's *datetime.datetime* class:
+Main date and time object, defined as:
 
 ```fortran
 TYPE :: datetime
@@ -82,6 +83,11 @@ TYPE :: datetime
 ENDTYPE datetime
 ```
 
+*datetime* components are initialized by default, so all arguments are optional.
+Arguments may be provided as positional arguments, in the order of their declaration,
+or as keyword arguments, in any order. If both positional and keyword arguments are used,
+no positional arguments may appear after a keyword argument. 
+
 Example usage:
 
 ```fortran
@@ -93,23 +99,41 @@ TYPE(datetime) :: a
 a = datetime()                                  ! 0001-01-01 00:00:00
 
 ! Components can be specified by position:
-a = datetime(2013,5,12)                         ! 2013-05-12 00:00:00
+a = datetime(1984,12,10)                        ! 1984-12-10 00:00:00
 
 ! Or by keyword:
-a = datetime(minute=23,day=5,month=2,year=2013) ! 2013-02-05 00:23:00
+a = datetime(month=1,day=1,year=1970)           ! 1970-01-01 00:00:00
 
 ! Or combined:
-a = datetime(2013,minute=23,day=5,month=2)      ! 2013-02-05 00:23:00
+a = datetime(2013,2,minute=23,day=12,month=5)   ! 2013-02-05 00:23:00
 
 ! Initialize as current local time:
 a = a%now()
 ```
 
+<h3>*datetime*-bound procedures</h3>
+
+<a id='addmilliseconds'><h4>*addMilliseconds*</h4></a>
+<a id='addseconds'><h4>*addSeconds*</h4></a>
+<a id='addminutes'><h4>*addMinutes*</h4></a>
+<a id='addhours'><h4>*addHours*</h4></a>
+<a id='adddays'><h4>*addDays*</h4></a>
+<a id='isocalendar'><h4>*isocalendar*</h4></a>
+<a id='isoformat'><h4>*isoformat*</h4></a>
+<a id='isValid'><h4>*isValid*</h4></a>
+<a id='now'><h4>*now*</h4></a>
+<a id='secondssinceepoch'><h4>*secondsSinceEpoch*</h4></a>
+<a id='tm'><h4>*tm*</h4></a>
+<a id='weekday'><h4>*weekday*</h4></a>
+<a id='weekdayLong'><h4>*weekdayLong*</h4></a>
+<a id='weekdayShort'><h4>*weekdayShort*</h4></a>
+<a id='yearday'><h4>*yearday*</h4></a>
+
 [Back to top](#top)
 
-<a id='timedelta'><h4>**timedelta**</h4></a>
+<a id='timedelta'><h3>**timedelta**</h3></a>
 
-Main time difference object, modeled after Python's *datetime.timedelta* class:
+Main time difference object
 
 ```fortran
 TYPE :: timedelta
@@ -130,7 +154,7 @@ ENDTYPE timedelta
 ```
 [Back to top](#top)
 
-<a id='tm_struct'><h4>**tm_struct**</h4></a>
+<a id='tm_struct'><h3>**tm_struct**</h3></a>
 
 Time object compatible with C/C++ *tm* struct. Available mainly 
 for the purpose of calling *strftime()* and *strptime()* procedures.
@@ -156,15 +180,15 @@ ENDTYPE tm_struct
 
 [Back to top](#top)
 
-<a id='#public-procedures'><h3>Public procedures</h3></a>
+<a id='#public-procedures'><h2>Public procedures</h2></a>
     
-<a id='date2num'><h4>date2num</a></h4>
-<a id='daysinmonth'><h4>daysInMonth</a></h4>
-<a id='daysinyear'><h4>daysInYear</a></h4>
-<a id='isleapyear'><h4>isLeapYear</a></h4>
-<a id='num2date'><h4>num2date</a></h4>
-<a id='strftime'><h4>strftime</a></h4>
-<a id='strptime'><h4>strptime</a></h4>
+<a id='date2num'><h3>date2num</h3></a>
+<a id='daysinmonth'><h3>daysInMonth</h3></a>
+<a id='daysinyear'><h3>daysInYear</h3></a>
+<a id='isleapyear'><h3>isLeapYear</h3></a>
+<a id='num2date'><h3>num2date</h3></a>
+<a id='strftime'><h3>strftime</h3></a>
+<a id='strptime'><h3>strptime</h3></a>
 
 [Back to top](#top)
 

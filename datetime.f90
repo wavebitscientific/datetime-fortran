@@ -722,7 +722,7 @@ PURE ELEMENTAL TYPE(tm_struct) FUNCTION tm(self)
   tm%tm_year  = self%year-1900
   tm%tm_wday  = self%weekday()
   tm%tm_yday  = self%yearday()-1
-  tm%tm_isdst = 0
+  tm%tm_isdst = -1
 
 ENDFUNCTION tm
 !======================================================================>
