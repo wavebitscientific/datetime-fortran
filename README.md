@@ -132,15 +132,15 @@ ENDTYPE tm_struct
 
 [Back to top](#top)
 
-<a id='public_procedures'><h3>Public procedures</h3></a>
+<a id='#public_procedures'><h3>Public procedures</h3></a>
     
-<a id='date2num'><h4>date2num</a><h4>
-<a id='daysinmonth'><h4>daysInMonth</a><h4>
-<a id='daysinyear'><h4>daysInYear</a><h4>
-<a id='isleapyear'><h4>isLeapYear</a><h4>
-<a id='num2date'><h4>num2date</a><h4>
-<a id='strftime'><h4>strftime</a><h4>
-<a id='strptime'><h4>strptime</a><h4>
+<a id='date2num'><h4>date2num</a></h4>
+<a id='daysinmonth'><h4>daysInMonth</a></h4>
+<a id='daysinyear'><h4>daysInYear</a></h4>
+<a id='isleapyear'><h4>isLeapYear</a></h4>
+<a id='num2date'><h4>num2date</a></h4>
+<a id='strftime'><h4>strftime</a></h4>
+<a id='strptime'><h4>strptime</a></h4>
 
 [Back to top](#top)
 
