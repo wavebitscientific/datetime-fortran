@@ -10,7 +10,7 @@ It is freely available under the [GNU General Public License](http://www.gnu.org
 
 <a id='top'></a>
 
-* <a href='#derived_types'>Derived Types</a>
+* <a href='#derived-types'>Derived Types</a>
     * <a href='#datetime'>*datetime*</a>
         * <a href='#addmilliseconds'>*addMilliseconds*</a>
         * <a href='#addseconds'>*addSeconds*</a>
@@ -30,7 +30,7 @@ It is freely available under the [GNU General Public License](http://www.gnu.org
     * <a href='#timedelta'>*timedelta*</a>
         * <a href='#total_seconds'>*total_seconds*</a>
     * <a href='#tm_struct'>*tm_struct*</a>
-* <a href='#public_procedures'>Public procedures</a>
+* <a href='#public-procedures'>Public procedures</a>
     * <a href='#date2num'>*date2num*</a>
     * <a href='#daysinmonth'>*daysInMonth*</a>
     * <a href='#daysinyear'>*daysInYear*</a>
@@ -40,13 +40,13 @@ It is freely available under the [GNU General Public License](http://www.gnu.org
     * <a href='#strptime'>*strptime*</a>
 
 
-<a id='derived_types'><h3>Derived Types</h3></a>
+<a id='derived-types'><h3>Derived Types</h3></a>
 
 *datetime-fortran* library provides the following derived types:
 
 <a id='datetime'><h4>**datetime**</h4></a>
 
-Main time object, modeled after Python's *datetime.datetime* class:
+Main date and time object, modeled after Python's *datetime.datetime* class:
 
 ```fortran
 TYPE :: datetime
@@ -81,6 +81,30 @@ TYPE :: datetime
 
 ENDTYPE datetime
 ```
+
+Example usage:
+
+```fortran
+USE datetime_module,ONLY:datetime
+
+TYPE(datetime) :: a
+
+! Initialize as default:
+a = datetime()                                  ! 0001-01-01 00:00:00
+
+! Components can be specified by position:
+a = datetime(2013,5,12)                         ! 2013-05-12 00:00:00
+
+! Or by keyword:
+a = datetime(minute=23,day=5,month=2,year=2013) ! 2013-02-05 00:23:00
+
+! Or combined:
+a = datetime(2013,minute=23,day=5,month=2)      ! 2013-02-05 00:23:00
+
+! Initialize as current local time:
+a = a%now()
+```
+
 [Back to top](#top)
 
 <a id='timedelta'><h4>**timedelta**</h4></a>
