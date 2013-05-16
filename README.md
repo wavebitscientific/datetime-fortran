@@ -3,14 +3,14 @@ datetime-fortran
 
 ## Description
 
-Time and date manipulation library for Fortran.
+*datetime-fortran* is a time and date manipulation library for Fortran.
 It is freely available under the [GNU General Public License](http://www.gnu.org/licenses/gpl.html).
 
 ## API
 
 <a id='top'></a>
 
-* <a href='#derived-types'>Derived Types</a>
+* [Derived Types](#derived-types)
     * <a href='#datetime'>*datetime*</a>
         * <a href='#addmilliseconds'>*addMilliseconds*</a>
         * <a href='#addseconds'>*addSeconds*</a>
@@ -40,7 +40,7 @@ It is freely available under the [GNU General Public License](http://www.gnu.org
     * <a href='#strptime'>*strptime*</a>
 
 
-<a id='derived-types'><h2>Derived Types</h2></a>
+<a id="derived-types"><h2>Derived Types</h2></a>
 
 *datetime-fortran* library provides the following derived types:
 [*datetime*](#datetime), [*timedelta*](#timedelta), and [*tm_struct*](#tm_struct).
