@@ -183,7 +183,7 @@ ENDTYPE tm_struct
     
 ### date2num<a id="date2num"></a>
 ### daysInMonth<a id="daysinmonth"></a>
-### daysInYear<a id="daysinyear"></a>
+### daysInYear<a id="daysinyear" href="#daysinyear"></a>
 ### isLeapYear<a id="isleapyear"></a>
 ### num2date<a id="num2date"></a>
 ### strftime<a id="strftime"></a>
