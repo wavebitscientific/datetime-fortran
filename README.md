@@ -183,13 +183,20 @@ ENDTYPE tm_struct
     
 ### date2num<a id="date2num"></a>
 ### daysInMonth<a id="daysinmonth"></a>
-### daysInYear<a id="daysinyear" href="#daysinyear"></a>
+### daysInYear<a id="daysinyear"></a>
 ### isLeapYear<a id="isleapyear"></a>
 ### num2date<a id="num2date"></a>
 ### strftime<a id="strftime"></a>
 ### strptime<a id="strptime"></a>
 
 [Back to top](#top)
+
+<script src="paypal-button.min.js?merchant=caomaco"
+    data-button="donate"
+    data-name="My donation"
+    data-amount="1.00"
+>
+</script>
 
 #### Tested with the following compilers:
 ---
