@@ -119,7 +119,7 @@ a = datetime(year=2013,2,minute=23,day=12,month=5) ! ILLEGAL
 <a id="adddays"><h4>addDays</h4></a>
 <a id="isocalendar"><h4>isocalendar</h4></a>
 <a id="isoformat"><h4>isoformat</h4></a>
-<h4><a id="isvalid">isValid</a></h4>
+#### isValid<a id="isvalid"></a>
 <a id="now"><h4>now</h4></a>
 <a id="secondssinceepoch"><h4>secondsSinceEpoch</h4></a>
 <a id="tm"><h4>tm</h4></a>
