@@ -110,29 +110,29 @@ a = datetime(2013,2,minute=23,day=12,month=5)      ! 2013-02-05 00:23:00
 a = datetime(year=2013,2,minute=23,day=12,month=5) ! ILLEGAL
 ```
 
-<h3>*datetime*-bound procedures</h3>
+### *datetime*-bound procedures
 
-<a id="addmilliseconds"><h4>addMilliseconds</h4></a>
-<a id="addseconds"><h4>addSeconds</h4></a>
-<a id="addminutes"><h4>addMinutes</h4></a>
-<a id="addhours"><h4>addHours</h4></a>
-<a id="adddays"><h4>addDays</h4></a>
-<a id="isocalendar"><h4>isocalendar</h4></a>
-<a id="isoformat"><h4>isoformat</h4></a>
+#### addMilliseconds<a id="addmilliseconds"></a>
+#### addSeconds<a id="addseconds"></a>
+#### addMinutes<a id="addminutes"></a>
+#### addHours<a id="addhours"></a>
+#### addDays<a id="adddays"></a>
+#### isocalendar<a id="isocalendar"></a>
+#### isoformat<a id="isoformat"></a>
 #### isValid<a id="isvalid"></a>
-<a id="now"><h4>now</h4></a>
-<a id="secondssinceepoch"><h4>secondsSinceEpoch</h4></a>
-<a id="tm"><h4>tm</h4></a>
-<a id="weekday"><h4>weekday</h4></a>
-<a id="weekdaylong"><h4>weekdayLong</h4></a>
-<a id="weekdayshort"><h4>weekdayShort</h4></a>
-<a id="yearday"><h4>yearday</h4></a>
+#### now<a id="now"></a>
+#### secondsSinceEpoch<a id="secondssinceepoch"></a>
+#### tm<a id="tm"></a>
+#### weekday<a id="weekday"></a>
+#### weekdayLong<a id="weekdaylong"></a>
+#### weekdayShort<a id="weekdayshort"></a>
+#### yearday<a id="yearday"></a>
 
 [Back to top](#top)
 
-<a id="timedelta"><h3>**timedelta**</h3></a>
+### **timedelta**<a id="timedelta"></a>
 
-Main time difference object
+Main time difference object:
 
 ```fortran
 TYPE :: timedelta
@@ -153,7 +153,7 @@ ENDTYPE timedelta
 ```
 [Back to top](#top)
 
-<a id="tm_struct"><h3>**tm_struct**</h3></a>
+### **tm_struct**<a id="tm_struct"></a>
 
 Time object compatible with C/C++ *tm* struct. Available mainly 
 for the purpose of calling *strftime()* and *strptime()* procedures.
@@ -181,13 +181,13 @@ ENDTYPE tm_struct
 
 <a id="#public-procedures"><h2>Public procedures</h2></a>
     
-<a id="date2num"><h3>date2num</h3></a>
-<a id="daysinmonth"><h3>daysInMonth</h3></a>
-<a id="daysinyear"><h3>daysInYear</h3></a>
-<a id="isleapyear"><h3>isLeapYear</h3></a>
-<a id="num2date"><h3>num2date</h3></a>
-<a id="strftime"><h3>strftime</h3></a>
-<a id="strptime"><h3>strptime</h3></a>
+### date2num<a id="date2num"></a>
+### daysInMonth<a id="daysinmonth"></a>
+### daysInYear<a id="daysinyear"></a>
+### isLeapYear<a id="isleapyear"></a>
+### num2date<a id="num2date"></a>
+### strftime<a id="strftime"></a>
+### strptime<a id="strptime"></a>
 
 [Back to top](#top)
 
