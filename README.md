@@ -6,6 +6,7 @@ It is freely available under the [GNU General Public License](http://www.gnu.org
 
 ## API
 
+
 <a id="top"></a>
 
 * [Derived Types](#derived-types)
@@ -118,13 +119,13 @@ a = datetime(year=2013,2,minute=23,day=12,month=5) ! ILLEGAL
 <a id="adddays"><h4>addDays</h4></a>
 <a id="isocalendar"><h4>isocalendar</h4></a>
 <a id="isoformat"><h4>isoformat</h4></a>
-<a id="isValid"><h4>isValid</h4></a>
+<h4><a id="isvalid">isValid</a></h4>
 <a id="now"><h4>now</h4></a>
 <a id="secondssinceepoch"><h4>secondsSinceEpoch</h4></a>
 <a id="tm"><h4>tm</h4></a>
 <a id="weekday"><h4>weekday</h4></a>
-<a id="weekdayLong"><h4>weekdayLong</h4></a>
-<a id="weekdayShort"><h4>weekdayShort</h4></a>
+<a id="weekdaylong"><h4>weekdayLong</h4></a>
+<a id="weekdayshort"><h4>weekdayShort</h4></a>
 <a id="yearday"><h4>yearday</h4></a>
 
 [Back to top](#top)
