@@ -2,10 +2,17 @@
 ## Description
 
 *datetime-fortran* is a time and date manipulation library for Fortran.
+It provides derived types for date ([*datetime*](#datetime)), 
+time and time difference representation ([*timedelta*](#timedelta))
+and associated methods for their manipulation.
+It also provides an interface to C/C++ **tm** struct, and associated
+*strftime* and *strptime* functions.
+*datetime-fortran* came about due to the lack of time handling facilities in standard Fortran language.
+*datetime-fortran* is written and managed by Milan Curcic of University of Miami.
 It is freely available under the [GNU General Public License](http://www.gnu.org/licenses/gpl.html).
+Please send suggestions and bug reports to [here](mailto:milan@orca.rsmas.miami.edu).
 
 ## API
-
 
 <a id="top"></a>
 
@@ -179,7 +186,7 @@ ENDTYPE tm_struct
 
 [Back to top](#top)
 
-<a id="#public-procedures"><h2>Public procedures</h2></a>
+## Public procedures<a id="#public-procedures"></a>
     
 ### date2num<a id="date2num"></a>
 ### daysInMonth<a id="daysinmonth"></a>
@@ -190,13 +197,6 @@ ENDTYPE tm_struct
 ### strptime<a id="strptime"></a>
 
 [Back to top](#top)
-
-<script src="paypal-button.min.js?merchant=caomaco"
-    data-button="donate"
-    data-name="My donation"
-    data-amount="1.00"
->
-</script>
 
 #### Tested with the following compilers:
 ---
