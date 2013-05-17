@@ -147,7 +147,7 @@ and is thus "naive" (open to interpretation).
 
 [Back to top](#top)
 
-### **timedelta** {#timedelta}
+### **timedelta** ### {#timedelta}
 
 Main time difference object:
 
