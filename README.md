@@ -4,7 +4,7 @@
 *datetime-fortran* is a time and date manipulation library for Fortran.
 It provides derived types for date ([*datetime*](#datetime)), 
 time and time difference representation ([*timedelta*](#timedelta))
-and associated methods for their manipulation.
+as well as arithmetic and associated methods for their manipulation.
 It also provides an interface to C/C++ **tm** struct, and associated
 *strftime* and *strptime* functions.
 *datetime-fortran* came about due to the lack of time handling facilities in standard Fortran language.
@@ -17,24 +17,28 @@ Please send suggestions and bug reports to [here](mailto:milan@orca.rsmas.miami.
 <a id="top"></a>
 
 * [Derived Types](#derived-types)
-    * <a href="#datetime">*datetime*</a>
-        * <a href="#addmilliseconds">*addMilliseconds*</a>
-        * <a href="#addseconds">*addSeconds*</a>
-        * <a href="#addminutes">*addMinutes*</a>
-        * <a href="#addhours">*addHours*</a>
-        * <a href="#adddays">*addDays*</a>
-        * <a href="#isocalendar">*isocalendar*</a>
-        * <a href="#isoformat">*isoformat*</a>
-        * <a href="#isvalid">*isValid*</a>
-        * <a href="#now">*now*</a>
-        * <a href="#secondsSinceEpoch">*secondsSinceEpoch*</a>
-        * <a href="#tm">*tm*</a>
-        * <a href="#weekday">*weekday*</a>
-        * <a href="#weekdayLong">*weekdayLong*</a>
-        * <a href="#weekdayShort">*weekdayShort*</a>
-        * <a href="#yearday">*yearday*</a>
+    * [*datetime*](#datetime)
+        * [Methods](#datetimemethods)
+            * <a href="#addmilliseconds">*addMilliseconds*</a>
+            * <a href="#addseconds">*addSeconds*</a>
+            * <a href="#addminutes">*addMinutes*</a>
+            * <a href="#addhours">*addHours*</a>
+            * <a href="#adddays">*addDays*</a>
+            * <a href="#isocalendar">*isocalendar*</a>
+            * <a href="#isoformat">*isoformat*</a>
+            * <a href="#isvalid">*isValid*</a>
+            * <a href="#now">*now*</a>
+            * <a href="#secondsSinceEpoch">*secondsSinceEpoch*</a>
+            * <a href="#tm">*tm*</a>
+            * <a href="#weekday">*weekday*</a>
+            * <a href="#weekdayLong">*weekdayLong*</a>
+            * <a href="#weekdayShort">*weekdayShort*</a>
+            * <a href="#yearday">*yearday*</a>
+        * [Operators](#datetimeoperators)
     * <a href="#timedelta">*timedelta*</a>
-        * <a href="#total_seconds">*total_seconds*</a>
+        * [Methods](#datetimemethods)
+            * [*total_seconds*](#total_seconds)
+        * [Operators](#timedeltaoperators)
     * <a href="#tm_struct">*tm_struct*</a>
 * <a href="#public-procedures">Public procedures</a>
     * <a href="#date2num">*date2num*</a>
@@ -89,7 +93,7 @@ TYPE :: datetime
 ENDTYPE datetime
 ```
 
-*datetime* components are initialized by default, so all arguments are optional.
+[*datetime*](#datetime) components are initialized by default, so all arguments are optional.
 Arguments may be provided as positional arguments, in the order of their declaration,
 or as keyword arguments, in any order. If both positional and keyword arguments are used,
 no positional arguments may appear after a keyword argument. 
@@ -117,7 +121,11 @@ a = datetime(2013,2,minute=23,day=12,month=5)      ! 2013-02-05 00:23:00
 a = datetime(year=2013,2,minute=23,day=12,month=5) ! ILLEGAL
 ```
 
-### *datetime*-bound procedures
+Note that the current implementation of [*datetime*](#datetime) does 
+not currently support time zone or daylight saving time (DST) information,
+and is thus "naive" (open to interpretation).
+
+### Methods<a id="datetimemethods"></a>
 
 #### addMilliseconds<a id="addmilliseconds"></a>
 #### addSeconds<a id="addseconds"></a>
@@ -134,6 +142,8 @@ a = datetime(year=2013,2,minute=23,day=12,month=5) ! ILLEGAL
 #### weekdayLong<a id="weekdaylong"></a>
 #### weekdayShort<a id="weekdayshort"></a>
 #### yearday<a id="yearday"></a>
+
+### *datetime*-bound procedures
 
 [Back to top](#top)
 
@@ -159,6 +169,10 @@ TYPE :: timedelta
 ENDTYPE timedelta
 ```
 [Back to top](#top)
+
+### Methods<a id="timedeltamethods"></a>
+
+### Operators<a id="timedeltaoperators"></a>
 
 ### **tm_struct**<a id="tm_struct"></a>
 
