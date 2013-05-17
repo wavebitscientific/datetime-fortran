@@ -143,11 +143,11 @@ and is thus "naive" (open to interpretation).
 #### weekdayShort<a id="weekdayshort"></a>
 #### yearday<a id="yearday"></a>
 
-### *datetime*-bound procedures
+### Methods <a id="datetimemethods"></a>
 
 [Back to top](#top)
 
-### **timedelta** ### {#timedelta}
+### **timedelta**
 
 Main time difference object:
 
