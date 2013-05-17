@@ -147,7 +147,7 @@ and is thus "naive" (open to interpretation).
 
 [Back to top](#top)
 
-### **timedelta**<a id="timedelta"></a>
+### **timedelta** {#timedelta}
 
 Main time difference object:
 
