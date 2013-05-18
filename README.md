@@ -149,7 +149,8 @@ and is thus "naive" (open to interpretation).
 
 ### **timedelta**
 
-Main time difference object:
+Represents a duration of time, and a difference between
+two [*datetime*](#datetime) objects. It is defined as:
 
 ```fortran
 TYPE :: timedelta
@@ -168,6 +169,39 @@ TYPE :: timedelta
 
 ENDTYPE timedelta
 ```
+
+All arguments are optional and default to 0. 
+Similarly to [*datetime*](#datetime) objects,
+[*timedelta*](#timedelta) instances can be initialized 
+using positional and/or keyword arguments.
+In addition, a [*timedelta*](#timedelta) object is a result
+of subtraction between two [*datetime*](#datetime) objects.
+
+Example usage:
+
+```fortran
+USE datetime_module,ONLY:datetime,timedelta
+
+TYPE(datetime)  :: a,b
+TYPE(timedelta) :: c
+
+! Initialize as default
+c = timedelta()
+
+! Positional arguments:
+c = timedelta(0,1,15,0,0)      ! 1 hour and 15 minutes
+
+! Keyword arguments:
+c = timedelta(days=1,hours=12) ! 1 day and 12 hours
+
+! Difference between two datetimes:
+a = datetime(2013,5,12,32,0,0) ! 2013-05-12 32:00:00
+b = datetime(2012,9,18,14,0,0) ! 2012-09-18 14:00:00
+
+! Subtract to get timedelta:
+c = a-b 
+```
+
 [Back to top](#top)
 
 ### Methods<a id="timedeltamethods"></a>
