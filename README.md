@@ -128,6 +128,41 @@ and is thus "naive" (open to interpretation).
 ### Methods<a id="datetimemethods"></a>
 
 #### addMilliseconds<a id="addmilliseconds"></a>
+
+```fortran
+PURE ELEMENTAL SUBROUTINE addMilliseconds(self,ms)
+!======================================================================>
+!
+! datetime-bound procedure. It adds an integer number of milliseconds to 
+! self. Called by datetime addition (+) and subtraction (-) operators.
+!
+!======================================================================>
+
+  CLASS(datetime),INTENT(INOUT) :: self
+  INTEGER,        INTENT(IN)    :: ms
+```
+
+Used internally by binary arithmetic operators + and - when 
+adding/subtracting a [timedelta](#timedelta) instance to/from a 
+[datetime](#datetime) instance. In general, there is no need to use 
+this method from external programs. However, it may be convenient
+and create less overhead if the operation needs to be performed
+on a large array of [datetime](#datetime) instances.
+
+Example usage:
+
+```fortran
+USE datetime_module,ONLY:datetime
+
+TYPE(datetime) :: a
+
+! Initialize:
+a = datetime(2013,1,1,0,0,0,0)           ! 2013-01-01 00:00:00.000
+
+! Add:
+CALL a%addMilliseconds(100)   ! a becomes: 2013-01-01 00:00:00.100
+```
+
 #### addSeconds<a id="addseconds"></a>
 #### addMinutes<a id="addminutes"></a>
 #### addHours<a id="addhours"></a>
@@ -194,7 +229,7 @@ c = timedelta(0,1,15,0,0)      ! 1 hour and 15 minutes
 ! Keyword arguments:
 c = timedelta(days=1,hours=12) ! 1 day and 12 hours
 
-! Difference between two datetimes:
+! Difference between datetimes:
 a = datetime(2013,5,12,32,0,0) ! 2013-05-12 32:00:00
 b = datetime(2012,9,18,14,0,0) ! 2012-09-18 14:00:00
 
