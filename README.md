@@ -125,21 +125,19 @@ Note that the current implementation of [*datetime*](#datetime) does
 not currently support time zone or daylight saving time (DST) information,
 and is thus "naive" (open to interpretation).
 
+[Back to top](#top)
+
+
 ### Methods<a id="datetimemethods"></a>
 
 #### addMilliseconds<a id="addmilliseconds"></a>
 
 ```fortran
 PURE ELEMENTAL SUBROUTINE addMilliseconds(self,ms)
-!======================================================================>
-!
-! datetime-bound procedure. It adds an integer number of milliseconds to 
-! self. Called by datetime addition (+) and subtraction (-) operators.
-!
-!======================================================================>
 
+  ! ARGUMENTS:
   CLASS(datetime),INTENT(INOUT) :: self
-  INTEGER,        INTENT(IN)    :: ms
+  INTEGER,        INTENT(IN)    :: ms   ! Number of milliseconds to add
 ```
 
 Used internally by binary arithmetic operators + and - when 
@@ -163,20 +161,153 @@ a = datetime(2013,1,1,0,0,0,0)           ! 2013-01-01 00:00:00.000
 CALL a%addMilliseconds(100)   ! a becomes: 2013-01-01 00:00:00.100
 ```
 
+[Back to top](#top)
+
+
 #### addSeconds<a id="addseconds"></a>
+
+```fortran
+PURE ELEMENTAL SUBROUTINE addSeconds(self,s)
+
+  ! ARGUMENTS:
+  CLASS(datetime),INTENT(INOUT) :: self
+  INTEGER,        INTENT(IN)    :: s    ! Number of seconds to add
+```
+
+Used internally by binary arithmetic operators + and - when
+adding/subtracting a [timedelta](#timedelta) instance to/from a
+[datetime](#datetime) instance. In general, there is no need to use
+this method from external programs. However, it may be convenient
+and create less overhead if the operation needs to be performed
+on a large array of [datetime](#datetime) instances.
+
+[Back to top](#top)
+
 #### addMinutes<a id="addminutes"></a>
+
+```fortran
+PURE ELEMENTAL SUBROUTINE addMinutes(self,m)
+
+  ! ARGUMENTS:
+  CLASS(datetime),INTENT(INOUT) :: self
+  INTEGER,        INTENT(IN)    :: m    ! Number of minutes to add
+```
+Used internally by binary arithmetic operators + and - when
+adding/subtracting a [timedelta](#timedelta) instance to/from a
+[datetime](#datetime) instance. In general, there is no need to use
+this method from external programs. However, it may be convenient
+and create less overhead if the operation needs to be performed
+on a large array of [datetime](#datetime) instances.
+
+[Back to top](#top)
+
 #### addHours<a id="addhours"></a>
+
+```fortran
+PURE ELEMENTAL SUBROUTINE addHours(self,h)
+
+  ! ARGUMENTS:
+  CLASS(datetime),INTENT(INOUT) :: self
+  INTEGER,        INTENT(IN)    :: h    ! Number of hours to add
+```
+
+Used internally by binary arithmetic operators + and - when
+adding/subtracting a [timedelta](#timedelta) instance to/from a
+[datetime](#datetime) instance. In general, there is no need to use
+this method from external programs. However, it may be convenient
+and create less overhead if the operation needs to be performed
+on a large array of [datetime](#datetime) instances.
+
+[Back to top](#top)
+
 #### addDays<a id="adddays"></a>
+
+```fortran
+PURE ELEMENTAL SUBROUTINE addDays(self,d)
+
+  CLASS(datetime),INTENT(INOUT) :: self
+  INTEGER,        INTENT(IN)    :: d    ! Number of days to add
+```
+
+Used internally by binary arithmetic operators + and - when
+adding/subtracting a [timedelta](#timedelta) instance to/from a
+[datetime](#datetime) instance. In general, there is no need to use
+this method from external programs. However, it may be convenient
+and create less overhead if the operation needs to be performed
+on a large array of [datetime](#datetime) instances.
+
+[Back to top](#top)
+
 #### isocalendar<a id="isocalendar"></a>
+
+```fortran
+```
+
+[Back to top](#top)
+
 #### isoformat<a id="isoformat"></a>
+
+```fortran
+```
+
+[Back to top](#top)
+
 #### isValid<a id="isvalid"></a>
+
+```fortran
+```
+
+[Back to top](#top)
+
 #### now<a id="now"></a>
+
+```fortran
+```
+
+[Back to top](#top)
+
 #### secondsSinceEpoch<a id="secondssinceepoch"></a>
+
+```fortran
+```
+
+[Back to top](#top)
+
 #### tm<a id="tm"></a>
+
+```fortran
+```
+
+[Back to top](#top)
+
 #### weekday<a id="weekday"></a>
+
+```fortran
+```
+
+[Back to top](#top)
+
 #### weekdayLong<a id="weekdaylong"></a>
+
+```fortran
+```
+
+[Back to top](#top)
+
 #### weekdayShort<a id="weekdayshort"></a>
+
+```fortran
+```
+
+[Back to top](#top)
+
 #### yearday<a id="yearday"></a>
+
+```fortran
+```
+
+[Back to top](#top)
+
 
 ### Methods <a id="datetimemethods"></a>
 
