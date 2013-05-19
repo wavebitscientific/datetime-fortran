@@ -181,6 +181,20 @@ this method from external programs. However, it may be convenient
 and create less overhead if the operation needs to be performed
 on a large array of [datetime](#datetime) instances.
 
+Example usage:
+
+```fortran
+USE datetime_module,ONLY:datetime
+
+TYPE(datetime) :: a
+
+! Initialize:
+a = datetime(2013,1,1,0,0,0,0)           ! 2013-01-01 00:00:00.000
+
+! Add:
+CALL a%addSeconds(10)         ! a becomes: 2013-01-01 00:00:10.000
+```
+
 [Back to top](#top)
 
 #### addMinutes<a id="addminutes"></a>
@@ -198,6 +212,20 @@ adding/subtracting a [timedelta](#timedelta) instance to/from a
 this method from external programs. However, it may be convenient
 and create less overhead if the operation needs to be performed
 on a large array of [datetime](#datetime) instances.
+
+Example usage:
+
+```fortran
+USE datetime_module,ONLY:datetime
+
+TYPE(datetime) :: a
+
+! Initialize:
+a = datetime(2013,1,1,0,0,0,0)           ! 2013-01-01 00:00:00.000
+
+! Add:
+CALL a%addMinutes(10)         ! a becomes: 2013-01-01 00:10:00.000
+```
 
 [Back to top](#top)
 
@@ -218,6 +246,20 @@ this method from external programs. However, it may be convenient
 and create less overhead if the operation needs to be performed
 on a large array of [datetime](#datetime) instances.
 
+Example usage:
+
+```fortran
+USE datetime_module,ONLY:datetime
+
+TYPE(datetime) :: a
+
+! Initialize:
+a = datetime(2013,1,1,0,0,0,0)           ! 2013-01-01 00:00:00.000
+
+! Add:
+CALL a%addHours(12)           ! a becomes: 2013-01-01 12:00:00.000
+```
+
 [Back to top](#top)
 
 #### addDays<a id="adddays"></a>
@@ -235,6 +277,21 @@ adding/subtracting a [timedelta](#timedelta) instance to/from a
 this method from external programs. However, it may be convenient
 and create less overhead if the operation needs to be performed
 on a large array of [datetime](#datetime) instances.
+
+Example usage:
+
+```fortran
+USE datetime_module,ONLY:datetime
+
+TYPE(datetime) :: a
+
+! Initialize:
+a = datetime(2013,1,1,0,0,0,0)           ! 2013-01-01 00:00:00.000
+
+! Add:
+CALL a%addDays(7)             ! a becomes: 2013-01-08 00:00:00.000
+```
+
 
 [Back to top](#top)
 
