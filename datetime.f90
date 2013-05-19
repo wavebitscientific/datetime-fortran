@@ -139,6 +139,8 @@ TYPE :: datetime
   INTEGER :: second      = 0 ! Second in minute       [0-59]
   INTEGER :: millisecond = 0 ! Milliseconds in second [0-999]
 
+! TODO: Implement tz offset
+
   CONTAINS
 
   ! METHODS:
@@ -330,7 +332,7 @@ CONTAINS
 PURE ELEMENTAL SUBROUTINE addMilliseconds(self,ms)
 !======================================================================>
 !
-! datetime-bound procedure. It adds an integer number of milliseconds to 
+! datetime-bound procedure. Adds an integer number of milliseconds to 
 ! self. Called by datetime addition (+) and subtraction (-) operators.
 !
 !======================================================================>
@@ -356,8 +358,8 @@ ENDSUBROUTINE addMilliseconds
 PURE ELEMENTAL SUBROUTINE addSeconds(self,s)
 !======================================================================>
 !
-! datetime-bound procedure. It adds an integer number of seconds to 
-! self. Called by datetime addition (+) and subtraction (-) operators.
+! datetime-bound procedure. Adds an integer number of seconds to self. 
+! Called by datetime addition (+) and subtraction (-) operators.
 !
 !======================================================================>
 
@@ -381,8 +383,8 @@ ENDSUBROUTINE addSeconds
 PURE ELEMENTAL SUBROUTINE addMinutes(self,m)
 !======================================================================>
 !
-! datetime-bound procedure. It adds an integer number of minutes to 
-! self. Called by datetime addition (+) and subtraction (-) operators.
+! datetime-bound procedure. Adds an integer number of minutes to self. 
+! Called by datetime addition (+) and subtraction (-) operators.
 !
 !======================================================================>
 
@@ -406,7 +408,7 @@ ENDSUBROUTINE addMinutes
 PURE ELEMENTAL SUBROUTINE addHours(self,h)
 !======================================================================>
 !
-! datetime-bound procedure. It adds an integer number of hours to self. 
+! datetime-bound procedure. Adds an integer number of hours to self. 
 ! Called by datetime addition (+) and subtraction (-) operators.
 !
 !======================================================================>
@@ -431,7 +433,7 @@ ENDSUBROUTINE addHours
 PURE ELEMENTAL SUBROUTINE addDays(self,d)
 !======================================================================>
 !
-! datetime-bound procedure. It adds an integer number of days to self. 
+! datetime-bound procedure. Adds an integer number of days to self. 
 ! Called by datetime addition (+) and subtraction (-) operators.
 !
 !======================================================================>
@@ -1155,6 +1157,8 @@ PURE ELEMENTAL REAL(KIND=real_dp) FUNCTION date2num(d)
 
   INTEGER :: year
 
+  ! TODO: d%year must be positive. Implement checks.
+
   date2num = 0
   DO year = 1,d%year-1
     date2num = date2num+daysInYear(year)
@@ -1180,6 +1184,8 @@ PURE ELEMENTAL TYPE(datetime) FUNCTION num2date(num)
   REAL(KIND=real_dp)            :: days,totseconds
 
   INTEGER :: year,month,day,hour,minute,second,millisecond
+
+  ! TODO: num must be positive. Implement checks.
 
   days = num
 
