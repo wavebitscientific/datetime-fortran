@@ -460,12 +460,81 @@ ENDTYPE tm_struct
 ## Public procedures<a id="#public-procedures"></a>
     
 ### date2num<a id="date2num"></a>
+
+```fortran
+```
+
+[Back to top](#top)
+
 ### daysInMonth<a id="daysinmonth"></a>
+
+```fortran
+```
+
+[Back to top](#top)
+
 ### daysInYear<a id="daysinyear"></a>
+
+```fortran
+```
+
+[Back to top](#top)
+
 ### isLeapYear<a id="isleapyear"></a>
+
+```fortran
+```
+
+[Back to top](#top)
+
 ### num2date<a id="num2date"></a>
+
+```fortran
+```
+
+[Back to top](#top)
+
 ### strftime<a id="strftime"></a>
+
+```fortran
+FUNCTION strftime(str,slen,format,tm)BIND(c,name='strftime')RESULT(rc)
+
+  CHARACTER(KIND=c_char),DIMENSION(*),INTENT(OUT) :: str   
+  INTEGER(KIND=c_int),VALUE,          INTENT(IN)  :: slen   
+  CHARACTER(KIND=c_char),DIMENSION(*),INTENT(IN)  :: format 
+  TYPE(tm_struct),                    INTENT(IN)  :: tm     
+  INTEGER(KIND=c_int)                             :: rc
+```
+
+An interface to a C/C++ standard library routine. 
+Copies into `str` the content of format, expanding its format specifiers 
+into the corresponding values that represent the time described in `tm`, 
+with a limit of `slen` characters.
+
+#### Arguments
+
+`str` is the destination character string with the requested date and time. 
+
+`slen` is the maximum number of characters to be copied to `str`, 
+including the terminating null-character, `CHAR(0)`.
+
+`format` is the character string containing any combination of regular characters and special format specifiers. 
+These format specifiers are replaced by the function to the corresponding values to represent the time specified in `tm`. 
+For more information on format specifiers see http://www.cplusplus.com/reference/ctime/strftime/.
+
+#### Return value
+
+If the resulting string fits in less than `slen` characters including the terminating null-character, 
+the total number of characters copied to `str` (not including the terminating null-character) is returned.
+Otherwise, zero is returned and the contents of the array are indeterminate.
+
+[Back to top](#top)
+
 ### strptime<a id="strptime"></a>
+
+```fortran
+```
+
 
 [Back to top](#top)
 
