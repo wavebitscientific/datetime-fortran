@@ -490,7 +490,13 @@ ENDTYPE tm_struct
 ### num2date<a id="num2date"></a>
 
 ```fortran
+PURE ELEMENTAL TYPE(datetime) FUNCTION num2date(num)
+
+  REAL(KIND=real_dp),INTENT(IN) :: num
 ```
+
+Given the number of days since 0001-01-01 00:00:00, returns a
+correspoding [datetime](#datetime) instance.
 
 [Back to top](#top)
 
