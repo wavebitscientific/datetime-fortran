@@ -18,28 +18,25 @@ Please send suggestions and bug reports to [here](mailto:milan@orca.rsmas.miami.
 
 * [Derived Types](#derived-types)
     * [*datetime*](#datetime)
-        * [Methods](#datetimemethods)
-            * <a href="#addmilliseconds">*addMilliseconds*</a>
-            * <a href="#addseconds">*addSeconds*</a>
-            * <a href="#addminutes">*addMinutes*</a>
-            * <a href="#addhours">*addHours*</a>
-            * <a href="#adddays">*addDays*</a>
-            * <a href="#isocalendar">*isocalendar*</a>
-            * <a href="#isoformat">*isoformat*</a>
-            * <a href="#isvalid">*isValid*</a>
-            * <a href="#now">*now*</a>
-            * <a href="#secondsSinceEpoch">*secondsSinceEpoch*</a>
-            * <a href="#tm">*tm*</a>
-            * <a href="#weekday">*weekday*</a>
-            * <a href="#weekdayLong">*weekdayLong*</a>
-            * <a href="#weekdayShort">*weekdayShort*</a>
-            * <a href="#yearday">*yearday*</a>
-        * [Operators](#datetimeoperators)
+        * <a href="#addmilliseconds">*addMilliseconds*</a>
+        * <a href="#addseconds">*addSeconds*</a>
+        * <a href="#addminutes">*addMinutes*</a>
+        * <a href="#addhours">*addHours*</a>
+        * <a href="#adddays">*addDays*</a>
+        * <a href="#isocalendar">*isocalendar*</a>
+        * <a href="#isoformat">*isoformat*</a>
+        * <a href="#isvalid">*isValid*</a>
+        * <a href="#now">*now*</a>
+        * <a href="#secondsSinceEpoch">*secondsSinceEpoch*</a>
+        * <a href="#tm">*tm*</a>
+        * <a href="#weekday">*weekday*</a>
+        * <a href="#weekdayLong">*weekdayLong*</a>
+        * <a href="#weekdayShort">*weekdayShort*</a>
+        * <a href="#yearday">*yearday*</a>
     * <a href="#timedelta">*timedelta*</a>
-        * [Methods](#datetimemethods)
-            * [*total_seconds*](#total_seconds)
-        * [Operators](#timedeltaoperators)
+        * [*total_seconds*](#total_seconds)
     * <a href="#tm_struct">*tm_struct*</a>
+* <a href="#operators">Overloaded operators</a>
 * <a href="#public-procedures">Public procedures</a>
     * <a href="#date2num">*date2num*</a>
     * <a href="#daysinmonth">*daysInMonth*</a>
@@ -127,10 +124,7 @@ and is thus "naive" (open to interpretation).
 
 [Back to top](#top)
 
-
-### Methods<a id="datetimemethods"></a>
-
-#### addMilliseconds<a id="addmilliseconds"></a>
+### addMilliseconds<a id="addmilliseconds"></a>
 
 ```fortran
 PURE ELEMENTAL SUBROUTINE addMilliseconds(self,ms)
@@ -164,7 +158,7 @@ CALL a%addMilliseconds(100)   ! a becomes: 2013-01-01 00:00:00.100
 [Back to top](#top)
 
 
-#### addSeconds<a id="addseconds"></a>
+### addSeconds<a id="addseconds"></a>
 
 ```fortran
 PURE ELEMENTAL SUBROUTINE addSeconds(self,s)
@@ -181,7 +175,7 @@ this method from external programs. However, it may be convenient
 and create less overhead if the operation needs to be performed
 on a large array of [datetime](#datetime) instances.
 
-Example usage:
+#### Example usage:
 
 ```fortran
 USE datetime_module,ONLY:datetime
@@ -197,7 +191,7 @@ CALL a%addSeconds(10)         ! a becomes: 2013-01-01 00:00:10.000
 
 [Back to top](#top)
 
-#### addMinutes<a id="addminutes"></a>
+### addMinutes<a id="addminutes"></a>
 
 ```fortran
 PURE ELEMENTAL SUBROUTINE addMinutes(self,m)
@@ -213,7 +207,7 @@ this method from external programs. However, it may be convenient
 and create less overhead if the operation needs to be performed
 on a large array of [datetime](#datetime) instances.
 
-Example usage:
+#### Example usage:
 
 ```fortran
 USE datetime_module,ONLY:datetime
@@ -229,7 +223,7 @@ CALL a%addMinutes(10)         ! a becomes: 2013-01-01 00:10:00.000
 
 [Back to top](#top)
 
-#### addHours<a id="addhours"></a>
+### addHours<a id="addhours"></a>
 
 ```fortran
 PURE ELEMENTAL SUBROUTINE addHours(self,h)
@@ -246,7 +240,7 @@ this method from external programs. However, it may be convenient
 and create less overhead if the operation needs to be performed
 on a large array of [datetime](#datetime) instances.
 
-Example usage:
+#### Example usage:
 
 ```fortran
 USE datetime_module,ONLY:datetime
@@ -262,7 +256,7 @@ CALL a%addHours(12)           ! a becomes: 2013-01-01 12:00:00.000
 
 [Back to top](#top)
 
-#### addDays<a id="adddays"></a>
+### addDays<a id="adddays"></a>
 
 ```fortran
 PURE ELEMENTAL SUBROUTINE addDays(self,d)
@@ -278,7 +272,7 @@ this method from external programs. However, it may be convenient
 and create less overhead if the operation needs to be performed
 on a large array of [datetime](#datetime) instances.
 
-Example usage:
+#### Example usage:
 
 ```fortran
 USE datetime_module,ONLY:datetime
@@ -295,78 +289,73 @@ CALL a%addDays(7)             ! a becomes: 2013-01-08 00:00:00.000
 
 [Back to top](#top)
 
-#### isocalendar<a id="isocalendar"></a>
+### isocalendar<a id="isocalendar"></a>
 
 ```fortran
 ```
 
 [Back to top](#top)
 
-#### isoformat<a id="isoformat"></a>
+### isoformat<a id="isoformat"></a>
 
 ```fortran
 ```
 
 [Back to top](#top)
 
-#### isValid<a id="isvalid"></a>
+### isValid<a id="isvalid"></a>
 
 ```fortran
 ```
 
 [Back to top](#top)
 
-#### now<a id="now"></a>
+### now<a id="now"></a>
 
 ```fortran
 ```
 
 [Back to top](#top)
 
-#### secondsSinceEpoch<a id="secondssinceepoch"></a>
+### secondsSinceEpoch<a id="secondssinceepoch"></a>
 
 ```fortran
 ```
 
 [Back to top](#top)
 
-#### tm<a id="tm"></a>
+### tm<a id="tm"></a>
 
 ```fortran
 ```
 
 [Back to top](#top)
 
-#### weekday<a id="weekday"></a>
+### weekday<a id="weekday"></a>
 
 ```fortran
 ```
 
 [Back to top](#top)
 
-#### weekdayLong<a id="weekdaylong"></a>
+### weekdayLong<a id="weekdaylong"></a>
 
 ```fortran
 ```
 
 [Back to top](#top)
 
-#### weekdayShort<a id="weekdayshort"></a>
+### weekdayShort<a id="weekdayshort"></a>
 
 ```fortran
 ```
 
 [Back to top](#top)
 
-#### yearday<a id="yearday"></a>
+### yearday<a id="yearday"></a>
 
 ```fortran
 ```
-
-[Back to top](#top)
-
-
-### Methods <a id="datetimemethods"></a>
 
 [Back to top](#top)
 
@@ -427,11 +416,7 @@ c = a-b
 
 [Back to top](#top)
 
-### Methods<a id="timedeltamethods"></a>
-
-#### total_seconds<a id="totalseconds"></a>
-
-### Operators<a id="timedeltaoperators"></a>
+### total_seconds<a id="totalseconds"></a>
 
 ### **tm_struct**<a id="tm_struct"></a>
 
@@ -458,6 +443,8 @@ ENDTYPE tm_struct
 ```
 
 [Back to top](#top)
+
+## Overloaded operators<a id="#operators"></a>
 
 ## Public procedures<a id="#public-procedures"></a>
     
