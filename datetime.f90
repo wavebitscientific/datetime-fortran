@@ -1157,7 +1157,11 @@ PURE ELEMENTAL REAL(KIND=real_dp) FUNCTION date2num(d)
 
   INTEGER :: year
 
-  ! TODO: d%year must be positive. Implement checks.
+  ! d%year must be positive:
+  IF(d%year < 1)THEN
+    date2num = 0
+    RETURN
+  ENDIF
 
   date2num = 0
   DO year = 1,d%year-1
@@ -1181,11 +1185,15 @@ PURE ELEMENTAL TYPE(datetime) FUNCTION num2date(num)
 !======================================================================>
 
   REAL(KIND=real_dp),INTENT(IN) :: num
-  REAL(KIND=real_dp)            :: days,totseconds
 
   INTEGER :: year,month,day,hour,minute,second,millisecond
+  REAL(KIND=real_dp) :: days,totseconds
 
-  ! TODO: num must be positive. Implement checks.
+  ! num must be positive:
+  IF(num < 0)THEN
+    num2date = datetime()
+    RETURN
+  ENDIF
 
   days = num
 
