@@ -429,6 +429,8 @@ c = a-b
 
 ### Methods<a id="timedeltamethods"></a>
 
+#### total_seconds<a id="totalseconds"></a>
+
 ### Operators<a id="timedeltaoperators"></a>
 
 ### **tm_struct**<a id="tm_struct"></a>
@@ -464,12 +466,24 @@ ENDTYPE tm_struct
 ```fortran
 ```
 
+#### Arguments
+
+#### Return value
+
+#### Example usage
+
 [Back to top](#top)
 
 ### daysInMonth<a id="daysinmonth"></a>
 
 ```fortran
 ```
+
+#### Arguments
+
+#### Return value
+
+#### Example usage
 
 [Back to top](#top)
 
@@ -478,12 +492,24 @@ ENDTYPE tm_struct
 ```fortran
 ```
 
+#### Arguments
+
+#### Return value
+
+#### Example usage
+
 [Back to top](#top)
 
 ### isLeapYear<a id="isleapyear"></a>
 
 ```fortran
 ```
+
+#### Arguments
+
+#### Return value
+
+#### Example usage
 
 [Back to top](#top)
 
@@ -536,6 +562,8 @@ If the resulting string fits in less than `slen` characters including the termin
 the total number of characters copied to `str` (not including the terminating null-character) is returned.
 Otherwise, zero is returned and the contents of the array are indeterminate.
 
+#### Example usage
+
 [Back to top](#top)
 
 ### strptime<a id="strptime"></a>
@@ -564,6 +592,7 @@ of the strptime function.
 
 #### Return value
 
+#### Example usage
 
 [Back to top](#top)
 
