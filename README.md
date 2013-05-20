@@ -528,6 +528,8 @@ including the terminating null-character, `CHAR(0)`.
 These format specifiers are replaced by the function to the corresponding values to represent the time specified in `tm`. 
 For more information on format specifiers see http://www.cplusplus.com/reference/ctime/strftime/.
 
+`tm` is an instance of the type `tm_struct`, containing date and time values to be processed.
+
 #### Return value
 
 If the resulting string fits in less than `slen` characters including the terminating null-character, 
@@ -539,7 +541,28 @@ Otherwise, zero is returned and the contents of the array are indeterminate.
 ### strptime<a id="strptime"></a>
 
 ```fortran
+FUNCTION strptime(str,format,tm)BIND(c,name='strptime')RESULT(rc)
+
+  CHARACTER(KIND=c_char),DIMENSION(*),INTENT(IN)  :: str
+  CHARACTER(KIND=c_char),DIMENSION(*),INTENT(IN)  :: format
+  TYPE(tm_struct),                    INTENT(OUT) :: tm
+  INTEGER(KIND=c_int)                             :: rc
 ```
+
+An interface to a C/C++ standard library routine.
+Converts the character string `str` to values which are stored in `tm`, using the format specified by `format`.
+
+#### Arguments
+
+`str` is the character string containing date and time information.
+
+'format' is the character string containing any combination of regular characters and special format specifiers,
+describing the date and time information in `str`.
+
+`tm` is an instance of the type `tm_struct`, in which the date and time values will be filled upon successful completion
+of the strptime function.
+
+#### Return value
 
 
 [Back to top](#top)
