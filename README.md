@@ -286,7 +286,6 @@ a = datetime(2013,1,1,0,0,0,0)           ! 2013-01-01 00:00:00.000
 CALL a%addDays(7)             ! a becomes: 2013-01-08 00:00:00.000
 ```
 
-
 [Back to top](#top)
 
 ### isocalendar<a id="isocalendar"></a>
@@ -297,8 +296,19 @@ FUNCTION isocalendar(self)
   CLASS(datetime),INTENT(IN) :: self
   INTEGER,DIMENSION(3)       :: isocalendar
 ```
+
 Returns an array of 3 integers: year, week number, and week day, 
-as defined by [ISO 8601 week date](http://en.wikipedia.org/wiki/ISO_week_date). 
+as defined by [ISO 8601 week date](http://en.wikipedia.org/wiki/ISO_week_date).
+The ISO calendar is a widely used variant of the Gregorian calendar.
+The ISO year consists of 52 or 53 full weeks, 
+A week starts on a Monday and ends on a Sunday. 
+The first week of an ISO year is the first (Gregorian) calendar week 
+of a year containing a Thursday. 
+This is called week number 1, and the ISO year of that Thursday 
+is the same as its Gregorian year.
+
+[*datetime%isocalendar()*](#isocalendar) is equivalent to Python's 
+[*datetime.datetime.isocalendar()*](http://docs.python.org/2/library/datetime.html#datetime.date.isocalendar).
 
 #### Example usage
 
