@@ -141,7 +141,7 @@ this method from external programs. However, it may be convenient
 and create less overhead if the operation needs to be performed
 on a large array of [datetime](#datetime) instances.
 
-Example usage:
+#### Example usage
 
 ```fortran
 USE datetime_module,ONLY:datetime
@@ -175,7 +175,7 @@ this method from external programs. However, it may be convenient
 and create less overhead if the operation needs to be performed
 on a large array of [datetime](#datetime) instances.
 
-#### Example usage:
+#### Example usage
 
 ```fortran
 USE datetime_module,ONLY:datetime
@@ -207,7 +207,7 @@ this method from external programs. However, it may be convenient
 and create less overhead if the operation needs to be performed
 on a large array of [datetime](#datetime) instances.
 
-#### Example usage:
+#### Example usage
 
 ```fortran
 USE datetime_module,ONLY:datetime
@@ -240,7 +240,7 @@ this method from external programs. However, it may be convenient
 and create less overhead if the operation needs to be performed
 on a large array of [datetime](#datetime) instances.
 
-#### Example usage:
+#### Example usage
 
 ```fortran
 USE datetime_module,ONLY:datetime
@@ -272,7 +272,7 @@ this method from external programs. However, it may be convenient
 and create less overhead if the operation needs to be performed
 on a large array of [datetime](#datetime) instances.
 
-#### Example usage:
+#### Example usage
 
 ```fortran
 USE datetime_module,ONLY:datetime
@@ -292,6 +292,23 @@ CALL a%addDays(7)             ! a becomes: 2013-01-08 00:00:00.000
 ### isocalendar<a id="isocalendar"></a>
 
 ```fortran
+FUNCTION isocalendar(self)
+
+  CLASS(datetime),INTENT(IN) :: self
+  INTEGER,DIMENSION(3)       :: isocalendar
+```
+Returns an array of 3 integers: year, week number, and week day, 
+as defined by [ISO 8601 week date](#http://en.wikipedia.org/wiki/ISO_week_date). 
+
+#### Example usage
+
+```fortran
+USE datetime_module,ONLY:datetime
+
+TYPE(datetime) :: a
+
+a = datetime(2013,1,1)
+WRITE(*,*)a%isocalendar() ! Prints: 2013  1  2
 ```
 
 [Back to top](#top)
