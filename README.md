@@ -298,7 +298,7 @@ FUNCTION isocalendar(self)
   INTEGER,DIMENSION(3)       :: isocalendar
 ```
 Returns an array of 3 integers: year, week number, and week day, 
-as defined by [ISO 8601 week date](#http://en.wikipedia.org/wiki/ISO_week_date). 
+as defined by [ISO 8601 week date](http://en.wikipedia.org/wiki/ISO_week_date). 
 
 #### Example usage
 
