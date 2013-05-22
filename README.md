@@ -261,6 +261,7 @@ CALL a%addHours(12)           ! a becomes: 2013-01-01 12:00:00.000
 ```fortran
 PURE ELEMENTAL SUBROUTINE addDays(self,d)
 
+  ! ARGUMENTS:
   CLASS(datetime),INTENT(INOUT) :: self
   INTEGER,        INTENT(IN)    :: d    ! Number of days to add
 ```
@@ -293,6 +294,7 @@ CALL a%addDays(7)             ! a becomes: 2013-01-08 00:00:00.000
 ```fortran
 FUNCTION isocalendar(self)
 
+  ! ARGUMENTS:
   CLASS(datetime),INTENT(IN) :: self
   INTEGER,DIMENSION(3)       :: isocalendar
 ```
@@ -300,8 +302,8 @@ FUNCTION isocalendar(self)
 Returns an array of 3 integers: year, week number, and week day, 
 as defined by [ISO 8601 week date](http://en.wikipedia.org/wiki/ISO_week_date).
 The ISO calendar is a widely used variant of the Gregorian calendar.
-The ISO year consists of 52 or 53 full weeks, 
-A week starts on a Monday and ends on a Sunday. 
+The ISO year consists of 52 or 53 full weeks. 
+A week starts on a Monday (1) and ends on a Sunday (7). 
 The first week of an ISO year is the first (Gregorian) calendar week 
 of a year containing a Thursday. 
 This is called week number 1, and the ISO year of that Thursday 
@@ -326,6 +328,40 @@ WRITE(*,*)a%isocalendar() ! Prints: 2013  1  2
 ### isoformat<a id="isoformat"></a>
 
 ```fortran
+PURE ELEMENTAL CHARACTER(LEN=23) FUNCTION isoformat(self,sep)
+
+  ! ARGUMENTS:
+  CLASS(datetime), INTENT(IN)          :: self
+  CHARACTER(LEN=1),INTENT(IN),OPTIONAL :: sep
+```
+
+Returns a character string of length 23 that contains date and time in ISO 8601 
+format.
+
+[*datetime%isoformat()*](#isoformat) is similar to Python's 
+[*datetime.datetime.isoformat()*](http://docs.python.org/2/library/datetime.html#datetime.date.isoformat),
+with the only difference being that [*datetime%isoformat()*](#isoformat) returns the milliseconds 
+in the last 3 characters of the string.
+
+#### Arguments
+
+`sep` is an optional argument that specifies which character of length 1 will
+separate date and time entries. If ommited, defaults to 'T'.
+
+#### Example usage
+
+```fortran
+USE datetime_module,ONLY:datetime
+
+TYPE(datetime) :: a
+
+a = datetime(1984,12,10,13,5,0)
+
+! Without arguments:
+WRITE(*,*)a%isoformat()        ! Prints 1984-12-10T13:05:00.000
+
+! With a specified separator:
+WRITE(*,*)a%isoformat(' ')     ! Prints 1984-12-10 13:05:00.000
 ```
 
 [Back to top](#top)
