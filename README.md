@@ -310,7 +310,7 @@ This is called week number 1, and the ISO year of that Thursday
 is the same as its Gregorian year.
 
 [*datetime%isocalendar()*](#isocalendar) is equivalent to Python's 
-[*datetime.datetime.isocalendar()*](http://docs.python.org/2/library/datetime.html#datetime.date.isocalendar).
+[*datetime.datetime.isocalendar()*](http://docs.python.org/2/library/datetime.html#datetime.datetime.isocalendar).
 
 #### Example usage
 
@@ -338,10 +338,12 @@ PURE ELEMENTAL CHARACTER(LEN=23) FUNCTION isoformat(self,sep)
 Returns a character string of length 23 that contains date and time in ISO 8601 
 format.
 
-[*datetime%isoformat()*](#isoformat) is similar to Python's 
-[*datetime.datetime.isoformat()*](http://docs.python.org/2/library/datetime.html#datetime.date.isoformat),
+[*datetime%isoformat()*](#isoformat) is equivalent to Python's 
+[*datetime.datetime.isoformat()*](http://docs.python.org/2/library/datetime.html#datetime.datetime.isoformat),
 with the only difference being that [*datetime%isoformat()*](#isoformat) returns the milliseconds 
-in the last 3 characters of the string.
+at the end of the string, where as 
+[*datetime.datetime.isoformat()*](http://docs.python.org/2/library/datetime.html#datetime.datetime.isoformat)
+returns microseconds.
 
 #### Arguments
 
@@ -369,6 +371,31 @@ WRITE(*,*)a%isoformat(' ')     ! Prints 1984-12-10 13:05:00.000
 ### isValid<a id="isvalid"></a>
 
 ```fortran
+PURE ELEMENTAL LOGICAL FUNCTION isValid(self)
+  
+  ! ARGUMENTS:
+  CLASS(datetime),INTENT(IN) :: self
+```
+
+Returns `.TRUE.` if all [*datetime*](#datetime) instance components 
+have valid values, and .FALSE. otherwise. Components have valid values
+if they are within the range indicated in [*datetime*](#datetime) 
+derived type description.
+
+#### Example usage
+
+```fortran
+USE datetime_module,ONLY:datetime
+
+TYPE(datetime) :: a
+
+a = datetime(1984,12,10,13,5,0)
+
+WRITE(*,*)a%isValid()   ! .TRUE.
+
+a = datetime(1984,13,10,13,5,0)
+
+WRITE(*,*)a%isValid()   ! .FALSE.
 ```
 
 [Back to top](#top)
