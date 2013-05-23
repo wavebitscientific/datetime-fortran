@@ -382,6 +382,8 @@ have valid values, and .FALSE. otherwise. Components have valid values
 if they are within the range indicated in [*datetime*](#datetime) 
 derived type description.
 
+Useful for debugging and validating user input.
+
 #### Example usage
 
 ```fortran
@@ -403,6 +405,23 @@ WRITE(*,*)a%isValid()   ! .FALSE.
 ### now<a id="now"></a>
 
 ```fortran
+TYPE(datetime) FUNCTION now(self)
+
+  ! ARGUMENTS:
+  CLASS(datetime),INTENT(IN) :: self
+```
+
+Returns the [*datetime*](#datetime) instance representing 
+the current machine time. Currently does not support specifying a timezone.
+
+#### Example usage
+
+```fortran
+USE datetime_module,ONLY:datetime
+
+TYPE(datetime) :: a
+
+a = a%now()   ! Assigns current machine time to a
 ```
 
 [Back to top](#top)
@@ -410,6 +429,27 @@ WRITE(*,*)a%isValid()   ! .FALSE.
 ### secondsSinceEpoch<a id="secondssinceepoch"></a>
 
 ```fortran
+INTEGER FUNCTION secondsSinceEpoch(self)
+
+  ! ARGUMENTS
+  CLASS(datetime),INTENT(IN) :: self
+```
+
+A wrapper around a [*strftime*](#strftime) call. 
+Returns an integer number of seconds since the 
+UNIX Epoch, 1970-01-01 00:00:00 +0000 (UTC).
+
+#### Example usage
+
+```fortran
+USE datetime_module,ONLY:datetime
+
+TYPE(datetime) :: a 
+
+! Initialize:
+a = datetime(2013,1,1)
+
+WRITE(*,*)a%secondsSinceEpoch() 
 ```
 
 [Back to top](#top)
@@ -417,6 +457,29 @@ WRITE(*,*)a%isValid()   ! .FALSE.
 ### tm<a id="tm"></a>
 
 ```fortran
+PURE ELEMENTAL TYPE(tm_struct) FUNCTION tm(self)
+
+  ! ARGUMENTS:
+  CLASS(datetime),INTENT(IN) :: self
+```
+
+Returns a [*tm_struct*](#tm_struct) instance that matches the 
+time and date information in the caller [*datetime*](#datetime)
+instance.
+
+#### Example usage
+
+```fortran
+USE datetime_module,ONLY:datetime
+
+TYPE(datetime)  :: a
+TYPE(tm_struct) :: tm
+
+! Initialize:
+a = datetime(2013,1,1)
+
+! Get tm_struct from datetime:
+tm = a%tm()
 ```
 
 [Back to top](#top)
