@@ -487,21 +487,98 @@ tm = a%tm()
 ### weekday<a id="weekday"></a>
 
 ```fortran
+PURE ELEMENTAL INTEGER FUNCTION weekday(self)
+
+  CLASS(datetime),INTENT(IN) :: self
 ```
+
+A [*datetime*](#datetime)-bound method to calculate day of the week using
+ [Zeller's congruence](http://en.wikipedia.org/wiki/Zeller%27s_congruence). 
+Returns an integer scalar in the range of [0-6], starting from Sunday.
+
+#### Example usage
+
+```fortran
+USE datetime_module,ONLY:datetime
+
+TYPE(datetime)  :: a
+
+! Initialize:
+a = datetime(2013,1,1)
+
+WRITE(*,*)a%weekday()    ! 2
+```
+
+#### See also
+
+[*weekdayLong*](#weekdaylong)
+
+[*weekdayShort*](#weekdayshort)
 
 [Back to top](#top)
 
 ### weekdayLong<a id="weekdaylong"></a>
 
 ```fortran
+PURE ELEMENTAL CHARACTER(LEN=9) FUNCTION weekdayLong(self)
+
+  CLASS(datetime),INTENT(IN) :: self
+
 ```
+
+Returns the full name of the day of the week.
+
+#### Example usage
+
+```fortran
+USE datetime_module,ONLY:datetime
+
+TYPE(datetime)  :: a
+
+! Initialize:
+a = datetime(2013,1,1)
+
+WRITE(*,*)a%weekdayLong()    ! Tuesday
+```
+
+#### See also
+
+[*weekday*](#weekday)
+
+[*weekdayShort*](#weekdayshort)
 
 [Back to top](#top)
 
 ### weekdayShort<a id="weekdayshort"></a>
 
+
 ```fortran
+PURE ELEMENTAL CHARACTER(LEN=3) FUNCTION weekdayShort(self)
+
+  CLASS(datetime),INTENT(IN) :: self
+
 ```
+
+Returns the abbreviated (e.g. Mon) name of the day of the week.
+
+#### Example usage
+
+```fortran
+USE datetime_module,ONLY:datetime
+
+TYPE(datetime)  :: a
+
+! Initialize:
+a = datetime(2013,1,1)
+
+WRITE(*,*)a%weekdayShort()    ! Tue
+```
+
+#### See also
+
+[*weekday*](#weekday)
+
+[*weekdayLong*](#weekdaylong)
 
 [Back to top](#top)
 
