@@ -122,6 +122,8 @@ Note that the current implementation of [*datetime*](#datetime) does
 not currently support time zone or daylight saving time (DST) information,
 and is thus "naive" (open to interpretation).
 
+#### See also
+
 [Back to top](#top)
 
 ### addMilliseconds<a id="addmilliseconds"></a>
@@ -154,6 +156,8 @@ a = datetime(2013,1,1,0,0,0,0)           ! 2013-01-01 00:00:00.000
 ! Add:
 CALL a%addMilliseconds(100)   ! a becomes: 2013-01-01 00:00:00.100
 ```
+
+#### See also
 
 [Back to top](#top)
 
@@ -189,6 +193,8 @@ a = datetime(2013,1,1,0,0,0,0)           ! 2013-01-01 00:00:00.000
 CALL a%addSeconds(10)         ! a becomes: 2013-01-01 00:00:10.000
 ```
 
+#### See also
+
 [Back to top](#top)
 
 ### addMinutes<a id="addminutes"></a>
@@ -220,6 +226,8 @@ a = datetime(2013,1,1,0,0,0,0)           ! 2013-01-01 00:00:00.000
 ! Add:
 CALL a%addMinutes(10)         ! a becomes: 2013-01-01 00:10:00.000
 ```
+
+#### See also
 
 [Back to top](#top)
 
@@ -254,6 +262,8 @@ a = datetime(2013,1,1,0,0,0,0)           ! 2013-01-01 00:00:00.000
 CALL a%addHours(12)           ! a becomes: 2013-01-01 12:00:00.000
 ```
 
+#### See also
+
 [Back to top](#top)
 
 ### addDays<a id="adddays"></a>
@@ -286,6 +296,8 @@ a = datetime(2013,1,1,0,0,0,0)           ! 2013-01-01 00:00:00.000
 ! Add:
 CALL a%addDays(7)             ! a becomes: 2013-01-08 00:00:00.000
 ```
+
+#### See also
 
 [Back to top](#top)
 
@@ -322,6 +334,8 @@ TYPE(datetime) :: a
 a = datetime(2013,1,1)
 WRITE(*,*)a%isocalendar() ! Prints: 2013  1  2
 ```
+
+#### See also
 
 [Back to top](#top)
 
@@ -366,6 +380,8 @@ WRITE(*,*)a%isoformat()        ! Prints 1984-12-10T13:05:00.000
 WRITE(*,*)a%isoformat(' ')     ! Prints 1984-12-10 13:05:00.000
 ```
 
+#### See also
+
 [Back to top](#top)
 
 ### isValid<a id="isvalid"></a>
@@ -400,6 +416,8 @@ a = datetime(1984,13,10,13,5,0)
 WRITE(*,*)a%isValid()   ! .FALSE.
 ```
 
+#### See also
+
 [Back to top](#top)
 
 ### now<a id="now"></a>
@@ -423,6 +441,8 @@ TYPE(datetime) :: a
 
 a = a%now()   ! Assigns current machine time to a
 ```
+
+#### See also
 
 [Back to top](#top)
 
@@ -451,6 +471,8 @@ a = datetime(2013,1,1)
 
 WRITE(*,*)a%secondsSinceEpoch() 
 ```
+
+#### See also
 
 [Back to top](#top)
 
@@ -481,6 +503,8 @@ a = datetime(2013,1,1)
 ! Get tm_struct from datetime:
 tm = a%tm()
 ```
+
+#### See also
 
 [Back to top](#top)
 
@@ -668,6 +692,8 @@ b = datetime(2012,9,18,14,0,0) ! 2012-09-18 14:00:00
 c = a-b 
 ```
 
+#### See also
+
 [Back to top](#top)
 
 ### total_seconds<a id="totalseconds"></a>
@@ -696,9 +722,15 @@ TYPE,BIND(c) :: tm_struct
 ENDTYPE tm_struct
 ```
 
+#### See also
+
 [Back to top](#top)
 
 ## Overloaded operators<a id="#operators"></a>
+
+#### See also
+
+[Back to top](#top)
 
 ## Public procedures<a id="#public-procedures"></a>
     
@@ -713,6 +745,8 @@ ENDTYPE tm_struct
 
 #### Example usage
 
+#### See also
+
 [Back to top](#top)
 
 ### daysInMonth<a id="daysinmonth"></a>
@@ -725,6 +759,8 @@ ENDTYPE tm_struct
 #### Return value
 
 #### Example usage
+
+#### See also
 
 [Back to top](#top)
 
@@ -739,6 +775,8 @@ ENDTYPE tm_struct
 
 #### Example usage
 
+#### See also
+
 [Back to top](#top)
 
 ### isLeapYear<a id="isleapyear"></a>
@@ -752,6 +790,8 @@ ENDTYPE tm_struct
 
 #### Example usage
 
+#### See also
+
 [Back to top](#top)
 
 ### num2date<a id="num2date"></a>
@@ -764,6 +804,8 @@ PURE ELEMENTAL TYPE(datetime) FUNCTION num2date(num)
 
 Given the number of days since 0001-01-01 00:00:00, returns a
 correspoding [datetime](#datetime) instance.
+
+#### See also
 
 [Back to top](#top)
 
@@ -805,6 +847,8 @@ Otherwise, zero is returned and the contents of the array are indeterminate.
 
 #### Example usage
 
+#### See also
+
 [Back to top](#top)
 
 ### strptime<a id="strptime"></a>
@@ -834,6 +878,8 @@ of the strptime function.
 #### Return value
 
 #### Example usage
+
+#### See also
 
 [Back to top](#top)
 
