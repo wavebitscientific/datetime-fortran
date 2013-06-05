@@ -543,14 +543,13 @@ WRITE(*,*)a%weekdayLong()    ! Tuesday
 
 #### See also
 
-[*weekday*](#weekday)
+* [*weekday*](#weekday)
 
-[*weekdayShort*](#weekdayshort)
+* [*weekdayShort*](#weekdayshort)
 
 [Back to top](#top)
 
 ### weekdayShort<a id="weekdayshort"></a>
-
 
 ```fortran
 PURE ELEMENTAL CHARACTER(LEN=3) FUNCTION weekdayShort(self)
@@ -576,16 +575,41 @@ WRITE(*,*)a%weekdayShort()    ! Tue
 
 #### See also
 
-[*weekday*](#weekday)
+* [*weekday*](#weekday)
 
-[*weekdayLong*](#weekdaylong)
+* [*weekdayLong*](#weekdaylong)
 
 [Back to top](#top)
 
 ### yearday<a id="yearday"></a>
 
 ```fortran
+PURE ELEMENTAL INTEGER FUNCTION yearday(self)
+
+  CLASS(datetime),INTENT(IN) :: self
 ```
+
+[*datetime*](#datetime)-bound procedure. 
+Returns integer day of the year (ordinal date).
+Equals to `1` for any January 1, `365` for a December 31 on a non-leap year,
+and `366` for a December 31 on a leap year.
+
+#### Example usage
+
+```fortran
+USE datetime_module,ONLY:datetime
+
+TYPE(datetime)  :: a
+
+! Initialize:
+a = datetime(2013,5,1)
+
+WRITE(*,*)a%yearday()    ! 121 
+```
+
+#### See also
+
+* [*isocalendar*](#isocalendar)
 
 [Back to top](#top)
 
