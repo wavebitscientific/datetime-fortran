@@ -737,15 +737,38 @@ ENDTYPE tm_struct
 ### date2num<a id="date2num"></a>
 
 ```fortran
+PURE ELEMENTAL REAL(KIND=real_dp) FUNCTION date2num(d)
+
+  TYPE(datetime),INTENT(IN) :: d
 ```
 
+Returns the number of days since *0001-01-01 00:00:00 UTC*,
+given a [*datetime*](#datetime) instance `d`.
+
 #### Arguments
+
+`d` A [*datetime*](#datetime) instance.
 
 #### Return value
 
 #### Example usage
 
+```fortran
+USE datetime_module,ONLY:datetime,date2num
+
+TYPE(datetime)  :: a
+
+! Initialize:
+a = datetime(2013,1,1,6)
+
+WRITE(*,*)date2num(a)   ! 734869.25000000000
+```
+
 #### See also
+
+* [*datetime*](#datetime)
+
+* [*num2date*](#num2date)
 
 [Back to top](#top)
 
