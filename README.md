@@ -362,7 +362,7 @@ returns microseconds.
 #### Arguments
 
 `sep` is an optional argument that specifies which character of length 1 will
-separate date and time entries. If ommited, defaults to 'T'.
+separate date and time entries. If ommited, defaults to `T`.
 
 #### Example usage
 
@@ -745,6 +745,18 @@ PURE ELEMENTAL REAL(KIND=real_dp) FUNCTION date2num(d)
 Returns the number of days since *0001-01-01 00:00:00 UTC*,
 given a [*datetime*](#datetime) instance `d`.
 
+This function is similar in what it returns to analogous functions
+in Python ( [*matplotlib.dates.date2num*](http://matplotlib.org/api/dates_api.html#matplotlib.dates.date2num))
+and MATLAB's [*datenum*](http://www.mathworks.com/help/matlab/ref/datenum.html).
+Note that [*matplotlib.dates.date2num*](http://matplotlib.org/api/dates_api.html#matplotlib.dates.date2num) returns the number of days since *0001-01-01 00:00:00 UTC* **plus 1**
+(plus 1 for historical reasons),
+and MATLAB's [*datenum*](http://www.mathworks.com/help/matlab/ref/datenum.html)
+returns the number of days since *0000-01-01 00:00:00 UTC*.
+In *datetime-fortran*, we choose the reference time of *0001-01-01 00:00:00 UTC*
+as we consider it to be the least astonishing for the average user.
+MATLAB and Python users should be cautius when using 
+*datetime-fortran*'s [*date2num()*](#date2num) function.
+
 #### Arguments
 
 `d` A [*datetime*](#datetime) instance.
@@ -892,7 +904,7 @@ Converts the character string `str` to values which are stored in `tm`, using th
 
 `str` is the character string containing date and time information.
 
-'format' is the character string containing any combination of regular characters and special format specifiers,
+`format` is the character string containing any combination of regular characters and special format specifiers,
 describing the date and time information in `str`.
 
 `tm` is an instance of the type `tm_struct`, in which the date and time values will be filled upon successful completion
