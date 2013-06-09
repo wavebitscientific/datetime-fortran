@@ -746,22 +746,35 @@ Returns the number of days since *0001-01-01 00:00:00 UTC*,
 given a [*datetime*](#datetime) instance `d`.
 
 This function is similar in what it returns to analogous functions
-in Python ( [*matplotlib.dates.date2num*](http://matplotlib.org/api/dates_api.html#matplotlib.dates.date2num))
+in Python ([*matplotlib.dates.date2num*](http://matplotlib.org/api/dates_api.html#matplotlib.dates.date2num))
 and MATLAB's [*datenum*](http://www.mathworks.com/help/matlab/ref/datenum.html).
-Note that [*matplotlib.dates.date2num*](http://matplotlib.org/api/dates_api.html#matplotlib.dates.date2num) returns the number of days since *0001-01-01 00:00:00 UTC* **plus 1**
-(plus 1 for historical reasons),
+Note that [*matplotlib.dates.date2num*](http://matplotlib.org/api/dates_api.html#matplotlib.dates.date2num) returns the number of days since *0001-01-01 00:00:00 UTC* plus 1
+(for historical reasons),
 and MATLAB's [*datenum*](http://www.mathworks.com/help/matlab/ref/datenum.html)
 returns the number of days since *0000-01-01 00:00:00 UTC*.
 In *datetime-fortran*, we choose the reference time of *0001-01-01 00:00:00 UTC*
 as we consider it to be the least astonishing for the average user.
-MATLAB and Python users should be cautius when using 
+Thus, MATLAB and Python users should be cautious when using 
 *datetime-fortran*'s [*date2num()*](#date2num) function.
+
+[date2num](#date2num) is the inverse function of [num2date](#num2date),
+so by definition, `a == num2date(date2num(a))` evaluates as `.TRUE.`
+for any `datetime` instance `a`.
+Similarly, `b == date2num(num2date(b))` evaluates as `.TRUE.`
+for any variable `b` of type `REAL(KIND=real_dp)`.
 
 #### Arguments
 
 `d` A [*datetime*](#datetime) instance.
 
 #### Return value
+
+`date2num` A `REAL(KIND=real_dp)` number of days since *0001-01-01 00:00:00 UTC*.
+`real_dp` is defined as:
+
+```fortran
+INTEGER,PARAMETER :: real_dp = KIND(1d0)
+```
 
 #### Example usage
 
@@ -837,10 +850,35 @@ PURE ELEMENTAL TYPE(datetime) FUNCTION num2date(num)
   REAL(KIND=real_dp),INTENT(IN) :: num
 ```
 
-Given the number of days since 0001-01-01 00:00:00, returns a
+Given the number of days since *0001-01-01 00:00:00 UTC*, returns a
 correspoding [datetime](#datetime) instance.
 
+This function is similar to analogous function
+in Python ([*matplotlib.dates.num2date*](http://matplotlib.org/api/dates_api.html#matplotlib.dates.num2date)).
+
+[num2date](#num2date) is the inverse function of [date2num](#date2num),
+so by definition, `a == num2date(date2num(a))` evaluates as `.TRUE.`
+for any `datetime` instance `a`.
+Similarly, `b == date2num(num2date(b))` evaluates as `.TRUE.`
+for any variable `b` of type `REAL(KIND=real_dp)`.
+
+#### Arguments
+
+`num` Number of days since *0001-01-01 00:00:00 UTC*.
+
+#### Return value
+
+`num2date` A [*datetime*](#datetime) instance.
+
+#### Example usage
+
+
+
 #### See also
+
+* [*date2num*](#date2num)
+
+* [*datetime*](#datetime)
 
 [Back to top](#top)
 
