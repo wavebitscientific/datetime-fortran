@@ -143,6 +143,10 @@ this method from external programs. However, it may be convenient
 and create less overhead if the operation needs to be performed
 on a large array of [datetime](#datetime) instances.
 
+#### Arguments
+
+`ms` Integer number of milliseconds to add. May be negative for subtraction.
+
 #### Example usage
 
 ```fortran
@@ -158,6 +162,14 @@ CALL a%addMilliseconds(100)   ! a becomes: 2013-01-01 00:00:00.100
 ```
 
 #### See also
+
+* [addSeconds](#addseconds)
+
+* [addMinutes](#addminutes)
+
+* [addHours](#addhours)
+
+* [addDays](#adddays)
 
 [Back to top](#top)
 
@@ -179,6 +191,10 @@ this method from external programs. However, it may be convenient
 and create less overhead if the operation needs to be performed
 on a large array of [datetime](#datetime) instances.
 
+#### Arguments
+
+`s` Integer number of seconds to add. May be negative for subtraction.
+
 #### Example usage
 
 ```fortran
@@ -192,8 +208,15 @@ a = datetime(2013,1,1,0,0,0,0)           ! 2013-01-01 00:00:00.000
 ! Add:
 CALL a%addSeconds(10)         ! a becomes: 2013-01-01 00:00:10.000
 ```
-
 #### See also
+
+* [addMilliseconds](#addmilliseconds)
+
+* [addMinutes](#addminutes)
+
+* [addHours](#addhours)
+
+* [addDays](#adddays)
 
 [Back to top](#top)
 
@@ -212,6 +235,10 @@ adding/subtracting a [timedelta](#timedelta) instance to/from a
 this method from external programs. However, it may be convenient
 and create less overhead if the operation needs to be performed
 on a large array of [datetime](#datetime) instances.
+
+#### Arguments
+
+`m` Integer number of minutes to add. May be negative for subtraction.
 
 #### Example usage
 
@@ -248,6 +275,10 @@ this method from external programs. However, it may be convenient
 and create less overhead if the operation needs to be performed
 on a large array of [datetime](#datetime) instances.
 
+#### Arguments
+
+`h` Integer number of hours to add. May be negative for subtraction.
+
 #### Example usage
 
 ```fortran
@@ -263,6 +294,14 @@ CALL a%addHours(12)           ! a becomes: 2013-01-01 12:00:00.000
 ```
 
 #### See also
+
+* [addMilliseconds](#addmilliseconds)
+
+* [addSeconds](#addseconds)
+
+* [addMinutes](#addminutes)
+
+* [addDays](#adddays)
 
 [Back to top](#top)
 
@@ -283,6 +322,10 @@ this method from external programs. However, it may be convenient
 and create less overhead if the operation needs to be performed
 on a large array of [datetime](#datetime) instances.
 
+#### Arguments
+
+`d` Integer number of days to add. May be negative for subtraction.
+
 #### Example usage
 
 ```fortran
@@ -298,6 +341,14 @@ CALL a%addDays(7)             ! a becomes: 2013-01-08 00:00:00.000
 ```
 
 #### See also
+
+* [addMilliseconds](#addmilliseconds)
+
+* [addSeconds](#addseconds)
+
+* [addMinutes](#addminutes)
+
+* [addHours](#addhours)
 
 [Back to top](#top)
 
