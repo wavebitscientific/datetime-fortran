@@ -147,6 +147,10 @@ on a large array of [datetime](#datetime) instances.
 
 `ms` Integer number of milliseconds to add. May be negative for subtraction.
 
+#### Return value
+
+None
+
 #### Example usage
 
 ```fortran
@@ -163,13 +167,13 @@ CALL a%addMilliseconds(100)   ! a becomes: 2013-01-01 00:00:00.100
 
 #### See also
 
-* [addSeconds](#addseconds)
+* [*addSeconds*](#addseconds)
 
-* [addMinutes](#addminutes)
+* [*addMinutes*](#addminutes)
 
-* [addHours](#addhours)
+* [*addHours*](#addhours)
 
-* [addDays](#adddays)
+* [*addDays*](#adddays)
 
 [Back to top](#top)
 
@@ -195,6 +199,10 @@ on a large array of [datetime](#datetime) instances.
 
 `s` Integer number of seconds to add. May be negative for subtraction.
 
+#### Return value
+
+None
+
 #### Example usage
 
 ```fortran
@@ -210,13 +218,13 @@ CALL a%addSeconds(10)         ! a becomes: 2013-01-01 00:00:10.000
 ```
 #### See also
 
-* [addMilliseconds](#addmilliseconds)
+* [*addMilliseconds*](#addmilliseconds)
 
-* [addMinutes](#addminutes)
+* [*addMinutes*](#addminutes)
 
-* [addHours](#addhours)
+* [*addHours*](#addhours)
 
-* [addDays](#adddays)
+* [*addDays*](#adddays)
 
 [Back to top](#top)
 
@@ -239,6 +247,10 @@ on a large array of [datetime](#datetime) instances.
 #### Arguments
 
 `m` Integer number of minutes to add. May be negative for subtraction.
+
+#### Return value
+
+None
 
 #### Example usage
 
@@ -279,6 +291,10 @@ on a large array of [datetime](#datetime) instances.
 
 `h` Integer number of hours to add. May be negative for subtraction.
 
+#### Return value
+
+None
+
 #### Example usage
 
 ```fortran
@@ -295,13 +311,13 @@ CALL a%addHours(12)           ! a becomes: 2013-01-01 12:00:00.000
 
 #### See also
 
-* [addMilliseconds](#addmilliseconds)
+* [*addMilliseconds*](#addmilliseconds)
 
-* [addSeconds](#addseconds)
+* [*addSeconds*](#addseconds)
 
-* [addMinutes](#addminutes)
+* [*addMinutes*](#addminutes)
 
-* [addDays](#adddays)
+* [*addDays*](#adddays)
 
 [Back to top](#top)
 
@@ -326,6 +342,10 @@ on a large array of [datetime](#datetime) instances.
 
 `d` Integer number of days to add. May be negative for subtraction.
 
+#### Return value
+
+None
+
 #### Example usage
 
 ```fortran
@@ -342,13 +362,13 @@ CALL a%addDays(7)             ! a becomes: 2013-01-08 00:00:00.000
 
 #### See also
 
-* [addMilliseconds](#addmilliseconds)
+* [*addMilliseconds*](#addmilliseconds)
 
-* [addSeconds](#addseconds)
+* [*addSeconds*](#addseconds)
 
-* [addMinutes](#addminutes)
+* [*addMinutes*](#addminutes)
 
-* [addHours](#addhours)
+* [*addHours*](#addhours)
 
 [Back to top](#top)
 
@@ -375,6 +395,15 @@ is the same as its Gregorian year.
 [*datetime%isocalendar()*](#isocalendar) is equivalent to Python's 
 [*datetime.datetime.isocalendar()*](http://docs.python.org/2/library/datetime.html#datetime.datetime.isocalendar).
 
+#### Arguments
+
+None
+
+#### Return value
+
+`isocalendar` A rank 1 integer array of length 3. Contains year, week number
+and week day.
+
 #### Example usage
 
 ```fortran
@@ -387,6 +416,8 @@ WRITE(*,*)a%isocalendar() ! Prints: 2013  1  2
 ```
 
 #### See also
+
+* [*weekday*](#weekday)
 
 [Back to top](#top)
 
