@@ -273,23 +273,16 @@ INTERFACE
   ! Refer to C standard library documentation for more information. 
   ! 
   !====================================================================>
+
     USE,INTRINSIC :: iso_c_binding
-    TYPE,BIND(c) :: tm_struct
-      INTEGER(KIND=c_int) :: tm_sec
-      INTEGER(KIND=c_int) :: tm_min
-      INTEGER(KIND=c_int) :: tm_hour
-      INTEGER(KIND=c_int) :: tm_mday
-      INTEGER(KIND=c_int) :: tm_mon
-      INTEGER(KIND=c_int) :: tm_year
-      INTEGER(KIND=c_int) :: tm_wday
-      INTEGER(KIND=c_int) :: tm_yday
-      INTEGER(KIND=c_int) :: tm_isdst
-    ENDTYPE tm_struct
+    IMPORT        :: tm_struct
+
     CHARACTER(KIND=c_char),DIMENSION(*),INTENT(OUT) :: str
     INTEGER(KIND=c_int),VALUE,          INTENT(IN)  :: slen
     CHARACTER(KIND=c_char),DIMENSION(*),INTENT(IN)  :: format
     TYPE(tm_struct),                    INTENT(IN)  :: tm
     INTEGER(KIND=c_int)                             :: rc
+
   ENDFUNCTION strftime
   !====================================================================>
 
@@ -303,22 +296,15 @@ INTERFACE
   ! for more information.
   ! 
   !====================================================================>
+
     USE,INTRINSIC :: iso_c_binding
-    TYPE,BIND(c) :: tm_struct
-      INTEGER(KIND=c_int) :: tm_sec
-      INTEGER(KIND=c_int) :: tm_min
-      INTEGER(KIND=c_int) :: tm_hour
-      INTEGER(KIND=c_int) :: tm_mday
-      INTEGER(KIND=c_int) :: tm_mon
-      INTEGER(KIND=c_int) :: tm_year
-      INTEGER(KIND=c_int) :: tm_wday
-      INTEGER(KIND=c_int) :: tm_yday
-      INTEGER(KIND=c_int) :: tm_isdst
-    ENDTYPE tm_struct
+    IMPORT        :: tm_struct
+
     CHARACTER(KIND=c_char),DIMENSION(*),INTENT(IN)  :: str
     CHARACTER(KIND=c_char),DIMENSION(*),INTENT(IN)  :: format
     TYPE(tm_struct),                    INTENT(OUT) :: tm
     INTEGER(KIND=c_int)                             :: rc
+
   ENDFUNCTION strptime
   !====================================================================>
 
