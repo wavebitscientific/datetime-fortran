@@ -882,15 +882,46 @@ WRITE(*,*)date2num(a)   ! 734869.25000000000
 ### daysInMonth<a id="daysinmonth"></a>
 
 ```fortran
+PURE ELEMENTAL INTEGER FUNCTION daysInMonth(month,year)
+
+  ! ARGUMENTS:
+  INTEGER,INTENT(IN) :: month
+  INTEGER,INTENT(IN) :: year
 ```
+
+Returns the number of days in month for a given month and year.
+This function is declared as `ELEMENTAL`, so it can be called
+with scalar or n-dimensional array arguments.
 
 #### Arguments
 
+`month` Integer number of month in year. Valid values are in the range [1-12].
+
+`year` Integer year.
+
 #### Return value
+
+Returns an integer number of days in requested month and year.
+Returns `0` if `month` is not in valid range.
 
 #### Example usage
 
+```fortran
+USE datetime_module,ONLY:daysInMonth
+
+! January on leap year:
+WRITE(*,*)daysInMonth(1,2012)   ! 31
+
+! February on leap year:
+WRITE(*,*)daysInMonth(2,2012)   ! 29
+
+! February on non-leap year
+WRITE(*,*)daysInMonth(2,2013)   ! 28
+```
+
 #### See also
+
+* [*daysInYear*](#daysInYear)
 
 [Back to top](#top)
 
