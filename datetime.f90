@@ -1085,6 +1085,7 @@ PURE ELEMENTAL LOGICAL FUNCTION isLeapYear(year)
 !
 !======================================================================>
 
+  ! ARGUMENTS:
   INTEGER,INTENT(IN) :: year
 
   isLeapYear = (MOD(year,4)==0.AND..NOT.MOD(year,100)==0)&
@@ -1103,7 +1104,9 @@ PURE ELEMENTAL INTEGER FUNCTION daysInMonth(month,year)
 !
 !======================================================================>
 
-  INTEGER,INTENT(IN) :: month,year
+  ! ARGUMENTS:
+  INTEGER,INTENT(IN) :: month
+  INTEGER,INTENT(IN) :: year
 
   INTEGER,PARAMETER,DIMENSION(12) :: &
           days = [31,28,31,30,31,30,31,31,30,31,30,31]
