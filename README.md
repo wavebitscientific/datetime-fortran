@@ -8,7 +8,7 @@ It also provides an interface to C/C++ **tm** struct, and associated
 *strftime()* and *strptime()* functions.
 *datetime-fortran* came about due to the lack of time handling facilities in standard Fortran language.
 *datetime-fortran* is written and maintained by Milan Curcic of University of Miami.
-It is freely available under the [GNU General Public License](http://www.gnu.org/licenses/gpl.html).
+It is freely available under the [GNU General Public License version 3](http://www.gnu.org/licenses/gpl.html).
 Please send suggestions and bug reports by [e-mail](mailto:milan@orca.rsmas.miami.edu) or
 through this Github page.
 
@@ -16,15 +16,15 @@ through this Github page.
 
 * Derived types: [*datetime*](#datetime), [*timedelta*](#timedelta), [*tm_struct*](#tm_struct);
 
-* Overloaded arithmetic operators (+) and (-) for *datetime* and *timedelta* objects;
+* Overloaded arithmetic operators `+` and `-` for *timedelta* objects and `-` for *datetime* objects;
 
-* Overloaded comparison operators (>), (>=), (<), (<=) and (==) for *datetime* objects;
+* Overloaded comparison operators `>`, `>=`, `<`, `<=` and `==` for *datetime* objects;
 
 * Interfaces to C/C++ routines [*strftime*](#strftime) and [*strptime*](#strptime) through `ISO_C_BINDING`;
 
 * Lightweight and portable;
 
-* Free to modify and distribute under the terms of the [GNU General Public License](http://www.gnu.org/licenses/gpl.html).
+* Free to modify and distribute under the terms of the [GNU General Public License version 3](http://www.gnu.org/licenses/gpl.html).
 
 
 ## API
