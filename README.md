@@ -10,7 +10,8 @@ It also provides an interface to C/C++ **tm** struct, and associated
 *datetime-fortran* is written and maintained by Milan Curcic of University of Miami.
 It is freely available under the [GNU General Public License version 3](http://www.gnu.org/licenses/gpl.html).
 Please send suggestions and bug reports by [e-mail](mailto:milan@orca.rsmas.miami.edu) or
-through this Github page.
+through this Github page. See the list of [current issues](https://github.com/milancurcic/datetime-fortran/issues)
+if you would like to contribute to the code.
 
 ## Features
 
