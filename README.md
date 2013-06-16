@@ -765,7 +765,7 @@ using positional and/or keyword arguments.
 In addition, a [*timedelta*](#timedelta) object is a result
 of subtraction between two [*datetime*](#datetime) objects.
 
-Example usage:
+#### Example usage
 
 ```fortran
 USE datetime_module,ONLY:datetime,timedelta
@@ -790,11 +790,44 @@ b = datetime(2012,9,18,14,0,0) ! 2012-09-18 14:00:00
 c = a-b 
 ```
 
-#### See also
-
 [Back to top](#top)
 
 ### total_seconds<a id="totalseconds"></a>
+
+```fortran
+PURE ELEMENTAL REAL(KIND=real_dp) FUNCTION total_seconds(self)
+
+  ! ARGUMENTS:
+  CLASS(timedelta),INTENT(IN) :: self
+```
+
+A [*timedelta*](#timedelta)-bound method that returns a number 
+of seconds contained in the time interval defined by the 
+[*timedelta*](#timedelta) instance. This method is equivalent
+to Python's [*datetime.timedelta.total_seconds*](http://docs.python.org/2/library/datetime.html#timedelta-objects) function.
+
+#### Arguments
+
+None
+
+#### Return value
+
+`total_seconds` A total number of seconds (of type `REAL(KIND=real_dp)`) 
+contained in the [*timedelta*](#timedelta) instance.
+
+#### Example usage
+
+```fortran
+USE datetime_module,ONLY:timedelta
+
+TYPE(timedelta) :: td
+
+td = timedelta(days=5,hours=12,minutes=15,seconds=7,milliseconds=123)
+
+WRITE(*,*)td%total_seconds()   ! 476107.13299999997
+```
+
+[Back to top](#top)
 
 ### **tm_struct**<a id="tm_struct"></a>
 
