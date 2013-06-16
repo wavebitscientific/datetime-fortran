@@ -824,7 +824,7 @@ TYPE(timedelta) :: td
 
 td = timedelta(days=5,hours=12,minutes=15,seconds=7,milliseconds=123)
 
-WRITE(*,*)td%total_seconds()   ! 476107.13299999997
+WRITE(*,*)td%total_seconds()   ! 476107.12300000002
 ```
 
 [Back to top](#top)
