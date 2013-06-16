@@ -1020,7 +1020,7 @@ ENDFUNCTION le
 
 
 
-PURE ELEMENTAL REAL FUNCTION total_seconds(self)
+PURE ELEMENTAL REAL(KIND=real_dp) FUNCTION total_seconds(self)
 !======================================================================>
 !
 ! timedelta-bound procedure. Returns a total number of 
@@ -1028,13 +1028,14 @@ PURE ELEMENTAL REAL FUNCTION total_seconds(self)
 !
 !======================================================================>
 
+  ! ARGUMENTS:
   CLASS(timedelta),INTENT(IN) :: self
 
-  total_seconds = self%days*86400 &
-                 +self%hours*3600 &
-                 +self%minutes*60 &
-                 +self%seconds    &
-                 +self%milliseconds*1E-3
+  total_seconds = self%days*86400D0 &
+                 +self%hours*3600D0 &
+                 +self%minutes*60D0 &
+                 +self%seconds      &
+                 +self%milliseconds*1D-3
 
 ENDFUNCTION total_seconds
 !======================================================================>
