@@ -234,22 +234,27 @@ ENDINTERFACE
 
 INTERFACE OPERATOR(==)
   MODULE PROCEDURE eq
+  MODULE PROCEDURE eq_td
 ENDINTERFACE
 
 INTERFACE OPERATOR(>)
   MODULE PROCEDURE gt
+  MODULE PROCEDURE gt_td
 ENDINTERFACE
 
 INTERFACE OPERATOR(<)
   MODULE PROCEDURE lt
+  MODULE PROCEDURE lt_td
 ENDINTERFACE
 
 INTERFACE OPERATOR(>=)
   MODULE PROCEDURE ge
+  MODULE PROCEDURE ge_td
 ENDINTERFACE
 
 INTERFACE OPERATOR(<=)
   MODULE PROCEDURE le
+  MODULE PROCEDURE le_td
 ENDINTERFACE
 
 !======================================================================>
@@ -277,6 +282,7 @@ INTERFACE
     USE,INTRINSIC :: iso_c_binding
     IMPORT        :: tm_struct
 
+    ! ARGUMENTS:
     CHARACTER(KIND=c_char),DIMENSION(*),INTENT(OUT) :: str
     INTEGER(KIND=c_int),VALUE,          INTENT(IN)  :: slen
     CHARACTER(KIND=c_char),DIMENSION(*),INTENT(IN)  :: format
@@ -300,6 +306,7 @@ INTERFACE
     USE,INTRINSIC :: iso_c_binding
     IMPORT        :: tm_struct
 
+    ! ARGUMENTS:
     CHARACTER(KIND=c_char),DIMENSION(*),INTENT(IN)  :: str
     CHARACTER(KIND=c_char),DIMENSION(*),INTENT(IN)  :: format
     TYPE(tm_struct),                    INTENT(OUT) :: tm
@@ -323,6 +330,7 @@ PURE ELEMENTAL SUBROUTINE addMilliseconds(self,ms)
 !
 !======================================================================>
 
+  ! ARGUMENTS:
   CLASS(datetime),INTENT(INOUT) :: self
   INTEGER,        INTENT(IN)    :: ms
 
@@ -349,6 +357,7 @@ PURE ELEMENTAL SUBROUTINE addSeconds(self,s)
 !
 !======================================================================>
 
+  ! ARGUMENTS:
   CLASS(datetime),INTENT(INOUT) :: self
   INTEGER,        INTENT(IN)    :: s
 
@@ -374,6 +383,7 @@ PURE ELEMENTAL SUBROUTINE addMinutes(self,m)
 !
 !======================================================================>
 
+  ! ARGUMENTS:
   CLASS(datetime),INTENT(INOUT) :: self
   INTEGER,        INTENT(IN)    :: m
 
@@ -399,6 +409,7 @@ PURE ELEMENTAL SUBROUTINE addHours(self,h)
 !
 !======================================================================>
   
+  ! ARGUMENTS:
   CLASS(datetime),INTENT(INOUT) :: self
   INTEGER,        INTENT(IN)    :: h
 
@@ -424,6 +435,7 @@ PURE ELEMENTAL SUBROUTINE addDays(self,d)
 !
 !======================================================================>
 
+  ! ARGUMENTS:
   CLASS(datetime),INTENT(INOUT) :: self
   INTEGER,        INTENT(IN)    :: d
 
@@ -463,6 +475,7 @@ PURE ELEMENTAL CHARACTER(LEN=23) FUNCTION isoformat(self,sep)
 !
 !======================================================================>
 
+  ! ARGUMENTS:
   CLASS(datetime), INTENT(IN)          :: self
   CHARACTER(LEN=1),INTENT(IN),OPTIONAL :: sep
 
@@ -496,6 +509,7 @@ PURE ELEMENTAL LOGICAL FUNCTION isValid(self)
 !
 !======================================================================>
 
+  ! ARGUMENTS:
   CLASS(datetime),INTENT(IN) :: self
 
   isValid = .TRUE.
@@ -548,6 +562,7 @@ TYPE(datetime) FUNCTION now(self)
 !
 !======================================================================>
 
+  ! ARGUMENTS:
   CLASS(datetime),INTENT(IN) :: self
 
   INTEGER,DIMENSION(8)       :: values
@@ -575,6 +590,7 @@ PURE ELEMENTAL INTEGER FUNCTION weekday(self)
 !
 !======================================================================>
 
+  ! ARGUMENTS:
   CLASS(datetime),INTENT(IN) :: self
 
   INTEGER :: year,month
@@ -608,6 +624,7 @@ PURE ELEMENTAL CHARACTER(LEN=9) FUNCTION weekdayLong(self)
 !
 !======================================================================>
 
+  ! ARGUMENTS:
   CLASS(datetime),INTENT(IN) :: self
 
   CHARACTER(LEN=9),PARAMETER,DIMENSION(7) :: &
@@ -629,6 +646,7 @@ PURE ELEMENTAL CHARACTER(LEN=3) FUNCTION weekdayShort(self)
 !
 !======================================================================>
 
+  ! ARGUMENTS:
   CLASS(datetime),INTENT(IN) :: self
 
   CHARACTER(LEN=3),PARAMETER,DIMENSION(7) :: &
@@ -650,6 +668,7 @@ FUNCTION isocalendar(self)
 !
 !======================================================================>
 
+  ! ARGUMENTS:
   CLASS(datetime),INTENT(IN) :: self
 
   INTEGER,DIMENSION(3) :: isocalendar
@@ -678,6 +697,7 @@ INTEGER FUNCTION secondsSinceEpoch(self)
 !
 !======================================================================>
 
+  ! ARGUMENTS:
   CLASS(datetime),INTENT(IN) :: self
 
   INTEGER           :: rc
@@ -700,6 +720,7 @@ PURE ELEMENTAL TYPE(tm_struct) FUNCTION tm(self)
 !
 !======================================================================>
 
+  ! ARGUMENTS:
   CLASS(datetime),INTENT(IN) :: self
 
   tm%tm_sec   = self%second
@@ -725,6 +746,7 @@ PURE ELEMENTAL INTEGER FUNCTION yearday(self)
 !
 !======================================================================>
 
+  ! ARGUMENTS:
   CLASS(datetime),INTENT(IN) :: self
 
   INTEGER :: month
@@ -748,6 +770,7 @@ PURE ELEMENTAL FUNCTION datetime_plus_timedelta(d0,t) RESULT(d)
 !
 !======================================================================>
 
+  ! ARGUMENTS:
   TYPE(datetime), INTENT(IN) :: d0
   TYPE(timedelta),INTENT(IN) :: t
   TYPE(datetime)             :: d
@@ -774,6 +797,7 @@ PURE ELEMENTAL FUNCTION datetime_minus_timedelta(d0,t) RESULT(d)
 !
 !======================================================================>
 
+  ! ARGUMENTS:
   TYPE(datetime), INTENT(IN) :: d0
   TYPE(timedelta),INTENT(IN) :: t
   TYPE(datetime)             :: d
@@ -800,6 +824,7 @@ PURE ELEMENTAL FUNCTION datetime_minus_datetime(d0,d1) RESULT(t)
 !
 !======================================================================>
 
+  ! ARGUMENTS:
   TYPE(datetime),INTENT(IN) :: d0,d1
   TYPE(timedelta)           :: t
 
@@ -839,6 +864,7 @@ PURE ELEMENTAL FUNCTION timedelta_plus_timedelta(t0,t1) RESULT(t)
 !
 !======================================================================>
 
+  ! ARGUMENTS:
   TYPE(timedelta),INTENT(IN) :: t0
   TYPE(timedelta),INTENT(IN) :: t1
   TYPE(timedelta)            :: t
@@ -861,6 +887,7 @@ PURE ELEMENTAL FUNCTION timedelta_minus_timedelta(t0,t1) RESULT(t)
 !
 !======================================================================>
 
+  ! ARGUMENTS:
   TYPE(timedelta),INTENT(IN) :: t0
   TYPE(timedelta),INTENT(IN) :: t1
   TYPE(timedelta)            :: t
@@ -881,6 +908,7 @@ PURE ELEMENTAL LOGICAL FUNCTION gt(d0,d1)
 !
 !======================================================================>
 
+  ! ARGUMENTS:
   TYPE(datetime),INTENT(IN) :: d0,d1
 
   ! Year comparison block
@@ -952,6 +980,7 @@ PURE ELEMENTAL LOGICAL FUNCTION lt(d0,d1)
 !
 !======================================================================>
 
+  ! ARGUMENTS:
   TYPE(datetime),INTENT(IN) :: d0,d1
 
   lt = d1 > d0
@@ -969,6 +998,7 @@ PURE ELEMENTAL LOGICAL FUNCTION eq(d0,d1)
 !
 !======================================================================>
 
+  ! ARGUMENTS:
   TYPE(datetime),INTENT(IN) :: d0,d1
 
   eq = d0%year        == d1%year   .AND. &
@@ -984,6 +1014,7 @@ ENDFUNCTION eq
 
 
 
+
 PURE ELEMENTAL LOGICAL FUNCTION ge(d0,d1)
 !======================================================================>
 !
@@ -993,6 +1024,7 @@ PURE ELEMENTAL LOGICAL FUNCTION ge(d0,d1)
 !
 !======================================================================>
 
+  ! ARGUMENTS:
   TYPE(datetime),INTENT(IN) :: d0,d1
 
   ge = d0 > d1 .OR. d0 == d1
@@ -1002,6 +1034,7 @@ ENDFUNCTION ge
 
 
 
+PURE ELEMENTAL LOGICAL FUNCTION le(d0,d1)
 !======================================================================>
 !
 ! datetime object comparison operator. Returns .TRUE. if
@@ -1009,14 +1042,15 @@ ENDFUNCTION ge
 ! operator <=.
 !
 !======================================================================>
-PURE ELEMENTAL LOGICAL FUNCTION le(d0,d1)
 
+  ! ARGUMENTS:
   TYPE(datetime),INTENT(IN) :: d0,d1
 
   le = d1 > d0 .OR. d0 == d1
 
 ENDFUNCTION le
 !======================================================================>
+
 
 
 
@@ -1031,11 +1065,11 @@ PURE ELEMENTAL REAL(KIND=real_dp) FUNCTION total_seconds(self)
   ! ARGUMENTS:
   CLASS(timedelta),INTENT(IN) :: self
 
-  total_seconds = self%days*86400D0 &
-                 +self%hours*3600D0 &
-                 +self%minutes*60D0 &
+  total_seconds = self%days*86400d0 &
+                 +self%hours*3600d0 &
+                 +self%minutes*60d0 &
                  +self%seconds      &
-                 +self%milliseconds*1D-3
+                 +self%milliseconds*1d-3
 
 ENDFUNCTION total_seconds
 !======================================================================>
@@ -1050,6 +1084,7 @@ PURE ELEMENTAL FUNCTION unary_minus_timedelta(t0) RESULT(t)
 !
 !======================================================================>
 
+  ! ARGUMENTS:
   TYPE(timedelta),INTENT(IN) :: t0
   TYPE(timedelta)            :: t
 
@@ -1062,6 +1097,99 @@ PURE ELEMENTAL FUNCTION unary_minus_timedelta(t0) RESULT(t)
 ENDFUNCTION unary_minus_timedelta
 !======================================================================>
   
+
+
+PURE ELEMENTAL LOGICAL FUNCTION eq_td(td0,td1)
+!======================================================================>
+!
+! timedelta object comparison operator. Returns .TRUE. if
+! td0 is equal to td1, and .FALSE. otherwise. Overloads the operator ==.
+!
+!======================================================================>
+
+  ! ARGUMENTS:
+  TYPE(timedelta),INTENT(IN) :: td0,td1
+
+  eq_td = td0%total_seconds() == td1%total_seconds()
+
+ENDFUNCTION eq_td
+!======================================================================>
+
+
+
+PURE ELEMENTAL LOGICAL FUNCTION gt_td(td0,td1)
+!======================================================================>
+!
+! timedelta object comparison operator. Returns .TRUE. if
+! td0 is greater than td1, and .FALSE. otherwise. Overloads the 
+! operator >.
+!
+!======================================================================>
+
+  ! ARGUMENTS:
+  TYPE(timedelta),INTENT(IN) :: td0,td1
+
+  gt_td = td0%total_seconds() > td1%total_seconds()
+
+ENDFUNCTION gt_td
+!======================================================================>
+
+
+
+PURE ELEMENTAL LOGICAL FUNCTION ge_td(td0,td1)
+!======================================================================>
+!
+! timedelta object comparison operator. Returns .TRUE. if
+! td0 is greater than or equal to td1, and .FALSE. otherwise. Overloads 
+! the operator >=.
+!
+!======================================================================>
+
+  ! ARGUMENTS:
+  TYPE(timedelta),INTENT(IN) :: td0,td1
+
+  ge_td = td0%total_seconds() >= td1%total_seconds()
+
+ENDFUNCTION ge_td
+!======================================================================>
+
+
+
+PURE ELEMENTAL LOGICAL FUNCTION lt_td(td0,td1)
+!======================================================================>
+!
+! timedelta object comparison operator. Returns .TRUE. if
+! td0 is less than td1, and .FALSE. otherwise. Overloads the operator <.
+!
+!======================================================================>
+
+  ! ARGUMENTS:
+  TYPE(timedelta),INTENT(IN) :: td0,td1
+
+  lt_td = td0%total_seconds() < td1%total_seconds()
+
+ENDFUNCTION lt_td
+!======================================================================>
+
+
+
+PURE ELEMENTAL LOGICAL FUNCTION le_td(td0,td1)
+!======================================================================>
+!
+! timedelta object comparison operator. Returns .TRUE. if
+! td0 is less than or equal to td1, and .FALSE. otherwise. Overloads the 
+! operator <=.
+!
+!======================================================================>
+
+  ! ARGUMENTS:
+  TYPE(timedelta),INTENT(IN) :: td0,td1
+
+  le_td = td0%total_seconds() <= td1%total_seconds()
+
+ENDFUNCTION le_td
+!======================================================================>
+
 
 
 PURE ELEMENTAL LOGICAL FUNCTION isLeapYear(year)
@@ -1122,6 +1250,7 @@ PURE ELEMENTAL INTEGER FUNCTION daysInYear(year)
 !
 !======================================================================>
 
+  ! ARGUMENTS:
   INTEGER,INTENT(IN) :: year
 
   IF(isLeapYear(year))THEN
@@ -1143,6 +1272,7 @@ PURE ELEMENTAL REAL(KIND=real_dp) FUNCTION date2num(d)
 !
 !======================================================================>
 
+  ! ARGUMENTS:
   TYPE(datetime),INTENT(IN) :: d
 
   INTEGER :: year
@@ -1174,6 +1304,7 @@ PURE ELEMENTAL TYPE(datetime) FUNCTION num2date(num)
 !
 !======================================================================>
 
+  ! ARGUMENTS:
   REAL(KIND=real_dp),INTENT(IN) :: num
 
   INTEGER :: year,month,day,hour,minute,second,millisecond
@@ -1229,6 +1360,7 @@ PURE FUNCTION int2str(i,length)
 !
 !======================================================================>
 
+  ! ARGUMENTS:
   INTEGER,INTENT(IN)    :: i,length
   CHARACTER(LEN=length) :: int2str
 
