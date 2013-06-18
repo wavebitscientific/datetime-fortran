@@ -94,6 +94,7 @@ PUBLIC :: OPERATOR(<)
 PUBLIC :: OPERATOR(>=)
 PUBLIC :: OPERATOR(<=)
 PUBLIC :: OPERATOR(==)
+PUBLIC :: OPERATOR(/=)
 
 ! Procedures:
 PUBLIC :: date2num
@@ -235,6 +236,11 @@ ENDINTERFACE
 INTERFACE OPERATOR(==)
   MODULE PROCEDURE eq
   MODULE PROCEDURE eq_td
+ENDINTERFACE
+
+INTERFACE OPERATOR(/=)
+  MODULE PROCEDURE neq
+  MODULE PROCEDURE neq_td
 ENDINTERFACE
 
 INTERFACE OPERATOR(>)
@@ -1014,6 +1020,23 @@ ENDFUNCTION eq
 
 
 
+PURE ELEMENTAL LOGICAL FUNCTION neq(d0,d1)
+!======================================================================>
+!
+! datetime object comparison operator. Returns .TRUE. if d0 is not equal 
+! to d1, and .FALSE. otherwise. Overloads the operator /=.
+!
+!======================================================================>
+
+  ! ARGUMENTS:
+  TYPE(datetime),INTENT(IN) :: d0,d1
+
+  neq = .NOT. d0 == d1
+
+ENDFUNCTION neq
+!======================================================================>
+
+
 
 PURE ELEMENTAL LOGICAL FUNCTION ge(d0,d1)
 !======================================================================>
@@ -1113,6 +1136,25 @@ PURE ELEMENTAL LOGICAL FUNCTION eq_td(td0,td1)
   eq_td = td0%total_seconds() == td1%total_seconds()
 
 ENDFUNCTION eq_td
+!======================================================================>
+
+
+
+PURE ELEMENTAL LOGICAL FUNCTION neq_td(td0,td1)
+!======================================================================>
+!
+! timedelta object comparison operator. Returns .TRUE. if
+! td0 is not equal to td1, and .FALSE. otherwise. Overloads the 
+! operator /=.
+!
+!======================================================================>
+
+  ! ARGUMENTS:
+  TYPE(timedelta),INTENT(IN) :: td0,td1
+
+  neq_td = .NOT. (td0%total_seconds() == td1%total_seconds())
+
+ENDFUNCTION neq_td
 !======================================================================>
 
 
