@@ -19,7 +19,7 @@ if you would like to contribute to the code.
 
 * Overloaded arithmetic operators `+` and `-` for *datetime* and *timedelta* objects;
 
-* Overloaded comparison operators `>`, `>=`, `<`, `<=` and `==` for *datetime* and *timedelta* objects;
+* Overloaded comparison operators `>`, `>=`, `<`, `<=`, `==` and `/=` for *datetime* and *timedelta* objects;
 
 * Interfaces to C/C++ routines [*strftime*](#strftime) and [*strptime*](#strptime) through `ISO_C_BINDING`;
 
