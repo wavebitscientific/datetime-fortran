@@ -992,7 +992,7 @@ Calls the [*isLeapYear*](#isleapyear) function.
 
 #### Return value
 
-`daysInYear An `INTEGER` scalar. Represents the number of days in `year`. 
+`daysInYear` An `INTEGER` scalar. Represents the number of days in `year`. 
 
 #### Example usage
 
