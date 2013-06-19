@@ -970,22 +970,47 @@ WRITE(*,*)daysInMonth(2,2013)   ! 28
 
 #### See also
 
-* [*daysInYear*](#daysInYear)
+* [*daysInYear*](#daysinyear)
 
 [Back to top](#top)
 
 ### daysInYear<a id="daysinyear"></a>
 
 ```fortran
+PURE ELEMENTAL INTEGER FUNCTION daysInYear(year)
+
+  ! ARGUMENTS:
+  INTEGER,INTENT(IN) :: year
 ```
+
+Given an integer `year`, returns an integer number of days in that year.
+Calls the [*isLeapYear*](#isleapyear) function.
 
 #### Arguments
 
+`year` An `INTEGER` scalar containing the desired year number.
+
 #### Return value
+
+`daysInYear An `INTEGER` scalar. Represents the number of days in `year`. 
 
 #### Example usage
 
+```fortran
+USE datetime_module,ONLY:daysInYear
+
+! Leap year:
+WRITE(*,*)daysInYear(2012)   ! 366
+
+! Non-leap year:
+WRITE(*,*)daysInYear(2013)   ! 365
+```
+
 #### See also
+
+* [*daysInMonth*](#daysinmonth)
+
+* [*isLeapYear*](#isleapyear)
 
 [Back to top](#top)
 
