@@ -873,17 +873,17 @@ PURE ELEMENTAL REAL(KIND=real_dp) FUNCTION date2num(d)
   TYPE(datetime),INTENT(IN) :: d
 ```
 
-Returns the number of days since *0001-01-01 00:00:00 UTC*,
+Returns the number of days since `0001-01-01 00:00:00 UTC`,
 given a [*datetime*](#datetime) instance `d`.
 
 This function is similar in what it returns to analogous functions
 in Python ([*matplotlib.dates.date2num*](http://matplotlib.org/api/dates_api.html#matplotlib.dates.date2num))
 and MATLAB's [*datenum*](http://www.mathworks.com/help/matlab/ref/datenum.html).
-Note that [*matplotlib.dates.date2num*](http://matplotlib.org/api/dates_api.html#matplotlib.dates.date2num) returns the number of days since *0001-01-01 00:00:00 UTC* plus 1
+Note that [*matplotlib.dates.date2num*](http://matplotlib.org/api/dates_api.html#matplotlib.dates.date2num) returns the number of days since `0001-01-01 00:00:00 UTC` plus `1`
 (for historical reasons),
 and MATLAB's [*datenum*](http://www.mathworks.com/help/matlab/ref/datenum.html)
-returns the number of days since *0000-01-01 00:00:00 UTC*.
-In *datetime-fortran*, we choose the reference time of *0001-01-01 00:00:00 UTC*
+returns the number of days since `0000-01-01 00:00:00 UTC`.
+In *datetime-fortran*, we choose the reference time of `0001-01-01 00:00:00 UTC`
 as we consider it to be the least astonishing for the average user.
 Thus, MATLAB and Python users should be cautious when using 
 *datetime-fortran*'s [*date2num()*](#date2num) function.
@@ -900,7 +900,7 @@ for any variable `b` of type `REAL(KIND=real_dp)`.
 
 #### Return value
 
-`date2num` A `REAL(KIND=real_dp)` number of days since *0001-01-01 00:00:00 UTC*.
+`date2num` A `REAL(KIND=real_dp)` number of days since `0001-01-01 00:00:00 UTC`.
 `real_dp` is defined as:
 
 ```fortran
@@ -988,11 +988,11 @@ Calls the [*isLeapYear*](#isleapyear) function.
 
 #### Arguments
 
-`year` An `INTEGER` scalar containing the desired year number.
+`year` An `INTEGER` scalar or array containing the desired year number(s).
 
 #### Return value
 
-`daysInYear` An `INTEGER` scalar. Represents the number of days in `year`. 
+`daysInYear` An `INTEGER` scalar or array. Represents the number of days in `year`. 
 
 #### Example usage
 
@@ -1017,15 +1017,37 @@ WRITE(*,*)daysInYear(2013)   ! 365
 ### isLeapYear<a id="isleapyear"></a>
 
 ```fortran
+PURE ELEMENTAL LOGICAL FUNCTION isLeapYear(year)
+
+  ! ARGUMENTS:
+  INTEGER,INTENT(IN) :: year
 ```
+
+Returns a `LOGICAL` value indicating whether the reqested year is a leap year.
 
 #### Arguments
 
+`year` An `INTEGER` scalar or array representing year number.
+
 #### Return value
+
+`isLeapYear` A `LOGICAL` scalar or array indicating whether a given year is leap year.
 
 #### Example usage
 
+```fortran
+USE datetime_module,ONLY:isLeapYear
+
+! Leap year:
+WRITE(*,*)isLeapYear(2012)   ! .TRUE.
+
+! Non-leap year:
+WRITE(*,*)isLeapYear(2013)   ! .FALSE.
+```
+
 #### See also
+
+* [*daysInYear*](#daysInYear)
 
 [Back to top](#top)
 
@@ -1037,7 +1059,7 @@ PURE ELEMENTAL TYPE(datetime) FUNCTION num2date(num)
   REAL(KIND=real_dp),INTENT(IN) :: num
 ```
 
-Given the number of days since *0001-01-01 00:00:00 UTC*, returns a
+Given the number of days since `0001-01-01 00:00:00 UTC`, returns a
 correspoding [datetime](#datetime) instance.
 
 This function is similar to analogous function
@@ -1051,7 +1073,7 @@ for any variable `b` of type `REAL(KIND=real_dp)`.
 
 #### Arguments
 
-`num` Number of days since *0001-01-01 00:00:00 UTC*.
+`num` Number of days since `0001-01-01 00:00:00 UTC`.
 
 #### Return value
 
@@ -1059,7 +1081,13 @@ for any variable `b` of type `REAL(KIND=real_dp)`.
 
 #### Example usage
 
+```fortran
+USE datetime_module,ONLY:datetime,num2date
 
+TYPE(datetime)  :: a
+
+a = num2date(734869.25d0) ! a becomes datetime(2013,1,1,6,0,0,0)
+```
 
 #### See also
 
