@@ -1,11 +1,11 @@
 ## Description
 
 *datetime-fortran* is a time and date manipulation library for Fortran.
-It provides derived types for date ([*datetime*](#datetime)), 
+It provides classes for date ([*datetime*](#datetime)), 
 time and time difference representation ([*timedelta*](#timedelta))
 as well as arithmetic operators and associated methods for their manipulation.
 It also provides an interface to C/C++ **tm** struct, and associated
-*strftime()* and *strptime()* functions.
+[*strftime*](#strftime) and [*strptime*](#strptime) functions.
 *datetime-fortran* came about due to the lack of time handling facilities in standard Fortran language.
 *datetime-fortran* is written and maintained by Milan Curcic of University of Miami.
 It is freely available under the [GNU General Public License version 3](http://www.gnu.org/licenses/gpl.html).
@@ -15,11 +15,11 @@ if you would like to contribute to the code.
 
 ## Features
 
-* Derived types: [*datetime*](#datetime), [*timedelta*](#timedelta), [*tm_struct*](#tm_struct);
+* Classes: [*datetime*](#datetime), [*timedelta*](#timedelta), [*tm_struct*](#tm_struct);
 
-* Overloaded arithmetic operators `+` and `-` for *datetime* and *timedelta* objects;
+* Arithmetic operators `+` and `-` for *datetime* and *timedelta* objects;
 
-* Overloaded comparison operators `>`, `>=`, `<`, `<=`, `==` and `/=` for *datetime* and *timedelta* objects;
+* Comparison operators `>`, `>=`, `<`, `<=`, `==` and `/=` for *datetime* and *timedelta* objects;
 
 * Interfaces to C/C++ routines [*strftime*](#strftime) and [*strptime*](#strptime) through `ISO_C_BINDING`;
 
