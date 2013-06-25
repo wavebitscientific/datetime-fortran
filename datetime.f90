@@ -286,8 +286,8 @@ INTERFACE
   ! 
   !====================================================================>
 
-    USE,INTRINSIC :: iso_c_binding
-    IMPORT        :: tm_struct
+    IMPORT :: c_char,c_int
+    IMPORT :: tm_struct
 
     ! ARGUMENTS:
     CHARACTER(KIND=c_char),DIMENSION(*),INTENT(OUT) :: str
@@ -310,8 +310,8 @@ INTERFACE
   ! 
   !====================================================================>
 
-    USE,INTRINSIC :: iso_c_binding
-    IMPORT        :: tm_struct
+    IMPORT :: c_char,c_int
+    IMPORT :: tm_struct
 
     ! ARGUMENTS:
     CHARACTER(KIND=c_char),DIMENSION(*),INTENT(IN)  :: str
