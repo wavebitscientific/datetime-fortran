@@ -20,7 +20,7 @@ MODULE datetime_module
 !
 ! MODULE: datetime
 !
-! VERSION: 1.0.0
+! VERSION: 0.1.0
 !
 ! AUTHOR: Milan Curcic
 !         University of Miami
@@ -72,7 +72,7 @@ MODULE datetime_module
 !         FUNCTION strftime
 !         FUNCTION strptime
 !
-! LAST UPDATE: 2013-05-12
+! LAST UPDATE: 2013-06-25
 !
 !======================================================================>
 USE,INTRINSIC :: iso_c_binding
@@ -223,6 +223,7 @@ ENDTYPE tm_struct
 
 INTERFACE OPERATOR(+)
   MODULE PROCEDURE datetime_plus_timedelta
+  MODULE PROCEDURE timedelta_plus_datetime
   MODULE PROCEDURE timedelta_plus_timedelta
 ENDINTERFACE
 
@@ -791,6 +792,26 @@ PURE ELEMENTAL FUNCTION datetime_plus_timedelta(d0,t) RESULT(d)
   IF(t%days         /= 0)CALL d%addDays(t%days)
 
 ENDFUNCTION datetime_plus_timedelta
+!======================================================================>
+
+
+
+PURE ELEMENTAL FUNCTION timedelta_plus_datetime(t,d0) RESULT(d)
+!======================================================================>
+!
+! Adds a timedelta instance to a datetime instance.
+! Returns a new datetime instance. Overloads the operator +.
+!
+!======================================================================>
+
+  ! ARGUMENTS:
+  TYPE(timedelta),INTENT(IN) :: t
+  TYPE(datetime), INTENT(IN) :: d0
+  TYPE(datetime)             :: d
+
+  d = d0+t
+
+ENDFUNCTION timedelta_plus_datetime
 !======================================================================>
 
 
