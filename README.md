@@ -34,33 +34,33 @@ if you would like to contribute to the code.
 
 * [Derived Types](#derived-types)
     * [*datetime*](#datetime)
-        * <a href="#addmilliseconds">*addMilliseconds*</a>
-        * <a href="#addseconds">*addSeconds*</a>
-        * <a href="#addminutes">*addMinutes*</a>
-        * <a href="#addhours">*addHours*</a>
-        * <a href="#adddays">*addDays*</a>
-        * <a href="#isocalendar">*isocalendar*</a>
-        * <a href="#isoformat">*isoformat*</a>
-        * <a href="#isvalid">*isValid*</a>
-        * <a href="#now">*now*</a>
-        * <a href="#secondsSinceEpoch">*secondsSinceEpoch*</a>
-        * <a href="#tm">*tm*</a>
-        * <a href="#weekday">*weekday*</a>
-        * <a href="#weekdayLong">*weekdayLong*</a>
-        * <a href="#weekdayShort">*weekdayShort*</a>
-        * <a href="#yearday">*yearday*</a>
-    * <a href="#timedelta">*timedelta*</a>
+        * [*addMilliseconds*](#addmilliseconds)
+        * [*addSeconds*](#addseconds)
+        * [*addMinutes*](#addminutes)
+        * [*addHours*](#addhours)
+        * [*addDays*](#adddays)
+        * [*isocalendar*](#isocalendar)
+        * [*isoformat*](#isoformat)
+        * [*isValid*](#isvalid)
+        * [*now*](#now)
+        * [*secondsSinceEpoch*](#secondssinceepoch)
+        * [*tm*](#tm)
+        * [*weekday*](#weekday)
+        * [*weekdayLong*](#weekdaylong)
+        * [*weekdayShort*](#weekdayshort)
+        * [*yearday*](#yearday)
+    * [*timedelta*](#timedelta)
         * [*total_seconds*](#total_seconds)
-    * <a href="#tm_struct">*tm_struct*</a>
-* <a href="#operators">Overloaded operators</a>
-* <a href="#public-procedures">Public procedures</a>
-    * <a href="#date2num">*date2num*</a>
-    * <a href="#daysinmonth">*daysInMonth*</a>
-    * <a href="#daysinyear">*daysInYear*</a>
-    * <a href="#isleapyear">*isLeapYear*</a>
-    * <a href="#num2date">*num2date*</a>
-    * <a href="#strftime">*strftime*</a>
-    * <a href="#strptime">*strptime*</a>
+    * [*tm_struct*](#tm-struct)
+* [Overloaded operators](#overloaded-operators)
+* [Public procedures](#public-procedures)
+    * [*date2num*](#date2num)
+    * [*daysInMonth*](#daysinmonth)
+    * [*daysInYear*](#daysinyear)
+    * [*isLeapYear*](#isleapyear)
+    * [*num2date*](#num2date)
+    * [*strftime*](#strftime)
+    * [*strptime*](#strptime)
 
 
 <a id="derived-types"><h2>Derived Types</h2></a>
@@ -528,7 +528,15 @@ TYPE(datetime) FUNCTION now(self)
 ```
 
 Returns the [*datetime*](#datetime) instance representing 
-the current machine time. Currently does not support specifying a timezone.
+the current machine time. Does not support timezones.
+
+#### Arguments
+
+None.
+
+#### Return value
+
+`self` A `datetime` instance with current machine time.
 
 #### Example usage
 
@@ -555,7 +563,16 @@ INTEGER FUNCTION secondsSinceEpoch(self)
 
 A wrapper around a [*strftime*](#strftime) call. 
 Returns an integer number of seconds since the 
-UNIX Epoch, 1970-01-01 00:00:00 +0000 (UTC).
+UNIX Epoch, `1970-01-01 00:00:00 +0000` (UTC).
+
+#### Arguments
+
+None.
+
+#### Return value
+
+`secondsSinceEpoch` An `INTEGER` scalar containing number of seconds since 
+UNIX Epoch.
 
 #### Example usage
 
