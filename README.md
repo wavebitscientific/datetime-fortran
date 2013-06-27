@@ -876,6 +876,28 @@ ENDTYPE tm_struct
 
 ## Overloaded operators<a id="#operators"></a>
 
+The *datetime-fortran* library provides arithmetic and comparison operators
+for [*datetime*](#datetime) and [*timedelta*](#timedelta) objects.
+
+### Arithmetic operators
+
+Addition (`+`) and subtraction (`-`) operators are available for 
+the following combination of derived type pairs:
+
+* `datetime  + timedelta`, returns a `datetime` instance;
+
+* `timedelta + datetime`, returns a `datetime` instance;
+
+* `timedelta + timedelta`, returns a `timedelta` instance;
+
+* `timedelta - timedelta`, returns a `timedelta` instance;
+
+* `datetime  - datetime`, returns a `timedelta` instance;
+
+* `-timedelta` (unary minus), returns a `timedelta` instance.
+
+### Comparison operators
+
 #### See also
 
 [Back to top](#top)
