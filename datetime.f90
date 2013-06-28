@@ -71,6 +71,7 @@ MODULE datetime_module
 !         FUNCTION num2date
 !         FUNCTION strftime
 !         FUNCTION strptime
+!         FUNCTION tm2date
 !
 ! LAST UPDATE: 2013-06-25
 !
@@ -104,6 +105,7 @@ PUBLIC :: isLeapYear
 PUBLIC :: num2date
 PUBLIC :: strftime
 PUBLIC :: strptime
+PUBLIC :: tm2date
 
 ! Constants:
 INTEGER,PARAMETER :: real_sp = KIND(1e0)
@@ -1434,5 +1436,27 @@ PURE FUNCTION int2str(i,length)
   ENDDO
 
 ENDFUNCTION int2str
+!======================================================================>
+
+
+PURE ELEMENTAL TYPE(datetime) FUNCTION tm2date(ctime)
+!======================================================================>
+!
+! Given a tm_struct instance, returns a corresponding datetime instance.
+!
+!======================================================================>
+
+  ! ARGUMENTS:
+  TYPE(tm_struct),INTENT(IN) :: ctime
+
+  tm2date%millisecond = 0
+  tm2date%second      = ctime%tm_sec
+  tm2date%minute      = ctime%tm_min
+  tm2date%hour        = ctime%tm_hour
+  tm2date%day         = ctime%tm_mday
+  tm2date%month       = ctime%tm_mon+1
+  tm2date%year        = ctime%tm_year+1900
+
+ENDFUNCTION tm2date
 !======================================================================>
 ENDMODULE datetime_module
