@@ -1210,6 +1210,21 @@ of the strptime function.
 
 [Back to top](#top)
 
+### tm2date
+
+```fortran
+```
+
+#### Arguments
+
+#### Return value
+
+#### Example usage
+
+#### See also
+
+[Back to top](#top)
+
 #### Tested with the following compilers:
 ---
 * gfortran 4.7.2
