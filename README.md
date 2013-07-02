@@ -61,6 +61,7 @@ if you would like to contribute to the code.
     * [*num2date*](#num2date)
     * [*strftime*](#strftime)
     * [*strptime*](#strptime)
+    * [*tm2date*](#tm2date)
 
 
 <a id="derived-types"><h2>Derived Types</h2></a>
