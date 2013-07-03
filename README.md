@@ -1,9 +1,9 @@
 ## Description
 
 *datetime-fortran* is a time and date manipulation library for Fortran.
-It provides classes for date ([*datetime*](#datetime)), 
-time and time difference representation ([*timedelta*](#timedelta))
-as well as arithmetic operators and associated methods for their manipulation.
+It provides classes for date and time ([*datetime*](#datetime)), 
+and time difference representation ([*timedelta*](#timedelta))
+as well as arithmetic and comparison operators and associated methods for their manipulation.
 It also provides an interface to C/C++ **tm** struct, and associated
 [*strftime*](#strftime) and [*strptime*](#strptime) functions.
 *datetime-fortran* came about due to the lack of time handling facilities in standard Fortran language.
