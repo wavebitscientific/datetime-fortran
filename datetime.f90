@@ -53,6 +53,8 @@ MODULE datetime_module
 !         PROCEDURE :: now
 !         PROCEDURE :: secondsSinceEpoch
 !         PROCEDURE :: tm
+!         PROCEDURE :: tzOffset
+!         PROCEDURE :: utc
 !         PROCEDURE :: weekday
 !         PROCEDURE :: weekdayShort
 !         PROCEDURE :: weekdayLong
@@ -73,7 +75,7 @@ MODULE datetime_module
 !         FUNCTION strptime
 !         FUNCTION tm2date
 !
-! LAST UPDATE: 2013-06-25
+! LAST UPDATE: 2013-07-06
 !
 !======================================================================>
 USE,INTRINSIC :: iso_c_binding
@@ -142,7 +144,7 @@ TYPE :: datetime
   INTEGER :: second      = 0 ! Second in minute       [0-59]
   INTEGER :: millisecond = 0 ! Milliseconds in second [0-999]
 
-! TODO: Implement tz offset
+  REAL :: tz = 0 ! Timezone offset from UTC [hours]
 
   CONTAINS
 
@@ -158,6 +160,8 @@ TYPE :: datetime
   PROCEDURE :: now
   PROCEDURE :: secondsSinceEpoch
   PROCEDURE :: tm
+  PROCEDURE :: tzOffset
+  PROCEDURE :: utc
   PROCEDURE :: weekday
   PROCEDURE :: weekdayLong
   PROCEDURE :: weekdayShort
@@ -319,7 +323,7 @@ INTERFACE
     CHARACTER(KIND=c_char),DIMENSION(*),INTENT(IN)  :: str
     CHARACTER(KIND=c_char),DIMENSION(*),INTENT(IN)  :: format
     TYPE(tm_struct),                    INTENT(OUT) :: tm
-    INTEGER(KIND=c_int)                             :: rc
+    CHARACTER(KIND=c_char,LEN=1)                    :: rc
 
   ENDFUNCTION strptime
   !====================================================================>
@@ -574,7 +578,7 @@ TYPE(datetime) FUNCTION now(self)
   ! ARGUMENTS:
   CLASS(datetime),INTENT(IN) :: self
 
-  INTEGER,DIMENSION(8)       :: values
+  INTEGER,DIMENSION(8) :: values
 
   CALL date_and_time(values=values)
   now = datetime(year        = values(1),&
@@ -747,6 +751,64 @@ ENDFUNCTION tm
 
 
 
+PURE ELEMENTAL CHARACTER(LEN=5) FUNCTION tzOffset(self)
+!======================================================================>
+!
+! Returns a character string with timezone offset in hours from UTC,
+! in format +/-[hh][mm].
+!
+!======================================================================>
+
+  ! ARGUMENTS:
+  CLASS(datetime),INTENT(IN) :: self
+
+  INTEGER :: hours,minutes
+
+  IF(self%tz < 0)THEN
+    tzOffset(1:1) = '-'
+  ELSE
+    tzOffset(1:1) = '+'
+  ENDIF
+
+  hours   = INT(ABS(self%tz))
+  minutes = NINT((ABS(self%tz)-hours)*60)
+
+  IF(minutes == 60)THEN
+    minutes = 0
+    hours = hours+1
+  ENDIF
+
+  WRITE(UNIT=tzOffset(2:5),FMT='(2I2.2)')hours,minutes
+
+ENDFUNCTION tzOffset
+!======================================================================>
+
+
+
+PURE ELEMENTAL TYPE(datetime) FUNCTION utc(self)
+!======================================================================>
+!
+! Returns the datetime instance at Centralized Universal Time (UTC). 
+!
+!======================================================================>
+
+  ! ARGUMENTS:
+  CLASS(datetime),INTENT(IN) :: self
+
+  INTEGER :: hours,minutes,sgn
+
+  hours   = INT(ABS(self%tz))
+  minutes = NINT((ABS(self%tz)-hours)*60)
+  sgn     = INT(self%tz/ABS(self%tz))
+
+  utc = self-timedelta(hours=sgn*hours,minutes=sgn*minutes)
+  utc%tz = 0
+
+ENDFUNCTION utc
+!======================================================================>
+
+
+
 PURE ELEMENTAL INTEGER FUNCTION yearday(self)
 !======================================================================>
 !
@@ -861,7 +923,7 @@ PURE ELEMENTAL FUNCTION datetime_minus_datetime(d0,d1) RESULT(t)
   INTEGER            :: days,hours,minutes,seconds,milliseconds
   INTEGER            :: sign_
 
-  daysDiff = date2num(d0)-date2num(d1)
+  daysDiff = date2num(d0%utc())-date2num(d1%utc())
 
   IF(daysDiff < 0)THEN
     sign_ = -1
