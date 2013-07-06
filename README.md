@@ -45,6 +45,8 @@ if you would like to contribute to the code.
         * [*now*](#now)
         * [*secondsSinceEpoch*](#secondssinceepoch)
         * [*tm*](#tm)
+        * [*tzOffset*](#tzOffset)
+        * [*utc*](#utc)
         * [*weekday*](#weekday)
         * [*weekdayLong*](#weekdaylong)
         * [*weekdayShort*](#weekdayshort)
@@ -623,6 +625,37 @@ tm = a%tm()
 #### See also
 
 [Back to top](#top)
+
+### tzOffset
+
+```fortran
+```
+
+#### Arguments
+
+#### Return value
+
+#### Example usage
+
+#### See also
+
+[Back to top](#top)
+
+### utc
+
+```fortran
+```
+
+#### Arguments
+
+#### Return value
+
+#### Example usage
+
+#### See also
+
+[Back to top](#top)
+
 
 ### weekday<a id="weekday"></a>
 
