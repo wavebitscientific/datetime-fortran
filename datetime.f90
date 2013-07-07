@@ -788,7 +788,7 @@ ENDFUNCTION tzOffset
 PURE ELEMENTAL TYPE(datetime) FUNCTION utc(self)
 !======================================================================>
 !
-! Returns the datetime instance at Centralized Universal Time (UTC). 
+! Returns the datetime instance at Coordinated Universal Time (UTC). 
 !
 !======================================================================>
 
