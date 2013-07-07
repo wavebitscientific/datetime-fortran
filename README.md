@@ -21,6 +21,8 @@ if you would like to contribute to the code.
 
 * Comparison operators `>`, `>=`, `<`, `<=`, `==` and `/=` for *datetime* and *timedelta* objects;
 
+* Basic timezone handling and arithmetic;
+
 * Interfaces to C/C++ routines [*strftime*](#strftime) and [*strptime*](#strptime) through `ISO_C_BINDING`;
 
 * Lightweight and portable;
@@ -87,6 +89,8 @@ TYPE :: datetime
   INTEGER :: second      = 0 ! Second in minute       [0-59]
   INTEGER :: millisecond = 0 ! Milliseconds in second [0-999]
 
+  REAL :: tz = 0 ! Timezone offset from UTC [hours]
+
   CONTAINS
 
   ! METHODS:
@@ -101,6 +105,8 @@ TYPE :: datetime
   PROCEDURE :: now
   PROCEDURE :: secondsSinceEpoch
   PROCEDURE :: tm
+  PROCEDURE :: tzOffset
+  PROCEDURE :: utc
   PROCEDURE :: weekday
   PROCEDURE :: weekdayLong
   PROCEDURE :: weekdayShort
@@ -114,7 +120,7 @@ Arguments may be provided as positional arguments, in the order of their declara
 or as keyword arguments, in any order. If both positional and keyword arguments are used,
 no positional arguments may appear after a keyword argument. 
 
-Example usage:
+#### Example usage
 
 ```fortran
 USE datetime_module,ONLY:datetime
@@ -122,24 +128,26 @@ USE datetime_module,ONLY:datetime
 TYPE(datetime) :: a
 
 ! Initialize as default:
-a = datetime()                                     ! 0001-01-01 00:00:00
+a = datetime()                                      ! 0001-01-01 00:00:00
 
 ! Components can be specified by position:
-a = datetime(1984,12,10)                           ! 1984-12-10 00:00:00
+a = datetime(1984,12,10)                            ! 1984-12-10 00:00:00
 
 ! Or by keyword:
-a = datetime(month=1,day=1,year=1970)              ! 1970-01-01 00:00:00
+a = datetime(month=1,day=1,year=1970)               ! 1970-01-01 00:00:00
 
 ! Or combined:
-a = datetime(2013,2,minute=23,day=12,month=5)      ! 2013-02-05 00:23:00
+a = datetime(2013,2,minute=23,day=12,month=5)       ! 2013-02-05 00:23:00
 
-! Do not do this:
-a = datetime(year=2013,2,minute=23,day=12,month=5) ! ILLEGAL
+! With timezone offset:
+a = datetime(2013,2,minute=23,day=12,month=5,tz=-4) ! 2013-02-05 00:23:00 -0400
+
+! Do not use positional after keyword arguments:
+a = datetime(year=2013,2,minute=23,day=12,month=5)  ! ILLEGAL
 ```
 
-Note that the current implementation of [*datetime*](#datetime) does 
-not currently support time zone or daylight saving time (DST) information,
-and is thus "naive" (open to interpretation).
+Note that the current implementation of [*datetime*](#datetime) 
+does not support daylight saving time (DST) information.
 
 #### See also
 
@@ -929,6 +937,10 @@ the following combination of derived type pairs:
 * `datetime  - datetime`, returns a `timedelta` instance;
 
 * `-timedelta` (unary minus), returns a `timedelta` instance.
+
+Note that `datetime  - datetime` operation accounts for timezone (`tz`) 
+offsets in each of the `datetime` instances. 
+The resulting `timedelta`thus  includes the difference between timezones.
 
 ### Comparison operators
 
