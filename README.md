@@ -1232,7 +1232,7 @@ FUNCTION strptime(str,format,tm)BIND(c,name='strptime')RESULT(rc)
   CHARACTER(KIND=c_char),DIMENSION(*),INTENT(IN)  :: str
   CHARACTER(KIND=c_char),DIMENSION(*),INTENT(IN)  :: format
   TYPE(tm_struct),                    INTENT(OUT) :: tm
-  INTEGER(KIND=c_int)                             :: rc
+  CHARACTER(KIND=c_char,LEN=1)                    :: rc
 ```
 
 An interface to a C/C++ standard library routine.
@@ -1246,13 +1246,58 @@ Converts the character string `str` to values which are stored in `tm`, using th
 describing the date and time information in `str`.
 
 `tm` is an instance of the type `tm_struct`, in which the date and time values will be filled upon successful completion
-of the strptime function.
+of the [*strptime*](#strptime) function.
 
 #### Return value
 
+Upon successful completion, [*strptime*](#strptime) returns the character 
+following the last character parsed. Otherwise, a null character is returned.
+
 #### Example usage
 
+Extracting time difference between two time strings using [*strptime*](#strptime)
+and [*tm2date*](#tm2date):
+
+```fortran
+USE datetime_module
+
+TYPE(datetime)  :: date1,date2
+TYPE(tm_struct) :: ctime
+TYPE(timedelta) :: timediff
+
+! Return code for strptime
+CHARACTER(LEN=1) :: rc
+
+! Example times in "YYYYMMDD hhmmss" format
+CHARACTER(LEN=15) :: str1 = "20130512 091519"
+CHARACTER(LEN=15) :: str2 = "20131116 120418"
+
+! Get tm_struct instance from str1
+rc = strptime(str1,"%Y%m%d %H%M%S"//CHAR(0),ctime)
+date1 = tm2date(ctime)
+
+! Get tm_struct instance from str2
+rc = strptime(str2,"%Y%m%d %H%M%S"//CHAR(0),ctime)
+date2 = tm2date(ctime)
+
+timediff = date2-date1
+
+WRITE(*,*)timediff
+WRITE(*,*)timediff%total_seconds()
+```
+
+This example outputs the following:
+
+```
+        188           2          48          58        1000
+   16253339.0000000
+```
+
 #### See also
+
+* [*strftime*](#strftime)
+
+* [*tm2date*](#tm2date)
 
 [Back to top](#top)
 
