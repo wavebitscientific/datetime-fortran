@@ -57,6 +57,8 @@ if you would like to contribute to the code.
         * [*total_seconds*](#total_seconds)
     * [*tm_struct*](#tm-struct)
 * [Overloaded operators](#overloaded-operators)
+    * [Arithmetic operators](#arithmetic_operators)
+    * [Comparison operators](#comparison_operators)
 * [Public procedures](#public-procedures)
     * [*date2num*](#date2num)
     * [*daysInMonth*](#daysinmonth)
