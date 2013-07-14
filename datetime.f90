@@ -1318,6 +1318,7 @@ ENDFUNCTION le_td
 !======================================================================>
 
 
+!--- PUBLIC PROCEDURES ----------------------------------------------->
 
 PURE ELEMENTAL LOGICAL FUNCTION isLeapYear(year)
 !======================================================================>
@@ -1479,28 +1480,6 @@ ENDFUNCTION num2date
 
 
 
-PURE FUNCTION int2str(i,length)
-!======================================================================>
-!
-! Converts an integer i into a character string of requested length, 
-! by pre-pending zeros if necessary.
-!
-!======================================================================>
-
-  ! ARGUMENTS:
-  INTEGER,INTENT(IN)    :: i,length
-  CHARACTER(LEN=length) :: int2str
-
-  WRITE(UNIT=int2str,FMT='(I0)')i
-
-  DO WHILE(LEN_TRIM(ADJUSTL(int2str)) < length)
-    int2str = '0'//TRIM(ADJUSTL(int2str))
-  ENDDO
-
-ENDFUNCTION int2str
-!======================================================================>
-
-
 PURE ELEMENTAL TYPE(datetime) FUNCTION tm2date(ctime)
 !======================================================================>
 !
@@ -1520,5 +1499,30 @@ PURE ELEMENTAL TYPE(datetime) FUNCTION tm2date(ctime)
   tm2date%year        = ctime%tm_year+1900
 
 ENDFUNCTION tm2date
+!======================================================================>
+
+
+
+!--- PRIVATE PROCEDURES ----------------------------------------------->
+
+PURE FUNCTION int2str(i,length)
+!======================================================================>
+!
+! Converts an integer i into a character string of requested length, 
+! by pre-pending zeros if necessary.
+!
+!======================================================================>
+
+  ! ARGUMENTS:
+  INTEGER,INTENT(IN)    :: i,length
+  CHARACTER(LEN=length) :: int2str
+
+  WRITE(UNIT=int2str,FMT='(I0)')i
+
+  DO WHILE(LEN_TRIM(ADJUSTL(int2str)) < length)
+    int2str = '0'//TRIM(ADJUSTL(int2str))
+  ENDDO
+
+ENDFUNCTION int2str
 !======================================================================>
 ENDMODULE datetime_module
