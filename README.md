@@ -944,7 +944,9 @@ The resulting `timedelta`thus  includes the difference between timezones.
 
 ### Comparison operators
 
-#### See also
+*datetime-fortran* supports following binary comparison operators for 
+[*datetime*](#datetime) and [*timedelta*](#timedelta) objects:
+`==`, `/=`, `>`, `>=`, `<` and `<=`.
 
 [Back to top](#top)
 
