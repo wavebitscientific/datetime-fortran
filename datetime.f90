@@ -75,7 +75,7 @@ MODULE datetime_module
 !         FUNCTION strptime
 !         FUNCTION tm2date
 !
-! LAST UPDATE: 2013-07-06
+! LAST UPDATE: 2013-07-23
 !
 !======================================================================>
 USE,INTRINSIC :: iso_c_binding
@@ -1455,7 +1455,7 @@ PURE ELEMENTAL TYPE(datetime) FUNCTION num2date(num)
 
   month = 1
   DO
-    IF(days < daysInMonth(month,year))EXIT
+    IF(days <= daysInMonth(month,year))EXIT
     days = days-daysInMonth(month,year)
     month = month+1
   ENDDO
