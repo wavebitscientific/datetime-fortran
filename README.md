@@ -55,7 +55,7 @@ if you would like to contribute to the code.
         * [*yearday*](#yearday)
     * [*timedelta*](#timedelta)
         * [*total_seconds*](#total_seconds)
-    * [*tm_struct*](#tm-struct)
+    * [*tm_struct*](#tm_struct)
 * [Overloaded operators](#overloaded-operators)
     * [Arithmetic operators](#arithmetic-operators)
     * [Comparison operators](#comparison-operators)
