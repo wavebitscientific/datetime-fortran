@@ -159,7 +159,7 @@ does not support daylight saving time (DST) information.
 
 [Back to top](#top)
 
-</hr>
+<hr>
 
 ### addMilliseconds<a id="addmilliseconds"></a>
 
