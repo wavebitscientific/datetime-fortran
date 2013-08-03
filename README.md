@@ -212,6 +212,7 @@ CALL a%addMilliseconds(100)   ! a becomes: 2013-01-01 00:00:00.100
 
 [Back to top](#top)
 
+<hr>
 
 ### addSeconds<a id="addseconds"></a>
 
@@ -262,6 +263,7 @@ CALL a%addSeconds(10)         ! a becomes: 2013-01-01 00:00:10.000
 * [*addDays*](#adddays)
 
 [Back to top](#top)
+<hr>
 
 ### addMinutes<a id="addminutes"></a>
 
@@ -304,6 +306,7 @@ CALL a%addMinutes(10)         ! a becomes: 2013-01-01 00:10:00.000
 #### See also
 
 [Back to top](#top)
+<hr>
 
 ### addHours<a id="addhours"></a>
 
@@ -355,6 +358,7 @@ CALL a%addHours(12)           ! a becomes: 2013-01-01 12:00:00.000
 * [*addDays*](#adddays)
 
 [Back to top](#top)
+<hr>
 
 ### addDays<a id="adddays"></a>
 
@@ -406,6 +410,7 @@ CALL a%addDays(7)             ! a becomes: 2013-01-08 00:00:00.000
 * [*addHours*](#addhours)
 
 [Back to top](#top)
+<hr>
 
 ### isocalendar<a id="isocalendar"></a>
 
@@ -455,6 +460,7 @@ WRITE(*,*)a%isocalendar() ! Prints: 2013  1  2
 * [*weekday*](#weekday)
 
 [Back to top](#top)
+<hr>
 
 ### isoformat<a id="isoformat"></a>
 
@@ -500,6 +506,7 @@ WRITE(*,*)a%isoformat(' ')     ! Prints 1984-12-10 13:05:00.000
 #### See also
 
 [Back to top](#top)
+<hr>
 
 ### isValid<a id="isvalid"></a>
 
@@ -536,6 +543,7 @@ WRITE(*,*)a%isValid()   ! .FALSE.
 #### See also
 
 [Back to top](#top)
+<hr>
 
 ### now<a id="now"></a>
 
@@ -570,6 +578,7 @@ a = a%now()   ! Assigns current machine time to a
 #### See also
 
 [Back to top](#top)
+<hr>
 
 ### secondsSinceEpoch<a id="secondssinceepoch"></a>
 
@@ -609,6 +618,7 @@ WRITE(*,*)a%secondsSinceEpoch()
 #### See also
 
 [Back to top](#top)
+<hr>
 
 ### tm<a id="tm"></a>
 
@@ -641,6 +651,7 @@ tm = a%tm()
 #### See also
 
 [Back to top](#top)
+<hr>
 
 ### tzOffset
 
@@ -656,6 +667,7 @@ tm = a%tm()
 #### See also
 
 [Back to top](#top)
+<hr>
 
 ### utc
 
@@ -671,6 +683,7 @@ tm = a%tm()
 #### See also
 
 [Back to top](#top)
+<hr>
 
 
 ### weekday<a id="weekday"></a>
@@ -705,6 +718,7 @@ WRITE(*,*)a%weekday()    ! 2
 [*weekdayShort*](#weekdayshort)
 
 [Back to top](#top)
+<hr>
 
 ### weekdayLong<a id="weekdaylong"></a>
 
@@ -737,6 +751,7 @@ WRITE(*,*)a%weekdayLong()    ! Tuesday
 * [*weekdayShort*](#weekdayshort)
 
 [Back to top](#top)
+<hr>
 
 ### weekdayShort<a id="weekdayshort"></a>
 
@@ -769,6 +784,7 @@ WRITE(*,*)a%weekdayShort()    ! Tue
 * [*weekdayLong*](#weekdaylong)
 
 [Back to top](#top)
+<hr>
 
 ### yearday<a id="yearday"></a>
 
@@ -801,6 +817,7 @@ WRITE(*,*)a%yearday()    ! 121
 * [*isocalendar*](#isocalendar)
 
 [Back to top](#top)
+<hr>
 
 ### **timedelta**
 
@@ -858,6 +875,7 @@ c = a-b
 ```
 
 [Back to top](#top)
+<hr>
 
 ### total_seconds<a id="totalseconds"></a>
 
@@ -895,6 +913,7 @@ WRITE(*,*)td%total_seconds()   ! 476107.12300000002
 ```
 
 [Back to top](#top)
+<hr>
 
 ### **tm_struct**<a id="tm_struct"></a>
 
@@ -923,6 +942,7 @@ ENDTYPE tm_struct
 #### See also
 
 [Back to top](#top)
+<hr>
 
 ## Overloaded operators<a id="#operators"></a>
 
@@ -957,6 +977,7 @@ The resulting `timedelta`thus  includes the difference between timezones.
 `==`, `/=`, `>`, `>=`, `<` and `<=`.
 
 [Back to top](#top)
+<hr>
 
 ## Public procedures<a id="#public-procedures"></a>
     
@@ -1022,6 +1043,7 @@ WRITE(*,*)date2num(a)   ! 734869.25000000000
 * [*num2date*](#num2date)
 
 [Back to top](#top)
+<hr>
 
 ### daysInMonth<a id="daysinmonth"></a>
 
@@ -1068,6 +1090,7 @@ WRITE(*,*)daysInMonth(2,2013)   ! 28
 * [*daysInYear*](#daysinyear)
 
 [Back to top](#top)
+<hr>
 
 ### daysInYear<a id="daysinyear"></a>
 
@@ -1108,6 +1131,7 @@ WRITE(*,*)daysInYear(2013)   ! 365
 * [*isLeapYear*](#isleapyear)
 
 [Back to top](#top)
+<hr>
 
 ### isLeapYear<a id="isleapyear"></a>
 
@@ -1145,6 +1169,7 @@ WRITE(*,*)isLeapYear(2013)   ! .FALSE.
 * [*daysInYear*](#daysInYear)
 
 [Back to top](#top)
+<hr>
 
 ### num2date<a id="num2date"></a>
 
@@ -1191,6 +1216,7 @@ a = num2date(734869.25d0) ! a becomes datetime(2013,1,1,6,0,0,0)
 * [*datetime*](#datetime)
 
 [Back to top](#top)
+<hr>
 
 ### strftime<a id="strftime"></a>
 
@@ -1233,6 +1259,7 @@ Otherwise, zero is returned and the contents of the array are indeterminate.
 #### See also
 
 [Back to top](#top)
+<hr>
 
 ### strptime<a id="strptime"></a>
 
@@ -1310,6 +1337,7 @@ This example outputs the following:
 * [*tm2date*](#tm2date)
 
 [Back to top](#top)
+<hr>
 
 ### tm2date
 
@@ -1325,6 +1353,7 @@ This example outputs the following:
 #### See also
 
 [Back to top](#top)
+<hr>
 
 #### Tested with the following compilers:
 ---
