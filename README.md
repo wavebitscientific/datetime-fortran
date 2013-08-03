@@ -665,8 +665,8 @@ PURE ELEMENTAL CHARACTER(LEN=5) FUNCTION tzOffset(self)
 ```
 
 Given a [*datetime*](#datetime) instance, returns a character string with timezone 
-offset in hours from UTC (Coordinated Universal Time), in format `+[hh][mm]`
-or `-[hh][mm]`, depending on the sign.
+offset in hours from UTC (Coordinated Universal Time), in format `+hhmm`
+or `-hhmm`, depending on the sign, where `hh` are hours and `mm` are minutes.
 
 #### Arguments
 
@@ -674,8 +674,8 @@ None.
 
 #### Return value
 
-`tzOffset` A `CHARACTER(LEN=5)` in the form `+[hh][mm]`
-or `-[hh][mm]`, depending on the sign.
+`tzOffset` A `CHARACTER(LEN=5)` in the form `+hhmm`
+or `-hhmm`, depending on the sign.
 
 #### Example usage
 
