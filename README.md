@@ -650,19 +650,47 @@ tm = a%tm()
 
 #### See also
 
+* [*tm_struct*](#tm_struct)
+
 [Back to top](#top)
 <hr>
 
 ### tzOffset
 
 ```fortran
+PURE ELEMENTAL CHARACTER(LEN=5) FUNCTION tzOffset(self)
+
+  ! ARGUMENTS:
+  CLASS(datetime),INTENT(IN) :: self
 ```
+
+Given a [*datetime*](#datetime) instance, returns a character string with timezone 
+offset in hours from UTC (Coordinated Universal Time), in format `+[hh][mm]`
+or `-[hh][mm]`, depending on the sign.
 
 #### Arguments
 
+None.
+
 #### Return value
 
+`tzOffset` A `CHARACTER(LEN=5)` in the form `+[hh][mm]`
+or `-[hh][mm]`, depending on the sign.
+
 #### Example usage
+
+```fortran
+USE datetime_module,ONLY:datetime
+
+TYPE(datetime)  :: a
+TYPE(tm_struct) :: tm
+
+! Initialize a datetime instance with timezone offset of -4.75 hours:
+a = datetime(2013,1,1,tz=-4.75)
+
+! Write tzOffset on screen:
+WRITE(*,*)a%tzOffset        ! -0445 (offset of 4 hours and 45 minutes)
+```
 
 #### See also
 
