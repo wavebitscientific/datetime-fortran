@@ -153,7 +153,13 @@ does not support daylight saving time (DST) information.
 
 #### See also
 
+* [*timedelta*](#timedelta)
+
+* [*tm_struct*](#tm_struct)
+
 [Back to top](#top)
+
+</hr>
 
 ### addMilliseconds<a id="addmilliseconds"></a>
 
