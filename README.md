@@ -700,19 +700,47 @@ WRITE(*,*)a%tzOffset        ! -0445 (offset of 4 hours and 45 minutes)
 ### utc
 
 ```fortran
+PURE ELEMENTAL TYPE(datetime) FUNCTION utc(self)
+
+  ! ARGUMENTS:
+  CLASS(datetime),INTENT(IN) :: self
 ```
+
+Returns the datetime instance at Coordinated Universal Time (UTC). 
 
 #### Arguments
 
+None.
+
 #### Return value
+
+`utc` A `datetime` instance with at UTC (tz = 0).
 
 #### Example usage
 
+```fortran
+USE datetime_module,ONLY:datetime
+
+TYPE(datetime)  :: a
+TYPE(tm_struct) :: tm
+
+! Initialize a datetime instance with timezone offset of -4.75 hours:
+a = datetime(2013,1,1,tz=-4.75)
+
+WRITE(*,*)a%isoformat()//a%tzOffset() ! 2013-01-01T00:00:00.000-0445
+
+! Convert a to UTC:
+a = a%utc()
+
+WRITE(*,*)a%isoformat()//a%tzOffset() ! 2013-01-01T04:45:00.000+0000
+```
+
 #### See also
+
+* [*tzOffset*](#tzoffset)
 
 [Back to top](#top)
 <hr>
-
 
 ### weekday<a id="weekday"></a>
 
