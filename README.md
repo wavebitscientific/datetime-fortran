@@ -1412,15 +1412,36 @@ This example outputs the following:
 ### tm2date
 
 ```fortran
+PURE ELEMENTAL TYPE(datetime) FUNCTION tm2date(ctime)
+
+  ! ARGUMENTS:
+  TYPE(tm_struct),INTENT(IN) :: ctime
 ```
+
+Given a [*tm_struct*](#tm_struct) instance, 
+returns a corresponding [*datetime*](#datetime) instance.
+Mostly useful for obtaining a *datetime* instance after a *tm_struct*
+is returned from [*strptime*](#strptime).
 
 #### Arguments
 
+`ctime` A `tm_struct` instance.
+
 #### Return value
+
+`tm2date` A `datetime` instance.
 
 #### Example usage
 
+See example usage for [*strptime*](#strptime).
+
 #### See also
+
+* [*datetime*](#datetime)
+
+* [*tm_struct*](#tm_struct)
+
+* [*strptime*](#strptime)
 
 [Back to top](#top)
 <hr>
