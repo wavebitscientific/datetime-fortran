@@ -47,7 +47,7 @@ if you would like to contribute to the code.
         * [*now*](#now)
         * [*secondsSinceEpoch*](#secondssinceepoch)
         * [*tm*](#tm)
-        * [*tzOffset*](#tzOffset)
+        * [*tzOffset*](#tzoffset)
         * [*utc*](#utc)
         * [*weekday*](#weekday)
         * [*weekdayLong*](#weekdaylong)
@@ -741,9 +741,9 @@ WRITE(*,*)a%weekday()    ! 2
 
 #### See also
 
-[*weekdayLong*](#weekdaylong)
+* [*weekdayLong*](#weekdaylong)
 
-[*weekdayShort*](#weekdayshort)
+* [*weekdayShort*](#weekdayshort)
 
 [Back to top](#top)
 <hr>
@@ -946,7 +946,8 @@ WRITE(*,*)td%total_seconds()   ! 476107.12300000002
 ### **tm_struct**<a id="tm_struct"></a>
 
 Time object compatible with C/C++ *tm* struct. Available mainly 
-for the purpose of calling *strftime()* and *strptime()* procedures.
+for the purpose of calling [*strftime*](#strftime) 
+and [*strptime*](#strptime) procedures.
 
 ```fortran
 TYPE,BIND(c) :: tm_struct
@@ -968,6 +969,10 @@ ENDTYPE tm_struct
 ```
 
 #### See also
+
+* [*datetime*](#datetime)
+
+* [*tm*](#tm)
 
 [Back to top](#top)
 <hr>
@@ -1014,6 +1019,7 @@ The resulting `timedelta`thus  includes the difference between timezones.
 ```fortran
 PURE ELEMENTAL REAL(KIND=real_dp) FUNCTION date2num(d)
 
+  ! ARGUMENTS:
   TYPE(datetime),INTENT(IN) :: d
 ```
 
@@ -1204,6 +1210,7 @@ WRITE(*,*)isLeapYear(2013)   ! .FALSE.
 ```fortran
 PURE ELEMENTAL TYPE(datetime) FUNCTION num2date(num)
 
+  ! ARGUMENTS:
   REAL(KIND=real_dp),INTENT(IN) :: num
 ```
 
@@ -1251,6 +1258,7 @@ a = num2date(734869.25d0) ! a becomes datetime(2013,1,1,6,0,0,0)
 ```fortran
 FUNCTION strftime(str,slen,format,tm)BIND(c,name='strftime')RESULT(rc)
 
+  ! ARGUMENTS:
   CHARACTER(KIND=c_char),DIMENSION(*),INTENT(OUT) :: str   
   INTEGER(KIND=c_int),VALUE,          INTENT(IN)  :: slen   
   CHARACTER(KIND=c_char),DIMENSION(*),INTENT(IN)  :: format 
@@ -1285,6 +1293,12 @@ Otherwise, zero is returned and the contents of the array are indeterminate.
 #### Example usage
 
 #### See also
+
+* [*strptime*](#strptime)
+
+* [*tm*](#tm)
+
+* [*tm_struct*](#tm_struct)
 
 [Back to top](#top)
 <hr>
