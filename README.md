@@ -908,7 +908,7 @@ of subtraction between two [*datetime*](#datetime) objects.
 #### Example usage
 
 ```fortran
-USE datetime_module,ONLY:datetime,timedelta
+USE datetime_module
 
 TYPE(datetime)  :: a,b
 TYPE(timedelta) :: c
