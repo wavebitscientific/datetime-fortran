@@ -323,7 +323,7 @@ INTERFACE
     CHARACTER(KIND=c_char),DIMENSION(*),INTENT(IN)  :: str
     CHARACTER(KIND=c_char),DIMENSION(*),INTENT(IN)  :: format
     TYPE(tm_struct),                    INTENT(OUT) :: tm
-    CHARACTER(KIND=c_char,LEN=1)                    :: rc
+    INTEGER(KIND=c_int)                             :: rc
 
   ENDFUNCTION strptime
   !====================================================================>
