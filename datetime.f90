@@ -20,7 +20,9 @@ MODULE datetime_module
 !
 ! MODULE: datetime
 !
-! VERSION: 0.1.0
+! VERSION: 0.1.1
+!
+! LAST UPDATE: 2013-09-17
 !
 ! AUTHOR: Milan Curcic
 !         University of Miami
@@ -74,8 +76,6 @@ MODULE datetime_module
 !         FUNCTION strftime
 !         FUNCTION strptime
 !         FUNCTION tm2date
-!
-! LAST UPDATE: 2013-07-23
 !
 !======================================================================>
 USE,INTRINSIC :: iso_c_binding
