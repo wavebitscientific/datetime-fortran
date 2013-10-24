@@ -20,9 +20,9 @@ MODULE datetime_module
 !
 ! MODULE: datetime
 !
-! VERSION: 0.1.1
+! VERSION: 0.1.3
 !
-! LAST UPDATE: 2013-09-17
+! LAST UPDATE: 2013-10-23
 !
 ! AUTHOR: Milan Curcic
 !         University of Miami
@@ -113,10 +113,12 @@ PUBLIC :: tm2date
 INTEGER,PARAMETER :: real_sp = KIND(1e0)
 INTEGER,PARAMETER :: real_dp = KIND(1d0)
 
+REAL(KIND=real_sp),PARAMETER :: one = 1e0      ! 1
 REAL(KIND=real_dp),PARAMETER :: d2h = 24d0     ! day    -> hour
 REAL(KIND=real_dp),PARAMETER :: h2d = 1d0/d2h  ! hour   -> day
 REAL(KIND=real_dp),PARAMETER :: d2m = d2h*60d0 ! day    -> minute
 REAL(KIND=real_dp),PARAMETER :: m2d = 1d0/d2m  ! minute -> day
+REAL(KIND=real_dp),PARAMETER :: m2h = 1d0/60d0 ! minute -> day
 REAL(KIND=real_dp),PARAMETER :: s2d = m2d/60d0 ! second -> day
 REAL(KIND=real_dp),PARAMETER :: d2s = 86400d0  ! day    -> second
 REAL(KIND=real_dp),PARAMETER :: h2s = 3600d0   ! hour   -> second
@@ -144,7 +146,7 @@ TYPE :: datetime
   INTEGER :: second      = 0 ! Second in minute       [0-59]
   INTEGER :: millisecond = 0 ! Milliseconds in second [0-999]
 
-  REAL :: tz = 0 ! Timezone offset from UTC [hours]
+  REAL(KIND=real_sp) :: tz = 0 ! Timezone offset from UTC [hours]
 
   CONTAINS
 
@@ -578,9 +580,16 @@ TYPE(datetime) FUNCTION now(self)
   ! ARGUMENTS:
   CLASS(datetime),INTENT(IN) :: self
 
+  CHARACTER(LEN=5)     :: zone
   INTEGER,DIMENSION(8) :: values
 
-  CALL date_and_time(values=values)
+  INTEGER :: hour,minute
+
+  CALL date_and_time(zone=zone,values=values)
+
+  READ(UNIT=zone(1:3),FMT='(I3)')hour
+  READ(UNIT=zone(4:5),FMT='(I2)')minute
+
   now = datetime(year        = values(1),&
                  month       = values(2),&
                  day         = values(3),&
@@ -588,6 +597,8 @@ TYPE(datetime) FUNCTION now(self)
                  minute      = values(6),&
                  second      = values(7),&
                  millisecond = values(8))
+
+  now%tz = hour+minute*m2h
 
 ENDFUNCTION now
 !======================================================================>
@@ -799,9 +810,9 @@ PURE ELEMENTAL TYPE(datetime) FUNCTION utc(self)
 
   hours   = INT(ABS(self%tz))
   minutes = NINT((ABS(self%tz)-hours)*60)
-  sgn     = INT(self%tz/ABS(self%tz))
+  sgn     = INT(SIGN(one,self%tz))
 
-  utc = self-timedelta(hours=sgn*hours,minutes=sgn*minutes)
+  utc    = self-timedelta(hours=sgn*hours,minutes=sgn*minutes)
   utc%tz = 0
 
 ENDFUNCTION utc
