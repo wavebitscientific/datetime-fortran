@@ -1450,4 +1450,5 @@ See example usage for [*strptime*](#strptime).
 ---
 * gfortran 4.7.2
 * ifort 13.1.1.163
+* xlf 14.1.0.5 (thanks to Bjoern Hendrik Fock)
 
