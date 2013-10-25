@@ -9,6 +9,7 @@ It also provides an interface to C/C++ **tm** struct, and associated
 *datetime-fortran* came about due to the lack of time handling facilities in standard Fortran language.
 *datetime-fortran* is written and maintained by Milan Curcic of University of Miami.
 It is freely available under the [GNU General Public License version 3](http://www.gnu.org/licenses/gpl.html).
+Contact me by [e-mail](mailto:milan@orca.rsmas.miami.edu) if you want to use *datetime-fortran* in a non-GPL software.
 Please send suggestions and bug reports by [e-mail](mailto:milan@orca.rsmas.miami.edu) or
 through this Github page. See the list of [current issues](https://github.com/milancurcic/datetime-fortran/issues)
 if you would like to contribute to the code.
