@@ -20,9 +20,9 @@ MODULE datetime_module
 !
 ! MODULE: datetime
 !
-! VERSION: 0.1.4
+! VERSION: 0.1.5
 !
-! LAST UPDATE: 2013-11-11
+! LAST UPDATE: 2014-02-05
 !
 ! AUTHOR: Milan Curcic
 !         University of Miami
