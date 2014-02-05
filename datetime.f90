@@ -20,9 +20,9 @@ MODULE datetime_module
 !
 ! MODULE: datetime
 !
-! VERSION: 0.1.3
+! VERSION: 0.1.4
 !
-! LAST UPDATE: 2013-10-24
+! LAST UPDATE: 2013-11-11
 !
 ! AUTHOR: Milan Curcic
 !         University of Miami
@@ -467,8 +467,8 @@ PURE ELEMENTAL SUBROUTINE addDays(self,d)
         self%month = MOD(self%month,12)
       ENDIF
     ELSEIF(self%day < 1)THEN
-      self%day = self%day+daysInCurrentMonth
       self%month = self%month-1
+      self%day = self%day+daysInMonth(self%month,self%year)
       IF(self%month < 1)THEN
         self%year = self%year+self%month/12-1
         self%month = 12+MOD(self%month,12)
