@@ -20,9 +20,9 @@ MODULE datetime_module
 !
 ! MODULE: datetime
 !
-! VERSION: 0.1.5
+! VERSION: 0.2.0
 !
-! LAST UPDATE: 2014-02-05
+! LAST UPDATE: 2014-02-08
 !
 ! AUTHOR: Milan Curcic
 !         University of Miami
@@ -40,6 +40,7 @@ MODULE datetime_module
 !
 !         datetime  - Main datetime object
 !         timedelta - Time difference object
+!         clock     - A generic clock container
 !         tm_struct - For compatibility with C/C++ procedures 
 !
 !     DATETIME METHODS:
@@ -66,6 +67,11 @@ MODULE datetime_module
 !
 !         PROCEDURE :: total_seconds
 !
+!     CLOCK METHODS:
+!
+!         PROCEDURE :: reset
+!         PROCEDURE :: tick
+!
 !     PUBLIC PROCEDURES:
 !
 !         FUNCTION date2num
@@ -85,6 +91,7 @@ IMPLICIT NONE
 PRIVATE
 
 ! Derived types:
+PUBLIC :: clock
 PUBLIC :: datetime
 PUBLIC :: timedelta
 PUBLIC :: tm_struct
@@ -197,6 +204,39 @@ TYPE :: timedelta
 ENDTYPE timedelta
 !======================================================================>
 
+
+
+TYPE :: clock
+!======================================================================>
+!
+! A clock object with a start, stop and current times, tick interval 
+! and tick methods. 
+!
+!======================================================================>
+
+  ! COMPONENTS:
+  TYPE(datetime) :: startTime   = datetime()
+  TYPE(datetime) :: stopTime    = datetime()
+  TYPE(datetime) :: currentTime = datetime()
+
+  TYPE(timedelta) :: tickInterval = timedelta()
+
+  ! May become Alarm class in some future release; 
+  ! for now, just a switch
+  LOGICAL :: alarm = .FALSE.
+
+  ! Clock status flags 
+  LOGICAL :: started = .FALSE.
+  LOGICAL :: stopped = .FALSE.
+
+  CONTAINS
+
+  ! METHODS:
+  PROCEDURE :: reset
+  PROCEDURE :: tick 
+
+ENDTYPE clock
+!======================================================================>
 
 
 TYPE,BIND(c) :: tm_struct
@@ -336,6 +376,8 @@ ENDINTERFACE
 CONTAINS
 
 
+
+!::: Datetime-bound methods ::::::::::::::::::::::::::::::::::::::::::::
 
 PURE ELEMENTAL SUBROUTINE addMilliseconds(self,ms)
 !======================================================================>
@@ -844,6 +886,8 @@ ENDFUNCTION yearday
 
 
 
+!::: Datetime operators ::::::::::::::::::::::::::::::::::::::::::::::::
+
 PURE ELEMENTAL FUNCTION datetime_plus_timedelta(d0,t) RESULT(d)
 !======================================================================>
 !
@@ -1171,7 +1215,7 @@ ENDFUNCTION le
 !======================================================================>
 
 
-
+!::: Timedelta-bound methods :::::::::::::::::::::::::::::::::::::::::::
 
 PURE ELEMENTAL REAL(KIND=real_dp) FUNCTION total_seconds(self)
 !======================================================================>
@@ -1194,6 +1238,7 @@ ENDFUNCTION total_seconds
 !======================================================================>
 
 
+!::: Timedelta operators :::::::::::::::::::::::::::::::::::::::::::::::
 
 PURE ELEMENTAL FUNCTION unary_minus_timedelta(t0) RESULT(t)
 !======================================================================>
@@ -1327,6 +1372,59 @@ PURE ELEMENTAL LOGICAL FUNCTION le_td(td0,td1)
 
 ENDFUNCTION le_td
 !======================================================================>
+
+
+
+!::: Clock-bound methods :::::::::::::::::::::::::::::::::::::::::::::::
+
+PURE ELEMENTAL SUBROUTINE reset(self)
+!======================================================================>
+!
+! Resets the clock to its start time.
+!
+!======================================================================>
+
+  ! ARGUMENTS:
+  CLASS(clock),INTENT(INOUT) :: self
+
+  self%currentTime = self%startTime
+
+  self%started = .FALSE.
+  self%stopped = .FALSE.
+
+ENDSUBROUTINE reset
+!======================================================================>
+
+
+
+PURE ELEMENTAL SUBROUTINE tick(self)
+!======================================================================>
+!
+! Increments the currentTime of the clock instance by one tickInterval.
+!
+!======================================================================>
+
+  ! ARGUMENTS:
+  CLASS(clock),INTENT(INOUT) :: self
+
+  IF(self%stopped == .TRUE.)THEN
+    RETURN
+  ENDIF
+
+  IF(.NOT.self%started)THEN
+    self%started = .TRUE.
+    self%currentTime = self%startTime
+  ENDIF
+
+  self%currentTime = self%currentTime + self%tickInterval
+
+  IF(self%currentTime >= self%stopTime)THEN
+    self%stopped = .TRUE.
+  ENDIF
+
+ENDSUBROUTINE tick
+!======================================================================>
+
 
 
 !--- PUBLIC PROCEDURES ----------------------------------------------->

@@ -6,17 +6,19 @@ and time difference representation ([*timedelta*](#timedelta))
 as well as arithmetic and comparison operators and associated methods for their manipulation.
 It also provides an interface to C/C++ **tm** struct, and associated
 [*strftime*](#strftime) and [*strptime*](#strptime) functions.
+Since version 0.2.0, also provides a [*clock*](#clock) class.
 *datetime-fortran* came about due to the lack of time handling facilities in standard Fortran language.
 *datetime-fortran* is written and maintained by Milan Curcic of University of Miami.
 It is freely available under the [GNU General Public License version 3](http://www.gnu.org/licenses/gpl.html).
-Contact me by [e-mail](mailto:milan@orca.rsmas.miami.edu) if you want to use *datetime-fortran* in a non-GPL software.
+[E-mail me](mailto:milan@orca.rsmas.miami.edu) if you want to use *datetime-fortran* in a non-GPL software.
 Please send suggestions and bug reports by [e-mail](mailto:milan@orca.rsmas.miami.edu) or
 through this Github page. See the list of [current issues](https://github.com/milancurcic/datetime-fortran/issues)
 if you would like to contribute to the code.
 
 ## Features
 
-* Classes: [*datetime*](#datetime), [*timedelta*](#timedelta), [*tm_struct*](#tm_struct);
+* Classes: [*datetime*](#datetime), [*timedelta*](#timedelta), 
+[*clock*](#clock), [*tm_struct*](#tm_struct);
 
 * Arithmetic operators `+` and `-` for *datetime* and *timedelta* objects;
 
@@ -56,6 +58,9 @@ if you would like to contribute to the code.
         * [*yearday*](#yearday)
     * [*timedelta*](#timedelta)
         * [*total_seconds*](#total_seconds)
+    * [*clock*](#clock)
+        * [*reset*](#reset)
+        * [*tick*](#tick)
     * [*tm_struct*](#tm_struct)
 * [Overloaded operators](#overloaded-operators)
     * [Arithmetic operators](#arithmetic-operators)
@@ -972,6 +977,152 @@ WRITE(*,*)td%total_seconds()   ! 476107.12300000002
 [Back to top](#top)
 <hr>
 
+### **clock**<a id="clock"></a>
+
+A generic clock object that contains start and stop times,
+tick increment and reset and tick methods. 
+Most useful when needing to keep track of many [*datetime*](#datetime) instances
+that change at different rates, for example, physical models with different 
+time steps.
+
+Definition:
+
+```fortran
+TYPE :: clock
+!======================================================================>
+!
+! A clock object with a start, stop and current times, tick interval 
+! and tick methods. 
+!
+!======================================================================>
+
+  ! COMPONENTS:
+  TYPE(datetime) :: startTime   = datetime()
+  TYPE(datetime) :: stopTime    = datetime()
+  TYPE(datetime) :: currentTime = datetime()
+
+  TYPE(timedelta) :: tickInterval = timedelta()
+
+  LOGICAL :: alarm = .FALSE.
+
+  ! Clock status flags 
+  LOGICAL :: started = .FALSE.
+  LOGICAL :: stopped = .FALSE.
+
+  CONTAINS
+
+  ! METHODS:
+  PROCEDURE :: reset
+  PROCEDURE :: tick
+
+ENDTYPE clock
+```
+
+[*clock*](#clock) components are initialized by default, and all arguments
+are optional. However, a [*clock*](#clock) instance must be initialized
+with some sane values of `clock%startTime`, `clock%stopTime` and `clock%tickIncrement`
+in order to be useful.
+
+#### Example usage
+
+```fortran
+USE datetime_module
+
+TYPE(clock)    :: myClock
+TYPE(datetime) :: myTime
+
+! Initialize myTime
+myTime = myTime%now()
+
+! Initialize myClock
+! Starts from myTime, stops 1 hour later, 1 minute per tick 
+myClock = clock(startTime    = myTime,                   &
+                stopTime     = myTime+timedelta(hours=1),&
+                tickInterval = timedelta(minutes=1))
+
+DO
+
+  CALL myClock % tick()
+
+  ! Report current time after each tick
+  WRITE(*,*)myClock % currentTime % isoformat(' ')
+
+  ! If clock has reached stopTime, exit loop
+  IF(myClock % stopped)THEN
+    EXIT
+  ENDIF
+
+ENDDO
+```
+#### See also
+
+* [*datetime*](#datetime)
+
+* [*timedelta*](#timedelta)
+
+
+[Back to top](#top)
+<hr>
+
+### reset
+
+```fortran
+PURE ELEMENTAL SUBROUTINE reset(self)
+
+  ! ARGUMENTS:
+  CLASS(clock),INTENT(INOUT) :: self
+```
+
+Resets the clock to its start time.
+
+## Arguments
+
+None
+
+## Return value
+
+None
+
+## Example usage
+
+```fortran
+CALL myClock%reset() ! Resets myClock%currentTime to myClock%startTime
+```
+
+## See also
+
+[Back to top](#top)
+<hr>
+
+### tick
+
+```fortran
+PURE ELEMENTAL SUBROUTINE tick(self)
+
+  ! ARGUMENTS:
+  CLASS(clock),INTENT(INOUT) :: self
+```
+
+Increments the `currentTime` of the clock instance by one `tickInterval`.
+Sets the `clock%stopped` flag to `.TRUE.` if `clock%currentTime` equals
+or exceeds `clock%stopTime`.
+
+## Arguments
+
+None
+
+## Return value
+
+None
+
+## Example usage
+
+## See also
+
+[Back to top](#top)
+<hr>
+
+
 ### **tm_struct**<a id="tm_struct"></a>
 
 Time object compatible with C/C++ *tm* struct. Available mainly 
@@ -1002,6 +1153,10 @@ ENDTYPE tm_struct
 * [*datetime*](#datetime)
 
 * [*tm*](#tm)
+
+* [*strftime*](#strftime)
+
+* [*strptime*](#strptime)
 
 [Back to top](#top)
 <hr>
