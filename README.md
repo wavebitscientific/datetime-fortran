@@ -1075,21 +1075,21 @@ PURE ELEMENTAL SUBROUTINE reset(self)
 
 Resets the clock to its start time.
 
-## Arguments
+#### Arguments
 
 None
 
-## Return value
+#### Return value
 
 None
 
-## Example usage
+#### Example usage
 
 ```fortran
 CALL myClock%reset() ! Resets myClock%currentTime to myClock%startTime
 ```
 
-## See also
+#### See also
 
 [Back to top](#top)
 <hr>
@@ -1107,17 +1107,19 @@ Increments the `currentTime` of the clock instance by one `tickInterval`.
 Sets the `clock%stopped` flag to `.TRUE.` if `clock%currentTime` equals
 or exceeds `clock%stopTime`.
 
-## Arguments
+#### Arguments
 
 None
 
-## Return value
+#### Return value
 
 None
 
-## Example usage
+#### Example usage
 
-## See also
+See [*clock*](#clock) for an example.
+
+#### See also
 
 [Back to top](#top)
 <hr>
