@@ -989,12 +989,6 @@ Definition:
 
 ```fortran
 TYPE :: clock
-!======================================================================>
-!
-! A clock object with a start, stop and current times, tick interval 
-! and tick methods. 
-!
-!======================================================================>
 
   ! COMPONENTS:
   TYPE(datetime) :: startTime   = datetime()
