@@ -929,7 +929,7 @@ c = timedelta(0,1,15,0,0)      ! 1 hour and 15 minutes
 c = timedelta(days=1,hours=12) ! 1 day and 12 hours
 
 ! Difference between datetimes:
-a = datetime(2013,5,12,32,0,0) ! 2013-05-12 32:00:00
+a = datetime(2013,5,12,22,0,0) ! 2013-05-12 22:00:00
 b = datetime(2012,9,18,14,0,0) ! 2012-09-18 14:00:00
 
 ! Subtract to get timedelta:
