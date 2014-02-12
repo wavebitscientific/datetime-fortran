@@ -20,9 +20,9 @@ MODULE datetime_module
 !
 ! MODULE: datetime
 !
-! VERSION: 0.2.0
+! VERSION: 0.2.1
 !
-! LAST UPDATE: 2014-02-08
+! LAST UPDATE: 2014-02-12
 !
 ! AUTHOR: Milan Curcic
 !         University of Miami
@@ -1407,7 +1407,7 @@ PURE ELEMENTAL SUBROUTINE tick(self)
   ! ARGUMENTS:
   CLASS(clock),INTENT(INOUT) :: self
 
-  IF(self%stopped == .TRUE.)THEN
+  IF(self%stopped)THEN
     RETURN
   ENDIF
 
