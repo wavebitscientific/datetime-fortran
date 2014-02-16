@@ -26,7 +26,9 @@ if you would like to contribute to the code.
 
 * Basic timezone handling and arithmetic;
 
-* Interfaces to C/C++ routines [*strftime*](#strftime) and [*strptime*](#strptime) through `ISO_C_BINDING`;
+* Interfaces to C/C++ routines [*c_strftime*](#c_strftime) and [*c_strptime*](#c_strptime) through `ISO_C_BINDING`.
+Since version `0.3.0`, *datetime*-bound method [*strftime*](#strftime)
+and function [*strptime*](#strptime) that returns a *datetime* instance are available.
 
 * Lightweight and portable;
 
@@ -49,6 +51,7 @@ if you would like to contribute to the code.
         * [*isValid*](#isvalid)
         * [*now*](#now)
         * [*secondsSinceEpoch*](#secondssinceepoch)
+        * [*strftime*](#strftime)
         * [*tm*](#tm)
         * [*tzOffset*](#tzoffset)
         * [*utc*](#utc)
@@ -66,12 +69,13 @@ if you would like to contribute to the code.
     * [Arithmetic operators](#arithmetic-operators)
     * [Comparison operators](#comparison-operators)
 * [Public procedures](#public-procedures)
+    * [*c_strftime*](#c_strftime)
+    * [*c_strptime*](#c_strptime)
     * [*date2num*](#date2num)
     * [*daysInMonth*](#daysinmonth)
     * [*daysInYear*](#daysinyear)
     * [*isLeapYear*](#isleapyear)
     * [*num2date*](#num2date)
-    * [*strftime*](#strftime)
     * [*strptime*](#strptime)
     * [*tm2date*](#tm2date)
 
@@ -79,7 +83,8 @@ if you would like to contribute to the code.
 <a id="derived-types"><h2>Derived Types</h2></a>
 
 *datetime-fortran* library provides the following derived types:
-[*datetime*](#datetime), [*timedelta*](#timedelta), and [*tm_struct*](#tm_struct).
+[*datetime*](#datetime), [*timedelta*](#timedelta),  
+[*clock*](#clock) and [*tm_struct*](#tm_struct).
 
 <a id="datetime"><h3>**datetime**</h3></a>
 
@@ -112,6 +117,7 @@ TYPE :: datetime
   PROCEDURE :: isValid
   PROCEDURE :: now
   PROCEDURE :: secondsSinceEpoch
+  PROCEDURE :: strftime
   PROCEDURE :: tm
   PROCEDURE :: tzOffset
   PROCEDURE :: utc
@@ -595,7 +601,6 @@ INTEGER FUNCTION secondsSinceEpoch(self)
   CLASS(datetime),INTENT(IN) :: self
 ```
 
-A wrapper around a [*strftime*](#strftime) call. 
 Returns an integer number of seconds since the 
 UNIX Epoch, `1970-01-01 00:00:00 +0000` (UTC).
 
@@ -625,6 +630,63 @@ WRITE(*,*)a%secondsSinceEpoch()
 
 [Back to top](#top)
 <hr>
+
+
+
+### strftime<a id="strfime"></a>
+
+```fortran
+CHARACTER(LEN=MAXSTRLEN) FUNCTION strftime(self,format)
+
+  ! ARGUMENTS:
+  CLASS(datetime), INTENT(IN) :: self
+  CHARACTER(LEN=*),INTENT(IN) :: format
+```
+
+A *datetime*-bound method that serves as a wrapper around the 
+C routine *strftime*. 
+`datetime%strftime` takes only the format string as argument,
+and returns the character string representation of the time 
+information contained in the datetime instance. Thus, this function
+takes care of the conversion to `tm_struct` and calling the raw C *strftime*.
+Because Fortran does not allow assumed-length character strings as 
+the type of the function result, a fixed length of `MAXSTRLEN` is used.
+`MAXSTRLEN` is currently set to `99`. It is assumed that the desired 
+time string is shorter than this value.
+Any resulting string shorter than `MAXSTRLEN` is padded with spaces,
+so it is best to trim the result using the `TRIM` intrinsic function
+(see the usage example below).
+This *datetime*-bound method is available since version `0.3.0`.
+
+#### Arguments
+
+`format` A character string describing the desired format of date and time.
+Same as the format for the raw C [*strftime*](#c_strftime).
+
+#### Return value
+
+A `CHARACTER(LEN=MAXSTRLEN)` representation of *datetime* using `format`.
+
+#### Example usage
+
+```fortran
+USE datetime_module
+
+TYPE(datetime)  :: a
+
+a = a % now()
+WRITE(*,*)a%isoformat()
+
+WRITE(*,*)TRIM(a%strftime("%Y %B %d"))
+```
+
+#### See also
+
+* [*c_strftime*](#c_strftime)
+
+[Back to top](#top)
+<hr>
+
 
 ### tm<a id="tm"></a>
 
@@ -1122,8 +1184,8 @@ See [*clock*](#clock) for an example.
 ### **tm_struct**<a id="tm_struct"></a>
 
 Time object compatible with C/C++ *tm* struct. Available mainly 
-for the purpose of calling [*strftime*](#strftime) 
-and [*strptime*](#strptime) procedures.
+for the purpose of calling [*c_strftime*](#c_strftime) 
+and [*c_strptime*](#c_strptime) procedures.
 
 ```fortran
 TYPE,BIND(c) :: tm_struct
@@ -1150,9 +1212,9 @@ ENDTYPE tm_struct
 
 * [*tm*](#tm)
 
-* [*strftime*](#strftime)
+* [*strftime*](#c_strftime)
 
-* [*strptime*](#strptime)
+* [*strptime*](#c_strptime)
 
 [Back to top](#top)
 <hr>
@@ -1194,6 +1256,160 @@ The resulting `timedelta`thus  includes the difference between timezones.
 
 ## Public procedures<a id="#public-procedures"></a>
     
+### c_strftime<a id="c_strftime"></a>
+
+```fortran
+FUNCTION c_strftime(str,slen,format,tm)BIND(c,name='strftime')RESULT(rc)
+
+  ! ARGUMENTS:
+  CHARACTER(KIND=c_char),DIMENSION(*),INTENT(OUT) :: str   
+  INTEGER(KIND=c_int),VALUE,          INTENT(IN)  :: slen   
+  CHARACTER(KIND=c_char),DIMENSION(*),INTENT(IN)  :: format 
+  TYPE(tm_struct),                    INTENT(IN)  :: tm     
+  INTEGER(KIND=c_int)                             :: rc
+```
+
+An interface to a C/C++ standard library routine. 
+Copies into `str` the content of format, expanding its format specifiers 
+into the corresponding values that represent the time described in `tm`, 
+with a limit of `slen` characters.
+
+Note: This function was renamed from *strftime* to *c_strftime* in version 0.3.0 
+to avoid name conflict with *datetime*-bound method [*strftime*](#strftime).
+If working with *datetime* instances, use [*datetime%strftime*](#strftime) instead.
+
+#### Arguments
+
+`str` is the destination character string with the requested date and time. 
+
+`slen` is the maximum number of characters to be copied to `str`, 
+including the terminating null-character, `CHAR(0)`.
+
+`format` is the character string containing any combination of regular characters and special format specifiers. 
+These format specifiers are replaced by the function to the corresponding values to represent the time specified in `tm`. 
+For more information on format specifiers see http://www.cplusplus.com/reference/ctime/strftime/.
+
+`tm` is an instance of the type `tm_struct`, containing date and time values to be processed.
+
+#### Return value
+
+If the resulting string fits in less than `slen` characters including the terminating null-character, 
+the total number of characters copied to `str` (not including the terminating null-character) is returned.
+Otherwise, zero is returned and the contents of the array are indeterminate.
+
+#### Example usage
+
+```fortran
+USE datetime_module
+
+TYPE(datetime)    :: a
+CHARACTER(LEN=20) :: res
+INTEGER           :: rc
+
+a = a % now()
+
+rc = c_strftime(res,20,"%Y %B %d"//CHAR(0),a%tm())
+```
+
+#### See also
+
+* [*datetime%strftime*](#strftime)
+
+* [*c_strptime*](#c_strptime)
+
+* [*strptime*](#strptime)
+
+* [*tm*](#tm)
+
+* [*tm_struct*](#tm_struct)
+
+
+[Back to top](#top)
+<hr>
+
+### c_strptime<a id="c_strptime"></a>
+
+```fortran
+FUNCTION c_strptime(str,format,tm)BIND(c,name='strptime')RESULT(rc)
+
+  CHARACTER(KIND=c_char),DIMENSION(*),INTENT(IN)  :: str
+  CHARACTER(KIND=c_char),DIMENSION(*),INTENT(IN)  :: format
+  TYPE(tm_struct),                    INTENT(OUT) :: tm
+  CHARACTER(KIND=c_char,LEN=1)                    :: rc
+```
+
+An interface to a C/C++ standard library routine.
+Converts the character string `str` to values which are stored in `tm`, using the format specified by `format`.
+
+Note: This function was renamed from *strptime* to *c_strptime* in version 0.3.0 to avoid 
+name conflicts with [*strptime*](#strptime) which operates on *datetime* instances.
+If working with *datetime* instances, use [*strptime*](#strptime) instead.
+
+#### Arguments
+
+`str` is the character string containing date and time information.
+
+`format` is the character string containing any combination of regular characters and special format specifiers,
+describing the date and time information in `str`.
+
+`tm` is an instance of the type `tm_struct`, in which the date and time values will be filled upon successful completion
+of the [*c_strptime*](#c_strptime) function.
+
+#### Return value
+
+Upon successful completion, [*c_strptime*](#c_strptime) returns the character 
+following the last character parsed. Otherwise, a null character is returned.
+
+#### Example usage
+
+Extracting time difference between two time strings using [*c_strptime*](#c_strptime)
+and [*tm2date*](#tm2date):
+
+```fortran
+USE datetime_module
+
+TYPE(datetime)  :: date1,date2
+TYPE(tm_struct) :: ctime
+TYPE(timedelta) :: timediff
+
+! Return code for strptime
+CHARACTER(LEN=1) :: rc
+
+! Example times in "YYYYMMDD hhmmss" format
+CHARACTER(LEN=15) :: str1 = "20130512 091519"
+CHARACTER(LEN=15) :: str2 = "20131116 120418"
+
+! Get tm_struct instance from str1
+rc = c_strptime(str1,"%Y%m%d %H%M%S"//CHAR(0),ctime)
+date1 = tm2date(ctime)
+
+! Get tm_struct instance from str2
+rc = c_strptime(str2,"%Y%m%d %H%M%S"//CHAR(0),ctime)
+date2 = tm2date(ctime)
+
+timediff = date2-date1
+
+WRITE(*,*)timediff
+WRITE(*,*)timediff%total_seconds()
+```
+
+This example outputs the following:
+
+```
+        188           2          48          58        1000
+   16253339.0000000
+```
+
+#### See also
+
+* [*strptime*](#strptime)
+
+* [*tm2date*](#tm2date)
+
+[Back to top](#top)
+<hr>
+
+
 ### date2num<a id="date2num"></a>
 
 ```fortran
@@ -1433,69 +1649,22 @@ a = num2date(734869.25d0) ! a becomes datetime(2013,1,1,6,0,0,0)
 [Back to top](#top)
 <hr>
 
-### strftime<a id="strftime"></a>
-
-```fortran
-FUNCTION strftime(str,slen,format,tm)BIND(c,name='strftime')RESULT(rc)
-
-  ! ARGUMENTS:
-  CHARACTER(KIND=c_char),DIMENSION(*),INTENT(OUT) :: str   
-  INTEGER(KIND=c_int),VALUE,          INTENT(IN)  :: slen   
-  CHARACTER(KIND=c_char),DIMENSION(*),INTENT(IN)  :: format 
-  TYPE(tm_struct),                    INTENT(IN)  :: tm     
-  INTEGER(KIND=c_int)                             :: rc
-```
-
-An interface to a C/C++ standard library routine. 
-Copies into `str` the content of format, expanding its format specifiers 
-into the corresponding values that represent the time described in `tm`, 
-with a limit of `slen` characters.
-
-#### Arguments
-
-`str` is the destination character string with the requested date and time. 
-
-`slen` is the maximum number of characters to be copied to `str`, 
-including the terminating null-character, `CHAR(0)`.
-
-`format` is the character string containing any combination of regular characters and special format specifiers. 
-These format specifiers are replaced by the function to the corresponding values to represent the time specified in `tm`. 
-For more information on format specifiers see http://www.cplusplus.com/reference/ctime/strftime/.
-
-`tm` is an instance of the type `tm_struct`, containing date and time values to be processed.
-
-#### Return value
-
-If the resulting string fits in less than `slen` characters including the terminating null-character, 
-the total number of characters copied to `str` (not including the terminating null-character) is returned.
-Otherwise, zero is returned and the contents of the array are indeterminate.
-
-#### Example usage
-
-#### See also
-
-* [*strptime*](#strptime)
-
-* [*tm*](#tm)
-
-* [*tm_struct*](#tm_struct)
-
-[Back to top](#top)
-<hr>
 
 ### strptime<a id="strptime"></a>
 
 ```fortran
-FUNCTION strptime(str,format,tm)BIND(c,name='strptime')RESULT(rc)
+TYPE(datetime) FUNCTION strptime(str,format)
 
-  CHARACTER(KIND=c_char),DIMENSION(*),INTENT(IN)  :: str
-  CHARACTER(KIND=c_char),DIMENSION(*),INTENT(IN)  :: format
-  TYPE(tm_struct),                    INTENT(OUT) :: tm
-  CHARACTER(KIND=c_char,LEN=1)                    :: rc
+  ! ARGUMENTS:
+  CHARACTER(LEN=*),INTENT(IN) :: str
+  CHARACTER(LEN=*),INTENT(IN) :: format
 ```
 
-An interface to a C/C++ standard library routine.
-Converts the character string `str` to values which are stored in `tm`, using the format specified by `format`.
+A wrapper function around [*c_strptime*](#c_strptime).
+Given a character string `str` with the format `format`, returns 
+an appropriate *datetime* instance containing that time information.
+This function is analogous to Python's *datetime.datetime.strptime()* function.
+Available since version 0.3.0. 
 
 #### Arguments
 
@@ -1504,40 +1673,27 @@ Converts the character string `str` to values which are stored in `tm`, using th
 `format` is the character string containing any combination of regular characters and special format specifiers,
 describing the date and time information in `str`.
 
-`tm` is an instance of the type `tm_struct`, in which the date and time values will be filled upon successful completion
-of the [*strptime*](#strptime) function.
-
 #### Return value
 
-Upon successful completion, [*strptime*](#strptime) returns the character 
-following the last character parsed. Otherwise, a null character is returned.
+Upon successful completion, [*strptime*](#strptime) returns the [*datetime*](#datetime)
+instance corresponding to the time information contained in *str*.
 
 #### Example usage
 
-Extracting time difference between two time strings using [*strptime*](#strptime)
-and [*tm2date*](#tm2date):
+Extracting time difference between two time strings using [*strptime*](#strptime):
 
 ```fortran
 USE datetime_module
 
 TYPE(datetime)  :: date1,date2
-TYPE(tm_struct) :: ctime
 TYPE(timedelta) :: timediff
-
-! Return code for strptime
-CHARACTER(LEN=1) :: rc
 
 ! Example times in "YYYYMMDD hhmmss" format
 CHARACTER(LEN=15) :: str1 = "20130512 091519"
 CHARACTER(LEN=15) :: str2 = "20131116 120418"
 
-! Get tm_struct instance from str1
-rc = strptime(str1,"%Y%m%d %H%M%S"//CHAR(0),ctime)
-date1 = tm2date(ctime)
-
-! Get tm_struct instance from str2
-rc = strptime(str2,"%Y%m%d %H%M%S"//CHAR(0),ctime)
-date2 = tm2date(ctime)
+date1 = strptime(str1,"%Y%m%d %H%M%S")
+date2 = strptime(str2,"%Y%m%d %H%M%S")
 
 timediff = date2-date1
 
@@ -1551,15 +1707,16 @@ This example outputs the following:
         188           2          48          58        1000
    16253339.0000000
 ```
+This is the same example as in [*c_strptime*](#c_strptime) but with fewer
+necessary steps.
 
 #### See also
 
-* [*strftime*](#strftime)
+* [*c_strptime*](#c_strptime)
 
 * [*tm2date*](#tm2date)
 
 [Back to top](#top)
-<hr>
 
 ### tm2date
 
@@ -1600,7 +1757,7 @@ See example usage for [*strptime*](#strptime).
 
 #### Tested with the following compilers:
 ---
-* gfortran 4.7.2
+* gfortran 4.7.2, 4.8.2
 * ifort 13.1.1.163
 * xlf 14.1.0.5 (thanks to Bjoern Hendrik Fock)
 

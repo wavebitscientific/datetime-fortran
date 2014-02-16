@@ -20,9 +20,9 @@ MODULE datetime_module
 !
 ! MODULE: datetime
 !
-! VERSION: 0.2.1
+! VERSION: 0.3.0
 !
-! LAST UPDATE: 2014-02-12
+! LAST UPDATE: 2014-02-16
 !
 ! AUTHOR: Milan Curcic
 !         University of Miami
@@ -55,6 +55,7 @@ MODULE datetime_module
 !         PROCEDURE :: isValid
 !         PROCEDURE :: now
 !         PROCEDURE :: secondsSinceEpoch
+!         PROCEDURE :: strftime
 !         PROCEDURE :: tm
 !         PROCEDURE :: tzOffset
 !         PROCEDURE :: utc
@@ -74,12 +75,13 @@ MODULE datetime_module
 !
 !     PUBLIC PROCEDURES:
 !
+!         FUNCTION c_strftime
+!         FUNCTION c_strptime
 !         FUNCTION date2num
 !         FUNCTION daysInMonth
 !         FUNCTION daysInYear
 !         FUNCTION isLeapYear
 !         FUNCTION num2date
-!         FUNCTION strftime
 !         FUNCTION strptime
 !         FUNCTION tm2date
 !
@@ -107,12 +109,13 @@ PUBLIC :: OPERATOR(==)
 PUBLIC :: OPERATOR(/=)
 
 ! Procedures:
+PUBLIC :: c_strftime
+PUBLIC :: c_strptime
 PUBLIC :: date2num
 PUBLIC :: daysInMonth
 PUBLIC :: daysInYear
 PUBLIC :: isLeapYear
 PUBLIC :: num2date
-PUBLIC :: strftime
 PUBLIC :: strptime
 PUBLIC :: tm2date
 
@@ -132,6 +135,10 @@ REAL(KIND=real_dp),PARAMETER :: h2s = 3600d0   ! hour   -> second
 REAL(KIND=real_dp),PARAMETER :: s2h = 1d0/h2s  ! second -> hour
 REAL(KIND=real_dp),PARAMETER :: m2s = 60d0     ! minute -> second
 REAL(KIND=real_dp),PARAMETER :: s2m = 1d0/m2s  ! second -> minute
+ 
+! Maximum string length for strftime.
+! Constant for now; may become a preprocessor macro later.
+INTEGER,PARAMETER :: MAXSTRLEN = 99
 
 ! Derived types:
 
@@ -168,6 +175,7 @@ TYPE :: datetime
   PROCEDURE :: isValid
   PROCEDURE :: now
   PROCEDURE :: secondsSinceEpoch
+  PROCEDURE :: strftime
   PROCEDURE :: tm
   PROCEDURE :: tzOffset
   PROCEDURE :: utc
@@ -326,7 +334,7 @@ INTERFACE
 
 
 
-  FUNCTION strftime(str,slen,format,tm)BIND(c,name='strftime')RESULT(rc)
+  FUNCTION c_strftime(str,slen,format,tm)BIND(c,name='strftime')RESULT(rc)
   !====================================================================>
   !
   ! Returns a formatted time string, given input time struct and format. 
@@ -344,12 +352,12 @@ INTERFACE
     TYPE(tm_struct),                    INTENT(IN)  :: tm
     INTEGER(KIND=c_int)                             :: rc
 
-  ENDFUNCTION strftime
+  ENDFUNCTION c_strftime
   !====================================================================>
 
 
 
-  FUNCTION strptime(str,format,tm)BIND(c,name='strptime')RESULT(rc)
+  FUNCTION c_strptime(str,format,tm)BIND(c,name='strptime')RESULT(rc)
   !====================================================================>
   !
   ! Returns a time struct object based on the input time string str, 
@@ -367,7 +375,7 @@ INTERFACE
     TYPE(tm_struct),                    INTENT(OUT) :: tm
     INTEGER(KIND=c_int)                             :: rc
 
-  ENDFUNCTION strptime
+  ENDFUNCTION c_strptime
   !====================================================================>
 
 
@@ -742,7 +750,7 @@ FUNCTION isocalendar(self)
   INTEGER              :: rc
   CHARACTER(LEN=20)    :: string
 
-  rc = strftime(string,LEN(string),'%G %V %u'//CHAR(0),self%tm())  
+  rc = c_strftime(string,LEN(string),'%G %V %u'//CHAR(0),self%tm())  
 
   READ(UNIT=string(1:4),FMT='(I4)')year
   READ(UNIT=string(6:7),FMT='(I2)')week
@@ -769,11 +777,37 @@ INTEGER FUNCTION secondsSinceEpoch(self)
   INTEGER           :: rc
   CHARACTER(LEN=11) :: string
 
-  rc = strftime(string,LEN(string),'%s'//CHAR(0),self%tm())  
+  rc = c_strftime(string,LEN(string),'%s'//CHAR(0),self%tm())  
 
   READ(UNIT=string,FMT='(I10)')secondsSinceEpoch
 
 ENDFUNCTION secondsSinceEpoch
+!======================================================================>
+
+
+
+CHARACTER(LEN=MAXSTRLEN) FUNCTION strftime(self,format)
+!======================================================================>
+!
+! datetime-bound procedure that provides a wrapper around C/C++
+! strftime function. 
+!
+!======================================================================>
+
+  ! ARGUMENTS:
+  CLASS(datetime), INTENT(IN) :: self
+  CHARACTER(LEN=*),INTENT(IN) :: format
+
+  INTEGER                  :: rc
+  CHARACTER(LEN=MAXSTRLEN) :: resultString
+  TYPE(tm_struct)          :: tm
+
+  resultString = ""
+  rc = c_strftime(resultString,MAXSTRLEN,TRIM(format)//C_NULL_CHAR,&
+                  self%tm())
+  strftime = TRIM(resultString)
+
+ENDFUNCTION strftime
 !======================================================================>
 
 
@@ -1589,6 +1623,29 @@ ENDFUNCTION num2date
 
 
 
+TYPE(datetime) FUNCTION strptime(str,format)
+!======================================================================>
+!
+! A wrapper function around C/C++ strptime. 
+! Returns a datetime instance. 
+!
+!======================================================================>
+
+  ! ARGUMENTS:
+  CHARACTER(LEN=*),INTENT(IN) :: str
+  CHARACTER(LEN=*),INTENT(IN) :: format
+
+  INTEGER         :: rc
+  TYPE(tm_struct) :: tm
+
+  rc = c_strptime(TRIM(str)//C_NULL_CHAR,TRIM(format)//C_NULL_CHAR,tm)
+  strptime = tm2date(tm)
+
+ENDFUNCTION strptime
+!======================================================================>
+
+
+
 PURE ELEMENTAL TYPE(datetime) FUNCTION tm2date(ctime)
 !======================================================================>
 !
@@ -1606,6 +1663,7 @@ PURE ELEMENTAL TYPE(datetime) FUNCTION tm2date(ctime)
   tm2date%day         = ctime%tm_mday
   tm2date%month       = ctime%tm_mon+1
   tm2date%year        = ctime%tm_year+1900
+  tm2date%tz          = 0
 
 ENDFUNCTION tm2date
 !======================================================================>
