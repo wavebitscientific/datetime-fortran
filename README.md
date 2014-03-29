@@ -1758,6 +1758,6 @@ See example usage for [*strptime*](#strptime).
 #### Tested with the following compilers:
 ---
 * gfortran 4.7.2, 4.8.2
-* ifort 13.1.1.163
+* ifort 13.1.1, 14.0.2
 * xlf 14.1.0.5 (thanks to Bjoern Hendrik Fock)
 
