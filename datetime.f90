@@ -20,9 +20,9 @@ MODULE datetime_module
 !
 ! MODULE: datetime
 !
-! VERSION: 0.3.0
+! VERSION: 0.3.1
 !
-! LAST UPDATE: 2014-02-16
+! LAST UPDATE: 2014-03-31
 !
 ! AUTHOR: Milan Curcic
 !         University of Miami
@@ -518,11 +518,11 @@ PURE ELEMENTAL SUBROUTINE addDays(self,d)
       ENDIF
     ELSEIF(self%day < 1)THEN
       self%month = self%month-1
-      self%day = self%day+daysInMonth(self%month,self%year)
       IF(self%month < 1)THEN
         self%year = self%year+self%month/12-1
         self%month = 12+MOD(self%month,12)
       ENDIF
+      self%day = self%day+daysInMonth(self%month,self%year)
     ELSE
       EXIT
     ENDIF 
@@ -1497,12 +1497,15 @@ PURE ELEMENTAL INTEGER FUNCTION daysInMonth(month,year)
   INTEGER,PARAMETER,DIMENSION(12) :: &
           days = [31,28,31,30,31,30,31,31,30,31,30,31]
 
-  IF(month<1.OR.month>12)THEN
+  IF(month < 1 .OR. month > 12)THEN
+    ! Should raise an error and abort here, however we want to keep
+    ! the pure and elemental attributes. Make sure this function is 
+    ! called with the month argument in range. 
     daysInMonth = 0
-    RETURN 
+    RETURN
   ENDIF
 
-  IF(month==2.AND.isLeapYear(year))THEN
+  IF(month == 2 .AND. isLeapYear(year))THEN
     daysInMonth = 29
   ELSE
     daysInMonth = days(month)
