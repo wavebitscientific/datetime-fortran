@@ -119,8 +119,6 @@ PUBLIC :: num2date
 PUBLIC :: strptime
 PUBLIC :: tm2date
 
-PUBLIC :: int2str
-
 ! Constants:
 INTEGER,PARAMETER :: real_sp = KIND(1e0)
 INTEGER,PARAMETER :: real_dp = KIND(1d0)
