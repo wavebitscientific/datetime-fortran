@@ -20,9 +20,9 @@ MODULE datetime_module
 !
 ! MODULE: datetime
 !
-! VERSION: 0.3.1
+! VERSION: 0.3.2
 !
-! LAST UPDATE: 2014-03-31
+! LAST UPDATE: 2014-04-21
 !
 ! AUTHOR: Milan Curcic
 !         University of Miami
@@ -118,6 +118,8 @@ PUBLIC :: isLeapYear
 PUBLIC :: num2date
 PUBLIC :: strptime
 PUBLIC :: tm2date
+
+PUBLIC :: int2str
 
 ! Constants:
 INTEGER,PARAMETER :: real_sp = KIND(1e0)
@@ -1684,14 +1686,20 @@ PURE FUNCTION int2str(i,length)
 !======================================================================>
 
   ! ARGUMENTS:
-  INTEGER,INTENT(IN)    :: i,length
+  INTEGER,INTENT(IN) :: i
+  INTEGER,INTENT(IN) :: length
+
   CHARACTER(LEN=length) :: int2str
+  CHARACTER(LEN=2)      :: string
 
-  WRITE(UNIT=int2str,FMT='(I0)')i
+  !WRITE(UNIT=int2str,FMT='(I0)')i
 
-  DO WHILE(LEN_TRIM(ADJUSTL(int2str)) < length)
-    int2str = '0'//TRIM(ADJUSTL(int2str))
-  ENDDO
+  !DO WHILE(LEN_TRIM(ADJUSTL(int2str)) < length)
+  !  int2str = '0'//TRIM(ADJUSTL(int2str))
+  !ENDDO
+
+  WRITE(UNIT=string,FMT='(I2)')length
+  WRITE(UNIT=int2str,FMT='(I'//string//'.'//string//')')i
 
 ENDFUNCTION int2str
 !======================================================================>
