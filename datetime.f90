@@ -20,9 +20,9 @@ MODULE datetime_module
 !
 ! MODULE: datetime
 !
-! VERSION: 0.3.2
+! VERSION: 0.4.0
 !
-! LAST UPDATE: 2014-04-21
+! LAST UPDATE: 2014-05-16
 !
 ! AUTHOR: Milan Curcic
 !         University of Miami
@@ -78,6 +78,7 @@ MODULE datetime_module
 !         FUNCTION c_strftime
 !         FUNCTION c_strptime
 !         FUNCTION date2num
+!         FUNCTION datetimeRange
 !         FUNCTION daysInMonth
 !         FUNCTION daysInYear
 !         FUNCTION isLeapYear
@@ -112,6 +113,7 @@ PUBLIC :: OPERATOR(/=)
 PUBLIC :: c_strftime
 PUBLIC :: c_strptime
 PUBLIC :: date2num
+PUBLIC :: datetimeRange
 PUBLIC :: daysInMonth
 PUBLIC :: daysInYear
 PUBLIC :: isLeapYear
@@ -245,6 +247,7 @@ TYPE :: clock
 
 ENDTYPE clock
 !======================================================================>
+
 
 
 TYPE,BIND(c) :: tm_struct
@@ -767,7 +770,10 @@ INTEGER FUNCTION secondsSinceEpoch(self)
 !======================================================================>
 !
 ! datetime-bound procedure. Returns an integer number of 
-! seconds since the UNIX Epoch, 1970-01-01 00:00:00 +0000 (UTC).
+! seconds since the UNIX Epoch, 1970-01-01 00:00:00.
+! Note that this is a wrapper around C's strftime('%s'), so the number
+! of seconds will reflect the time zone of the local machine on which
+! the function is being called. 
 !
 !======================================================================>
 
@@ -777,9 +783,13 @@ INTEGER FUNCTION secondsSinceEpoch(self)
   INTEGER           :: rc
   CHARACTER(LEN=11) :: string
 
-  rc = c_strftime(string,LEN(string),'%s'//CHAR(0),self%tm())  
+  INTEGER :: nullIndex
 
-  READ(UNIT=string,FMT='(I10)')secondsSinceEpoch
+  string = self % strftime('%s'//C_NULL_CHAR)
+
+  nullIndex = SCAN(string,C_NULL_CHAR)
+
+  READ(UNIT=string(1:nullIndex-1),FMT='(I10)')secondsSinceEpoch
 
 ENDFUNCTION secondsSinceEpoch
 !======================================================================>
@@ -1482,6 +1492,45 @@ ENDFUNCTION isLeapYear
 
 
 
+PURE FUNCTION datetimeRange(d0,d1,t)
+!======================================================================>
+!
+! Given start and end datetime instances d0 and d1, and time increment
+! as timedelta instance t, returns an array of datetime instances.
+! The number of elements is the number of whole time increments 
+! contained between datetimes d0 and d1.
+!
+!======================================================================>
+
+  ! ARGUMENTS:
+  TYPE(datetime), INTENT(IN) :: d0
+  TYPE(datetime), INTENT(IN) :: d1
+  TYPE(timedelta),INTENT(IN) :: t
+
+  REAL(KIND=real_dp) :: datenum0,datenum1,increment
+
+  TYPE(datetime),DIMENSION(:),ALLOCATABLE :: datetimeRange
+
+  INTEGER :: n,nm
+
+  datenum0 = date2num(d0)
+  datenum1 = date2num(d1)
+
+  increment = t % total_seconds() * s2d
+
+  nm = FLOOR((datenum1-datenum0)/increment)+1
+
+  ALLOCATE(datetimeRange(nm))
+
+  DO n = 1,nm
+    datetimeRange(n) = num2date(datenum0 + (n-1)*increment)
+  ENDDO
+
+ENDFUNCTION datetimeRange
+!======================================================================>
+
+
+
 PURE ELEMENTAL INTEGER FUNCTION daysInMonth(month,year)
 !======================================================================>
 !
@@ -1679,7 +1728,7 @@ PURE FUNCTION int2str(i,length)
 !======================================================================>
 !
 ! Converts an integer i into a character string of requested length, 
-! by pre-pending zeros if necessary.
+! pre-pending zeros if necessary.
 !
 !======================================================================>
 
@@ -1689,12 +1738,6 @@ PURE FUNCTION int2str(i,length)
 
   CHARACTER(LEN=length) :: int2str
   CHARACTER(LEN=2)      :: string
-
-  !WRITE(UNIT=int2str,FMT='(I0)')i
-
-  !DO WHILE(LEN_TRIM(ADJUSTL(int2str)) < length)
-  !  int2str = '0'//TRIM(ADJUSTL(int2str))
-  !ENDDO
 
   WRITE(UNIT=string,FMT='(I2)')length
   WRITE(UNIT=int2str,FMT='(I'//string//'.'//string//')')i
