@@ -72,6 +72,7 @@ and function [*strptime*](#strptime) that returns a *datetime* instance are avai
     * [*c_strftime*](#c_strftime)
     * [*c_strptime*](#c_strptime)
     * [*date2num*](#date2num)
+    * [*datetimeRange*](#datetimeRange)
     * [*daysInMonth*](#daysinmonth)
     * [*daysInYear*](#daysinyear)
     * [*isLeapYear*](#isleapyear)
@@ -1471,6 +1472,86 @@ WRITE(*,*)date2num(a)   ! 734869.25000000000
 * [*datetime*](#datetime)
 
 * [*num2date*](#num2date)
+
+[Back to top](#top)
+<hr>
+
+### datetimeRange<a id="datetimeRange"></a>
+
+```fortran
+PURE FUNCTION datetimeRange(d0,d1,t)
+
+  ! ARGUMENTS:
+  TYPE(datetime), INTENT(IN) :: d0
+  TYPE(datetime), INTENT(IN) :: d1
+  TYPE(timedelta),INTENT(IN) :: t
+```
+
+Given start and end [*datetime*](#datetime) instances `d0` and `d1`, 
+and time increment as [*timedelta*](#timedelta) instance `t`, 
+returns an array of datetime instances.
+The number of elements is the number of whole time increments 
+contained between datetimes d0 and d1.
+
+#### Arguments
+
+`d0` A [*datetime*](#datetime) instance with start time. Will be the first element
+of the resulting array.
+
+`d1` A [*datetime*](#datetime) instance with end time. Will be the equal to or greater than 
+the last element of the resulting array.
+
+`t` A [*timedelta*](#timedelta) instance being the time increment for the resulting array.
+
+#### Return value
+
+`datetimeRange` An array of [*datetime*](#datetime) instances of length
+ `FLOOR((d1-d0)/t)`
+
+#### Example usage
+
+```fortran
+TYPE(datetime)  :: a,b
+TYPE(timedelta) :: td
+
+TYPE(datetime),DIMENSION(:),ALLOCATABLE :: dtRange
+
+a  = datetime(2014,5,1)
+b  = datetime(2014,5,3)
+td = timedelta(days=1)
+
+dtRange = datetimeRange(a,b,td)
+
+! Returns: 
+!     
+! dtRange = [datetime(2014,5,1),
+!            datetime(2014,5,2),
+!            datetime(2014,5,3)]
+!
+```
+a  = datetime(2014,5,1)
+b  = datetime(2014,5,3)
+td = timedelta(hours=7)
+
+dtRange = datetimeRange(a,b,td)
+
+! Returns: 
+!     
+! dtRange = [datetime(2014,5,1,0),
+!            datetime(2014,5,1,7),
+!            datetime(2014,5,1,14),
+!            datetime(2014,5,1,21),
+!            datetime(2014,5,2, 4),
+!            datetime(2014,5,2,11),
+!            datetime(2014,5,2,18)]
+!
+```
+
+#### See also
+
+* [*datetime*](#datetime)
+
+* [*timedelta*](#timedelta)
 
 [Back to top](#top)
 <hr>
