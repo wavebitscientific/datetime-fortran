@@ -1506,7 +1506,7 @@ the last element of the resulting array.
 #### Return value
 
 `datetimeRange` An array of [*datetime*](#datetime) instances of length
- `FLOOR((d1-d0)/t)`
+ `FLOOR((d1-d0)/t)+1`
 
 #### Example usage
 
