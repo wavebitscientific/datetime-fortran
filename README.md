@@ -72,7 +72,7 @@ and function [*strptime*](#strptime) that returns a *datetime* instance are avai
     * [*c_strftime*](#c_strftime)
     * [*c_strptime*](#c_strptime)
     * [*date2num*](#date2num)
-    * [*datetimeRange*](#datetimeRange)
+    * [*datetimeRange*](#datetimerange)
     * [*daysInMonth*](#daysinmonth)
     * [*daysInYear*](#daysinyear)
     * [*isLeapYear*](#isleapyear)
@@ -1476,7 +1476,7 @@ WRITE(*,*)date2num(a)   ! 734869.25000000000
 [Back to top](#top)
 <hr>
 
-### datetimeRange<a id="datetimeRange"></a>
+### datetimeRange<a id="datetimerange"></a>
 
 ```fortran
 PURE FUNCTION datetimeRange(d0,d1,t)
@@ -1528,7 +1528,7 @@ dtRange = datetimeRange(a,b,td)
 !            datetime(2014,5,2),
 !            datetime(2014,5,3)]
 !
-```
+
 a  = datetime(2014,5,1)
 b  = datetime(2014,5,3)
 td = timedelta(hours=7)
