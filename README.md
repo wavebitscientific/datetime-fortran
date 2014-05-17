@@ -1527,7 +1527,6 @@ dtRange = datetimeRange(a,b,td)
 ! dtRange = [datetime(2014,5,1),
 !            datetime(2014,5,2),
 !            datetime(2014,5,3)]
-!
 
 a  = datetime(2014,5,1)
 b  = datetime(2014,5,3)
@@ -1544,7 +1543,6 @@ dtRange = datetimeRange(a,b,td)
 !            datetime(2014,5,2, 4),
 !            datetime(2014,5,2,11),
 !            datetime(2014,5,2,18)]
-!
 ```
 
 #### See also
