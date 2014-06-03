@@ -20,9 +20,9 @@ MODULE datetime_module
 !
 ! MODULE: datetime
 !
-! VERSION: 0.4.0
+! VERSION: 0.4.1
 !
-! LAST UPDATE: 2014-05-16
+! LAST UPDATE: 2014-06-03
 !
 ! AUTHOR: Milan Curcic
 !         University of Miami
@@ -225,11 +225,11 @@ TYPE :: clock
 !======================================================================>
 
   ! COMPONENTS:
-  TYPE(datetime) :: startTime   = datetime()
-  TYPE(datetime) :: stopTime    = datetime()
-  TYPE(datetime) :: currentTime = datetime()
+  TYPE(datetime) :: startTime   = datetime(1)
+  TYPE(datetime) :: stopTime    = datetime(1)
+  TYPE(datetime) :: currentTime = datetime(1)
 
-  TYPE(timedelta) :: tickInterval = timedelta()
+  TYPE(timedelta) :: tickInterval = timedelta(0)
 
   ! May become Alarm class in some future release; 
   ! for now, just a switch
@@ -1635,7 +1635,7 @@ PURE ELEMENTAL TYPE(datetime) FUNCTION num2date(num)
 
   ! num must be positive:
   IF(num < 0)THEN
-    num2date = datetime()
+    num2date = datetime(1)
     RETURN
   ENDIF
 

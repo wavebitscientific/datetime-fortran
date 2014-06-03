@@ -8,10 +8,9 @@ It also provides an interface to C/C++ **tm** struct, and associated
 [*strftime*](#strftime) and [*strptime*](#strptime) functions.
 Since version 0.2.0, also provides a [*clock*](#clock) class.
 *datetime-fortran* came about due to the lack of time handling facilities in standard Fortran language.
-*datetime-fortran* is written and maintained by Milan Curcic of University of Miami.
 It is freely available under the [GNU General Public License version 3](http://www.gnu.org/licenses/gpl.html).
-[E-mail me](mailto:milan@orca.rsmas.miami.edu) if you want to use *datetime-fortran* in a non-GPL software.
-Please send suggestions and bug reports by [e-mail](mailto:milan@orca.rsmas.miami.edu) or
+[Contact me](mailto:caomaco@gmail.com) if you want to use *datetime-fortran* in a non-GPL software.
+Please send suggestions and bug reports by [e-mail](mailto:caomaco@gmail.com) or
 through this Github page. See the list of [current issues](https://github.com/milancurcic/datetime-fortran/issues)
 if you would like to contribute to the code.
 
@@ -1838,5 +1837,5 @@ See example usage for [*strptime*](#strptime).
 ---
 * gfortran 4.7.2, 4.8.2
 * ifort 13.1.1, 14.0.2
+* pgf90 13.10 (thanks to Timothy Hilton)
 * xlf 14.1.0.5 (thanks to Bjoern Hendrik Fock)
-
