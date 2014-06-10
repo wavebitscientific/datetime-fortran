@@ -33,6 +33,12 @@ and function [*strptime*](#strptime) that returns a *datetime* instance are avai
 
 * Free to modify and distribute under the terms of the [GNU General Public License version 3](http://www.gnu.org/licenses/gpl.html).
 
+* Tested with the following compilers:
+
+   * gfortran 4.7.2, 4.8.2
+   * ifort 13.1.1, 14.0.2
+   * pgf90 13.6-0, 13.10-0 (thanks to Timothy Hilton)
+   * xlf 14.1.0.5 (thanks to Bjoern Hendrik Fock)
 
 ## API
 
@@ -1832,10 +1838,3 @@ See example usage for [*strptime*](#strptime).
 
 [Back to top](#top)
 <hr>
-
-#### Tested with the following compilers:
----
-* gfortran 4.7.2, 4.8.2
-* ifort 13.1.1, 14.0.2
-* pgf90 13.6-0, 13.10-0 (thanks to Timothy Hilton)
-* xlf 14.1.0.5 (thanks to Bjoern Hendrik Fock)
