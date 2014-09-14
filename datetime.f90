@@ -20,9 +20,9 @@ MODULE datetime_module
 !
 ! MODULE: datetime
 !
-! VERSION: 0.4.1
+! VERSION: 0.4.2
 !
-! LAST UPDATE: 2014-06-03
+! LAST UPDATE: 2014-09-14
 !
 ! AUTHOR: Milan Curcic
 !         University of Miami
@@ -402,14 +402,14 @@ PURE ELEMENTAL SUBROUTINE addMilliseconds(self,ms)
   CLASS(datetime),INTENT(INOUT) :: self
   INTEGER,        INTENT(IN)    :: ms
 
-  self%millisecond = self%millisecond+ms
+  self % millisecond = self % millisecond+ms
 
-  IF(self%millisecond >= 1000)THEN
-    CALL self%addSeconds(self%millisecond/1000)
-    self%millisecond = MOD(self%millisecond,1000)
-  ELSEIF(self%millisecond < 0)THEN
-    CALL self%addSeconds(self%millisecond/1000-1)
-    self%millisecond = MOD(self%millisecond,1000)+1000
+  IF(self % millisecond >= 1000)THEN
+    CALL self % addSeconds(self % millisecond/1000)
+    self % millisecond = MOD(self % millisecond,1000)
+  ELSEIF(self % millisecond < 0)THEN
+    CALL self % addSeconds(self % millisecond/1000-1)
+    self % millisecond = MOD(self % millisecond,1000)+1000
   ENDIF
 
 ENDSUBROUTINE addMilliseconds
@@ -429,13 +429,13 @@ PURE ELEMENTAL SUBROUTINE addSeconds(self,s)
   CLASS(datetime),INTENT(INOUT) :: self
   INTEGER,        INTENT(IN)    :: s
 
-  self%second = self%second+s
-  IF(self%second >= 60)THEN
-    CALL self%addMinutes(self%second/60)
-    self%second = MOD(self%second,60)
-  ELSEIF(self%second < 0)THEN
-    CALL self%addMinutes(self%second/60-1)
-    self%second = MOD(self%second,60)+60
+  self % second = self % second+s
+  IF(self % second >= 60)THEN
+    CALL self % addMinutes(self % second/60)
+    self % second = MOD(self % second,60)
+  ELSEIF(self % second < 0)THEN
+    CALL self % addMinutes(self % second/60-1)
+    self % second = MOD(self % second,60)+60
   ENDIF
 
 ENDSUBROUTINE addSeconds
@@ -455,13 +455,13 @@ PURE ELEMENTAL SUBROUTINE addMinutes(self,m)
   CLASS(datetime),INTENT(INOUT) :: self
   INTEGER,        INTENT(IN)    :: m
 
-  self%minute = self%minute+m
-  IF(self%minute >= 60)THEN
-    CALL self%addHours(self%minute/60)
-    self%minute = MOD(self%minute,60)
-  ELSEIF(self%minute < 0)THEN
-    CALL self%addHours(self%minute/60-1)
-    self%minute = MOD(self%minute,60)+60
+  self % minute = self % minute+m
+  IF(self % minute >= 60)THEN
+    CALL self % addHours(self % minute/60)
+    self % minute = MOD(self % minute,60)
+  ELSEIF(self % minute < 0)THEN
+    CALL self % addHours(self % minute/60-1)
+    self % minute = MOD(self % minute,60)+60
   ENDIF
 
 ENDSUBROUTINE addMinutes
@@ -481,13 +481,13 @@ PURE ELEMENTAL SUBROUTINE addHours(self,h)
   CLASS(datetime),INTENT(INOUT) :: self
   INTEGER,        INTENT(IN)    :: h
 
-  self%hour = self%hour+h
-  IF(self%hour >= 24)THEN
-    CALL self%addDays(self%hour/24)
-    self%hour = MOD(self%hour,24)
-  ELSEIF(self%hour < 0)THEN
-    CALL self%addDays(self%hour/24-1)
-    self%hour = MOD(self%hour,24)+24
+  self % hour = self % hour+h
+  IF(self % hour >= 24)THEN
+    CALL self % addDays(self % hour/24)
+    self % hour = MOD(self % hour,24)
+  ELSEIF(self % hour < 0)THEN
+    CALL self % addDays(self % hour/24-1)
+    self % hour = MOD(self % hour,24)+24
   ENDIF
 
 ENDSUBROUTINE addHours
@@ -509,23 +509,23 @@ PURE ELEMENTAL SUBROUTINE addDays(self,d)
 
   INTEGER :: daysInCurrentMonth
 
-  self%day = self%day+d
+  self % day = self % day+d
   DO
-    daysInCurrentMonth = daysInMonth(self%month,self%year)
-    IF(self%day > daysInCurrentMonth)THEN
-      self%day = self%day-daysInCurrentMonth
-      self%month = self%month+1
-      IF(self%month > 12)THEN
-        self%year = self%year+self%month/12
-        self%month = MOD(self%month,12)
+    daysInCurrentMonth = daysInMonth(self % month,self % year)
+    IF(self % day > daysInCurrentMonth)THEN
+      self % day = self % day-daysInCurrentMonth
+      self % month = self % month+1
+      IF(self % month > 12)THEN
+        self % year = self % year+self % month/12
+        self % month = MOD(self % month,12)
       ENDIF
-    ELSEIF(self%day < 1)THEN
-      self%month = self%month-1
-      IF(self%month < 1)THEN
-        self%year = self%year+self%month/12-1
-        self%month = 12+MOD(self%month,12)
+    ELSEIF(self % day < 1)THEN
+      self % month = self % month-1
+      IF(self % month < 1)THEN
+        self % year = self % year+self % month/12-1
+        self % month = 12+MOD(self % month,12)
       ENDIF
-      self%day = self%day+daysInMonth(self%month,self%year)
+      self % day = self % day+daysInMonth(self % month,self % year)
     ELSE
       EXIT
     ENDIF 
@@ -555,13 +555,13 @@ PURE ELEMENTAL CHARACTER(LEN=23) FUNCTION isoformat(self,sep)
     separator = 'T'
   ENDIF
 
-  isoformat = int2str(self%year,       4)//'-'//      &
-              int2str(self%month,      2)//'-'//      &
-              int2str(self%day,        2)//separator//&
-              int2str(self%hour,       2)//':'//      &
-              int2str(self%minute,     2)//':'//      &
-              int2str(self%second,     2)//'.'//      &
-              int2str(self%millisecond,3)
+  isoformat = int2str(self % year,       4)//'-'//      &
+              int2str(self % month,      2)//'-'//      &
+              int2str(self % day,        2)//separator//&
+              int2str(self % hour,       2)//':'//      &
+              int2str(self % minute,     2)//':'//      &
+              int2str(self % second,     2)//'.'//      &
+              int2str(self % millisecond,3)
 
 ENDFUNCTION isoformat
 !======================================================================>
@@ -651,7 +651,7 @@ TYPE(datetime) FUNCTION now(self)
                  second      = values(7),&
                  millisecond = values(8))
 
-  now%tz = hour+minute*m2h
+  now % tz = hour+minute*m2h
 
 ENDFUNCTION now
 !======================================================================>
@@ -673,8 +673,8 @@ PURE ELEMENTAL INTEGER FUNCTION weekday(self)
   INTEGER :: year,month
   INTEGER :: j,k
 
-  year  = self%year
-  month = self%month
+  year  = self % year
+  month = self % month
 
   IF(month <= 2)THEN
     month = month+12
@@ -684,7 +684,7 @@ PURE ELEMENTAL INTEGER FUNCTION weekday(self)
   j = year/100
   k = MOD(year,100)
 
-  weekday = MOD(self%day+((month+1)*26)/10+k+k/4+j/4+5*j,7)-1
+  weekday = MOD(self % day+((month+1)*26)/10+k+k/4+j/4+5*j,7)-1
 
   IF(weekday < 0)weekday = 6
 
@@ -708,7 +708,7 @@ PURE ELEMENTAL CHARACTER(LEN=9) FUNCTION weekdayLong(self)
   days = ['Sunday   ','Monday   ','Tuesday  ','Wednesday',&
           'Thursday ','Friday   ','Saturday ']
 
-  weekdayLong = days(self%weekday()+1)
+  weekdayLong = days(self % weekday()+1)
 
 ENDFUNCTION weekdayLong
 !======================================================================>
@@ -729,7 +729,7 @@ PURE ELEMENTAL CHARACTER(LEN=3) FUNCTION weekdayShort(self)
   CHARACTER(LEN=3),PARAMETER,DIMENSION(7) :: &
                    days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
 
-  weekdayShort = days(self%weekday()+1)
+  weekdayShort = days(self % weekday()+1)
 
 ENDFUNCTION weekdayShort
 !======================================================================>
@@ -753,7 +753,8 @@ FUNCTION isocalendar(self)
   INTEGER              :: rc
   CHARACTER(LEN=20)    :: string
 
-  rc = c_strftime(string,LEN(string),'%G %V %u'//CHAR(0),self%tm())  
+  rc = c_strftime(string,LEN(string),'%G %V %u'//C_NULL_CHAR,&
+                  self % tm())  
 
   READ(UNIT=string(1:4),FMT='(I4)')year
   READ(UNIT=string(6:7),FMT='(I2)')week
@@ -796,7 +797,7 @@ ENDFUNCTION secondsSinceEpoch
 
 
 
-CHARACTER(LEN=MAXSTRLEN) FUNCTION strftime(self,format)
+FUNCTION strftime(self,format)
 !======================================================================>
 !
 ! datetime-bound procedure that provides a wrapper around C/C++
@@ -805,17 +806,21 @@ CHARACTER(LEN=MAXSTRLEN) FUNCTION strftime(self,format)
 !======================================================================>
 
   ! ARGUMENTS:
-  CLASS(datetime), INTENT(IN) :: self
-  CHARACTER(LEN=*),INTENT(IN) :: format
+  CLASS(datetime), INTENT(IN)  :: self
+  CHARACTER(LEN=*),INTENT(IN)  :: format
 
-  INTEGER                  :: rc
+  CHARACTER(LEN=:),ALLOCATABLE :: strftime
+
+  INTEGER                  :: n,rc
   CHARACTER(LEN=MAXSTRLEN) :: resultString
   TYPE(tm_struct)          :: tm
 
   resultString = ""
   rc = c_strftime(resultString,MAXSTRLEN,TRIM(format)//C_NULL_CHAR,&
-                  self%tm())
+                  self % tm())
   strftime = TRIM(resultString)
+  n = LEN(strftime)
+  strftime = strftime(1:n-1)
 
 ENDFUNCTION strftime
 !======================================================================>
@@ -833,14 +838,14 @@ PURE ELEMENTAL TYPE(tm_struct) FUNCTION tm(self)
   ! ARGUMENTS:
   CLASS(datetime),INTENT(IN) :: self
 
-  tm%tm_sec   = self%second
-  tm%tm_min   = self%minute
-  tm%tm_hour  = self%hour
-  tm%tm_mday  = self%day
-  tm%tm_mon   = self%month-1
-  tm%tm_year  = self%year-1900
-  tm%tm_wday  = self%weekday()
-  tm%tm_yday  = self%yearday()-1
+  tm%tm_sec   = self % second
+  tm%tm_min   = self % minute
+  tm%tm_hour  = self % hour
+  tm%tm_mday  = self % day
+  tm%tm_mon   = self % month-1
+  tm%tm_year  = self % year-1900
+  tm%tm_wday  = self % weekday()
+  tm%tm_yday  = self % yearday()-1
   tm%tm_isdst = -1
 
 ENDFUNCTION tm
@@ -861,14 +866,14 @@ PURE ELEMENTAL CHARACTER(LEN=5) FUNCTION tzOffset(self)
 
   INTEGER :: hours,minutes
 
-  IF(self%tz < 0)THEN
+  IF(self % tz < 0)THEN
     tzOffset(1:1) = '-'
   ELSE
     tzOffset(1:1) = '+'
   ENDIF
 
-  hours   = INT(ABS(self%tz))
-  minutes = NINT((ABS(self%tz)-hours)*60)
+  hours   = INT(ABS(self % tz))
+  minutes = NINT((ABS(self % tz)-hours)*60)
 
   IF(minutes == 60)THEN
     minutes = 0
@@ -894,12 +899,12 @@ PURE ELEMENTAL TYPE(datetime) FUNCTION utc(self)
 
   INTEGER :: hours,minutes,sgn
 
-  hours   = INT(ABS(self%tz))
-  minutes = NINT((ABS(self%tz)-hours)*60)
-  sgn     = INT(SIGN(one,self%tz))
+  hours   = INT(ABS(self % tz))
+  minutes = NINT((ABS(self % tz)-hours)*60)
+  sgn     = INT(SIGN(one,self % tz))
 
-  utc    = self-timedelta(hours=sgn*hours,minutes=sgn*minutes)
-  utc%tz = 0
+  utc      = self-timedelta(hours=sgn*hours,minutes=sgn*minutes)
+  utc % tz = 0
 
 ENDFUNCTION utc
 !======================================================================>
@@ -920,10 +925,10 @@ PURE ELEMENTAL INTEGER FUNCTION yearday(self)
   INTEGER :: month
 
   yearday = 0
-  DO month=1,self%month-1
-    yearday = yearday+daysInMonth(month,self%year)
+  DO month=1,self % month-1
+    yearday = yearday+daysInMonth(month,self % year)
   ENDDO
-  yearday = yearday+self%day
+  yearday = yearday+self % day
 
 ENDFUNCTION yearday
 !======================================================================>
@@ -1272,11 +1277,11 @@ PURE ELEMENTAL REAL(KIND=real_dp) FUNCTION total_seconds(self)
   ! ARGUMENTS:
   CLASS(timedelta),INTENT(IN) :: self
 
-  total_seconds = self%days*86400d0 &
-                 +self%hours*3600d0 &
-                 +self%minutes*60d0 &
-                 +self%seconds      &
-                 +self%milliseconds*1d-3
+  total_seconds = self % days*86400d0 &
+                 +self % hours*3600d0 &
+                 +self % minutes*60d0 &
+                 +self % seconds      &
+                 +self % milliseconds*1d-3
 
 ENDFUNCTION total_seconds
 !======================================================================>
@@ -1431,10 +1436,10 @@ PURE ELEMENTAL SUBROUTINE reset(self)
   ! ARGUMENTS:
   CLASS(clock),INTENT(INOUT) :: self
 
-  self%currentTime = self%startTime
+  self % currentTime = self % startTime
 
-  self%started = .FALSE.
-  self%stopped = .FALSE.
+  self % started = .FALSE.
+  self % stopped = .FALSE.
 
 ENDSUBROUTINE reset
 !======================================================================>
@@ -1451,19 +1456,19 @@ PURE ELEMENTAL SUBROUTINE tick(self)
   ! ARGUMENTS:
   CLASS(clock),INTENT(INOUT) :: self
 
-  IF(self%stopped)THEN
+  IF(self % stopped)THEN
     RETURN
   ENDIF
 
-  IF(.NOT.self%started)THEN
-    self%started = .TRUE.
-    self%currentTime = self%startTime
+  IF(.NOT.self % started)THEN
+    self % started = .TRUE.
+    self % currentTime = self % startTime
   ENDIF
 
-  self%currentTime = self%currentTime + self%tickInterval
+  self % currentTime = self % currentTime + self % tickInterval
 
-  IF(self%currentTime >= self%stopTime)THEN
-    self%stopped = .TRUE.
+  IF(self % currentTime >= self % stopTime)THEN
+    self % stopped = .TRUE.
   ENDIF
 
 ENDSUBROUTINE tick
@@ -1601,18 +1606,18 @@ PURE ELEMENTAL REAL(KIND=real_dp) FUNCTION date2num(d)
   INTEGER :: year
 
   ! d%year must be positive:
-  IF(d%year < 1)THEN
+  IF(d % year < 1)THEN
     date2num = 0
     RETURN
   ENDIF
 
   date2num = 0
-  DO year = 1,d%year-1
+  DO year = 1,d % year-1
     date2num = date2num+daysInYear(year)
   ENDDO
 
-  date2num = date2num+d%yearday()+d%hour*h2d+d%minute*m2d&
-            +(d%second+1d-3*d%millisecond)*s2d
+  date2num = date2num+d % yearday()+d % hour*h2d+d % minute*m2d&
+            +(d % second+1d-3*d % millisecond)*s2d
  
 ENDFUNCTION date2num
 !======================================================================>
@@ -1665,9 +1670,9 @@ PURE ELEMENTAL TYPE(datetime) FUNCTION num2date(num)
   num2date = datetime(year,month,day,hour,minute,second,millisecond)
 
   ! Handle a special case caused by floating-point arithmethic:
-  IF(num2date%millisecond == 1000)THEN
-    num2date%millisecond = 0
-    CALL num2date%addSeconds(1)
+  IF(num2date % millisecond == 1000)THEN
+    num2date % millisecond = 0
+    CALL num2date % addSeconds(1)
   ENDIF
 
 ENDFUNCTION num2date
@@ -1709,12 +1714,12 @@ PURE ELEMENTAL TYPE(datetime) FUNCTION tm2date(ctime)
   TYPE(tm_struct),INTENT(IN) :: ctime
 
   tm2date%millisecond = 0
-  tm2date%second      = ctime%tm_sec
-  tm2date%minute      = ctime%tm_min
-  tm2date%hour        = ctime%tm_hour
-  tm2date%day         = ctime%tm_mday
-  tm2date%month       = ctime%tm_mon+1
-  tm2date%year        = ctime%tm_year+1900
+  tm2date%second      = ctime % tm_sec
+  tm2date%minute      = ctime % tm_min
+  tm2date%hour        = ctime % tm_hour
+  tm2date%day         = ctime % tm_mday
+  tm2date%month       = ctime % tm_mon+1
+  tm2date%year        = ctime % tm_year+1900
   tm2date%tz          = 0
 
 ENDFUNCTION tm2date

@@ -36,7 +36,7 @@ and function [*strptime*](#strptime) that returns a *datetime* instance are avai
 * Tested with the following compilers:
 
    * gfortran 4.7.2, 4.8.2
-   * ifort 13.1.1, 14.0.2
+   * ifort 13.1.1, 14.0.2, 15.0.0
    * pgf90 13.6-0, 13.10-0 (thanks to Timothy Hilton)
    * xlf 14.1.0.5 (thanks to Bjoern Hendrik Fock)
 
