@@ -27,7 +27,7 @@ if you would like to contribute to the code.
 
 * Interfaces to C/C++ routines [*c_strftime*](#c_strftime) and [*c_strptime*](#c_strptime) through `ISO_C_BINDING`.
 Since version `0.3.0`, *datetime*-bound method [*strftime*](#strftime)
-and function [*strptime*](#strptime) that returns a *datetime* instance are available.
+and function [*strptime*](#strptime) that return a *datetime* instance are available.
 
 * Lightweight and portable;
 

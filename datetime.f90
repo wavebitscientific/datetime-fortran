@@ -20,9 +20,9 @@ MODULE datetime_module
 !
 ! MODULE: datetime
 !
-! VERSION: 0.4.2
+! VERSION: 1.0.0
 !
-! LAST UPDATE: 2014-09-14
+! LAST UPDATE: 2014-09-27
 !
 ! AUTHOR: Milan Curcic
 !         University of Miami
@@ -87,6 +87,7 @@ MODULE datetime_module
 !         FUNCTION tm2date
 !
 !======================================================================>
+
 USE,INTRINSIC :: iso_c_binding
 
 IMPLICIT NONE
@@ -97,7 +98,7 @@ PRIVATE
 PUBLIC :: clock
 PUBLIC :: datetime
 PUBLIC :: timedelta
-PUBLIC :: tm_struct
+PUBLIC :: tm_struct ! May become PRIVATE in the future
 
 ! Operators:
 PUBLIC :: OPERATOR(+)
@@ -110,8 +111,8 @@ PUBLIC :: OPERATOR(==)
 PUBLIC :: OPERATOR(/=)
 
 ! Procedures:
-PUBLIC :: c_strftime
-PUBLIC :: c_strptime
+PUBLIC :: c_strftime ! May become PRIVATE in the future
+PUBLIC :: c_strptime ! May become PRIVATE in the future
 PUBLIC :: date2num
 PUBLIC :: datetimeRange
 PUBLIC :: daysInMonth
@@ -582,38 +583,38 @@ PURE ELEMENTAL LOGICAL FUNCTION isValid(self)
 
   isValid = .TRUE.
 
-  IF(self%year < 1)THEN
+  IF(self % year < 1)THEN
     isValid = .FALSE.
     RETURN
   ENDIF
 
-  IF(self%month < 1 .OR. self%month > 12)THEN
+  IF(self % month < 1 .OR. self % month > 12)THEN
     isValid = .FALSE.
     RETURN
   ENDIF
 
-  IF(self%day < 1 .OR. &
-     self%day > daysInMonth(self%month,self%year))THEN
+  IF(self % day < 1 .OR. &
+     self % day > daysInMonth(self % month,self % year))THEN
     isValid = .FALSE.
     RETURN
   ENDIF
  
-  IF(self%hour < 0 .OR. self%hour > 23)THEN    
+  IF(self % hour < 0 .OR. self % hour > 23)THEN    
     isValid = .FALSE.
     RETURN
   ENDIF
 
-  IF(self%minute < 0 .OR. self%minute > 59)THEN    
+  IF(self % minute < 0 .OR. self % minute > 59)THEN    
     isValid = .FALSE.
     RETURN
   ENDIF
 
-  IF(self%second < 0 .OR. self%second > 59)THEN    
+  IF(self % second < 0 .OR. self % second > 59)THEN    
     isValid = .FALSE.
     RETURN
   ENDIF
 
-  IF(self%millisecond < 0 .OR. self%millisecond > 999)THEN    
+  IF(self % millisecond < 0 .OR. self % millisecond > 999)THEN    
     isValid = .FALSE.
     RETURN
   ENDIF
@@ -784,13 +785,8 @@ INTEGER FUNCTION secondsSinceEpoch(self)
   INTEGER           :: rc
   CHARACTER(LEN=11) :: string
 
-  INTEGER :: nullIndex
-
-  string = self % strftime('%s'//C_NULL_CHAR)
-
-  nullIndex = SCAN(string,C_NULL_CHAR)
-
-  READ(UNIT=string(1:nullIndex-1),FMT='(I10)')secondsSinceEpoch
+  string = self % strftime('%s')
+  READ(UNIT=string,FMT='(I10)')secondsSinceEpoch
 
 ENDFUNCTION secondsSinceEpoch
 !======================================================================>
@@ -838,15 +834,15 @@ PURE ELEMENTAL TYPE(tm_struct) FUNCTION tm(self)
   ! ARGUMENTS:
   CLASS(datetime),INTENT(IN) :: self
 
-  tm%tm_sec   = self % second
-  tm%tm_min   = self % minute
-  tm%tm_hour  = self % hour
-  tm%tm_mday  = self % day
-  tm%tm_mon   = self % month-1
-  tm%tm_year  = self % year-1900
-  tm%tm_wday  = self % weekday()
-  tm%tm_yday  = self % yearday()-1
-  tm%tm_isdst = -1
+  tm % tm_sec   = self % second
+  tm % tm_min   = self % minute
+  tm % tm_hour  = self % hour
+  tm % tm_mday  = self % day
+  tm % tm_mon   = self % month-1
+  tm % tm_year  = self % year-1900
+  tm % tm_wday  = self % weekday()
+  tm % tm_yday  = self % yearday()-1
+  tm % tm_isdst = -1
 
 ENDFUNCTION tm
 !======================================================================>
@@ -953,11 +949,11 @@ PURE ELEMENTAL FUNCTION datetime_plus_timedelta(d0,t) RESULT(d)
   ! Initialize:
   d = d0 
 
-  IF(t%milliseconds /= 0)CALL d%addMilliseconds(t%milliseconds)
-  IF(t%seconds      /= 0)CALL d%addSeconds(t%seconds)
-  IF(t%minutes      /= 0)CALL d%addMinutes(t%minutes)
-  IF(t%hours        /= 0)CALL d%addHours(t%hours)
-  IF(t%days         /= 0)CALL d%addDays(t%days)
+  IF(t % milliseconds /= 0)CALL d % addMilliseconds(t % milliseconds)
+  IF(t % seconds      /= 0)CALL d % addSeconds(t % seconds)
+  IF(t % minutes      /= 0)CALL d % addMinutes(t % minutes)
+  IF(t % hours        /= 0)CALL d % addHours(t % hours)
+  IF(t % days         /= 0)CALL d % addDays(t % days)
 
 ENDFUNCTION datetime_plus_timedelta
 !======================================================================>
@@ -1000,11 +996,11 @@ PURE ELEMENTAL FUNCTION datetime_minus_timedelta(d0,t) RESULT(d)
   ! Initialize:
   d = d0
 
-  IF(t%milliseconds /= 0)CALL d%addMilliseconds(-t%milliseconds)
-  IF(t%seconds      /= 0)CALL d%addSeconds(-t%seconds)
-  IF(t%minutes      /= 0)CALL d%addMinutes(-t%minutes)
-  IF(t%hours        /= 0)CALL d%addHours(-t%hours)
-  IF(t%days         /= 0)CALL d%addDays(-t%days)
+  IF(t % milliseconds /= 0)CALL d % addMilliseconds(-t % milliseconds)
+  IF(t % seconds      /= 0)CALL d % addSeconds(-t % seconds)
+  IF(t % minutes      /= 0)CALL d % addMinutes(-t % minutes)
+  IF(t % hours        /= 0)CALL d % addHours(-t % hours)
+  IF(t % days         /= 0)CALL d % addDays(-t % days)
 
 ENDFUNCTION datetime_minus_timedelta
 !======================================================================>
@@ -1064,11 +1060,11 @@ PURE ELEMENTAL FUNCTION timedelta_plus_timedelta(t0,t1) RESULT(t)
   TYPE(timedelta),INTENT(IN) :: t1
   TYPE(timedelta)            :: t
 
-  t = timedelta(days         = t0%days+t1%days,      &
-                hours        = t0%hours+t1%hours,    &
-                minutes      = t0%minutes+t1%minutes,&
-                seconds      = t0%seconds+t1%seconds,&
-                milliseconds = t0%milliseconds+t1%milliseconds)
+  t = timedelta(days         = t0 % days         + t1 % days,   &
+                hours        = t0 % hours        + t1 % hours,  &
+                minutes      = t0 % minutes      + t1 % minutes,&
+                seconds      = t0 % seconds      + t1 % seconds,&
+                milliseconds = t0 % milliseconds + t1 % milliseconds)
 
 ENDFUNCTION timedelta_plus_timedelta
 !======================================================================>
@@ -1107,49 +1103,49 @@ PURE ELEMENTAL LOGICAL FUNCTION gt(d0,d1)
   TYPE(datetime),INTENT(IN) :: d0,d1
 
   ! Year comparison block
-  IF(d0%year > d1%year)THEN
+  IF(d0 % year > d1 % year)THEN
     gt = .TRUE.
-  ELSEIF(d0%year < d1%year)THEN
+  ELSEIF(d0 % year < d1 % year)THEN
     gt = .FALSE.
   ELSE
 
     ! Month comparison block
-    IF(d0%month > d1%month)THEN
+    IF(d0 % month > d1 % month)THEN
       gt = .TRUE.
-    ELSEIF(d0%month < d1%month)THEN
+    ELSEIF(d0 % month < d1 % month)THEN
       gt = .FALSE.
     ELSE
 
       ! Day comparison block
-      IF(d0%day > d1%day)THEN
+      IF(d0 % day > d1 % day)THEN
         gt = .TRUE.
-      ELSEIF(d0%day < d1%day)THEN
+      ELSEIF(d0 % day < d1 % day)THEN
         gt = .FALSE.
       ELSE
 
         ! Hour comparison block
-        IF(d0%hour > d1%hour)THEN
+        IF(d0 % hour > d1 % hour)THEN
           gt = .TRUE.
-        ELSEIF(d0%hour < d1%hour)THEN
+        ELSEIF(d0 % hour < d1 % hour)THEN
           gt = .FALSE.
         ELSE
 
           ! Minute comparison block
-          IF(d0%minute > d1%minute)THEN
+          IF(d0 % minute > d1 % minute)THEN
             gt = .TRUE.
-          ELSEIF(d0%minute < d1%minute)THEN
+          ELSEIF(d0 % minute < d1 % minute)THEN
             gt = .FALSE.
           ELSE
 
             ! Second comparison block
-            IF(d0%second > d1%second)THEN
+            IF(d0 % second > d1 % second)THEN
               gt = .TRUE.
-            ELSEIF(d0%second < d1%second)THEN
+            ELSEIF(d0 % second < d1 % second)THEN
               gt = .FALSE.
             ELSE
 
               ! Millisecond comparison block
-              IF(d0%millisecond > d1%millisecond)THEN
+              IF(d0 % millisecond > d1 % millisecond)THEN
                 gt = .TRUE.
               ELSE
                 gt = .FALSE.
@@ -1196,13 +1192,13 @@ PURE ELEMENTAL LOGICAL FUNCTION eq(d0,d1)
   ! ARGUMENTS:
   TYPE(datetime),INTENT(IN) :: d0,d1
 
-  eq = d0%year        == d1%year   .AND. &
-       d0%month       == d1%month  .AND. &
-       d0%day         == d1%day    .AND. &
-       d0%hour        == d1%hour   .AND. &
-       d0%minute      == d1%minute .AND. &
-       d0%second      == d1%second .AND. &
-       d0%millisecond == d1%millisecond
+  eq = d0 % year        == d1 % year   .AND. &
+       d0 % month       == d1 % month  .AND. &
+       d0 % day         == d1 % day    .AND. &
+       d0 % hour        == d1 % hour   .AND. &
+       d0 % minute      == d1 % minute .AND. &
+       d0 % second      == d1 % second .AND. &
+       d0 % millisecond == d1 % millisecond
 
 ENDFUNCTION eq
 !======================================================================>
@@ -1489,8 +1485,8 @@ PURE ELEMENTAL LOGICAL FUNCTION isLeapYear(year)
   ! ARGUMENTS:
   INTEGER,INTENT(IN) :: year
 
-  isLeapYear = (MOD(year,4)==0.AND..NOT.MOD(year,100)==0)&
-           .OR.(MOD(year,400)==0)
+  isLeapYear = (MOD(year,4) == 0 .AND. .NOT. MOD(year,100) == 0)&
+          .OR. (MOD(year,400) == 0)
 
 ENDFUNCTION isLeapYear
 !======================================================================>
