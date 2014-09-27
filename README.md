@@ -157,7 +157,7 @@ a = datetime(1984,12,10)                            ! 1984-12-10 00:00:00
 a = datetime(month=1,day=1,year=1970)               ! 1970-01-01 00:00:00
 
 ! Or combined:
-a = datetime(2013,2,minute=23,day=12,month=5)       ! 2013-02-05 00:23:00
+a = datetime(2013,2,minute=23,day=5)       ! 2013-02-05 00:23:00
 
 ! With timezone offset:
 a = datetime(2013,2,minute=23,day=12,month=5,tz=-4) ! 2013-02-05 00:23:00 -0400
