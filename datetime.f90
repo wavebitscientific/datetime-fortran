@@ -20,9 +20,9 @@ MODULE datetime_module
 !
 ! MODULE: datetime
 !
-! VERSION: 1.0.0
+! VERSION: 1.0.1
 !
-! LAST UPDATE: 2014-09-27
+! LAST UPDATE: 2014-09-28
 !
 ! AUTHOR: Milan Curcic
 !         University of Miami
@@ -123,21 +123,20 @@ PUBLIC :: strptime
 PUBLIC :: tm2date
 
 ! Constants:
-INTEGER,PARAMETER :: real_sp = KIND(1e0)
 INTEGER,PARAMETER :: real_dp = KIND(1d0)
 
-REAL(KIND=real_sp),PARAMETER :: one = 1e0      ! 1
+REAL(KIND=real_dp),PARAMETER :: one = 1d0      ! 1
 REAL(KIND=real_dp),PARAMETER :: d2h = 24d0     ! day    -> hour
-REAL(KIND=real_dp),PARAMETER :: h2d = 1d0/d2h  ! hour   -> day
+REAL(KIND=real_dp),PARAMETER :: h2d = one/d2h  ! hour   -> day
 REAL(KIND=real_dp),PARAMETER :: d2m = d2h*60d0 ! day    -> minute
-REAL(KIND=real_dp),PARAMETER :: m2d = 1d0/d2m  ! minute -> day
-REAL(KIND=real_dp),PARAMETER :: m2h = 1d0/60d0 ! minute -> hour
+REAL(KIND=real_dp),PARAMETER :: m2d = one/d2m  ! minute -> day
+REAL(KIND=real_dp),PARAMETER :: m2h = one/60d0 ! minute -> hour
 REAL(KIND=real_dp),PARAMETER :: s2d = m2d/60d0 ! second -> day
 REAL(KIND=real_dp),PARAMETER :: d2s = 86400d0  ! day    -> second
 REAL(KIND=real_dp),PARAMETER :: h2s = 3600d0   ! hour   -> second
-REAL(KIND=real_dp),PARAMETER :: s2h = 1d0/h2s  ! second -> hour
+REAL(KIND=real_dp),PARAMETER :: s2h = one/h2s  ! second -> hour
 REAL(KIND=real_dp),PARAMETER :: m2s = 60d0     ! minute -> second
-REAL(KIND=real_dp),PARAMETER :: s2m = 1d0/m2s  ! second -> minute
+REAL(KIND=real_dp),PARAMETER :: s2m = one/m2s  ! second -> minute
  
 ! Maximum string length for strftime.
 ! Constant for now; may become a preprocessor macro later.
@@ -163,7 +162,7 @@ TYPE :: datetime
   INTEGER :: second      = 0 ! Second in minute       [0-59]
   INTEGER :: millisecond = 0 ! Milliseconds in second [0-999]
 
-  REAL(KIND=real_sp) :: tz = 0 ! Timezone offset from UTC [hours]
+  REAL(KIND=real_dp) :: tz = 0 ! Timezone offset from UTC [hours]
 
   CONTAINS
 
