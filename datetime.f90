@@ -20,9 +20,9 @@ MODULE datetime_module
 !
 ! MODULE: datetime
 !
-! VERSION: 1.0.1
+! VERSION: 1.0.2
 !
-! LAST UPDATE: 2014-09-28
+! LAST UPDATE: 2014-09-30
 !
 ! AUTHOR: Milan Curcic
 !         University of Miami
@@ -1022,7 +1022,7 @@ PURE ELEMENTAL FUNCTION datetime_minus_datetime(d0,d1) RESULT(t)
   INTEGER            :: days,hours,minutes,seconds,milliseconds
   INTEGER            :: sign_
 
-  daysDiff = date2num(d0%utc())-date2num(d1%utc())
+  daysDiff = date2num(d0 % utc())-date2num(d1 % utc())
 
   IF(daysDiff < 0)THEN
     sign_ = -1
@@ -1296,11 +1296,11 @@ PURE ELEMENTAL FUNCTION unary_minus_timedelta(t0) RESULT(t)
   TYPE(timedelta),INTENT(IN) :: t0
   TYPE(timedelta)            :: t
 
-  t%days         = -t0%days
-  t%hours        = -t0%hours
-  t%minutes      = -t0%minutes
-  t%seconds      = -t0%seconds
-  t%milliseconds = -t0%milliseconds
+  t % days         = -t0 % days
+  t % hours        = -t0 % hours
+  t % minutes      = -t0 % minutes
+  t % seconds      = -t0 % seconds
+  t % milliseconds = -t0 % milliseconds
 
 ENDFUNCTION unary_minus_timedelta
 !======================================================================>
@@ -1318,7 +1318,7 @@ PURE ELEMENTAL LOGICAL FUNCTION eq_td(td0,td1)
   ! ARGUMENTS:
   TYPE(timedelta),INTENT(IN) :: td0,td1
 
-  eq_td = td0%total_seconds() == td1%total_seconds()
+  eq_td = td0 % total_seconds() == td1 % total_seconds()
 
 ENDFUNCTION eq_td
 !======================================================================>
@@ -1337,7 +1337,7 @@ PURE ELEMENTAL LOGICAL FUNCTION neq_td(td0,td1)
   ! ARGUMENTS:
   TYPE(timedelta),INTENT(IN) :: td0,td1
 
-  neq_td = .NOT. (td0%total_seconds() == td1%total_seconds())
+  neq_td = .NOT. (td0 % total_seconds() == td1 % total_seconds())
 
 ENDFUNCTION neq_td
 !======================================================================>
@@ -1356,7 +1356,7 @@ PURE ELEMENTAL LOGICAL FUNCTION gt_td(td0,td1)
   ! ARGUMENTS:
   TYPE(timedelta),INTENT(IN) :: td0,td1
 
-  gt_td = td0%total_seconds() > td1%total_seconds()
+  gt_td = td0 % total_seconds() > td1 % total_seconds()
 
 ENDFUNCTION gt_td
 !======================================================================>
@@ -1375,7 +1375,7 @@ PURE ELEMENTAL LOGICAL FUNCTION ge_td(td0,td1)
   ! ARGUMENTS:
   TYPE(timedelta),INTENT(IN) :: td0,td1
 
-  ge_td = td0%total_seconds() >= td1%total_seconds()
+  ge_td = td0 % total_seconds() >= td1 % total_seconds()
 
 ENDFUNCTION ge_td
 !======================================================================>
@@ -1393,7 +1393,7 @@ PURE ELEMENTAL LOGICAL FUNCTION lt_td(td0,td1)
   ! ARGUMENTS:
   TYPE(timedelta),INTENT(IN) :: td0,td1
 
-  lt_td = td0%total_seconds() < td1%total_seconds()
+  lt_td = td0 % total_seconds() < td1 % total_seconds()
 
 ENDFUNCTION lt_td
 !======================================================================>
@@ -1412,7 +1412,7 @@ PURE ELEMENTAL LOGICAL FUNCTION le_td(td0,td1)
   ! ARGUMENTS:
   TYPE(timedelta),INTENT(IN) :: td0,td1
 
-  le_td = td0%total_seconds() <= td1%total_seconds()
+  le_td = td0 % total_seconds() <= td1 % total_seconds()
 
 ENDFUNCTION le_td
 !======================================================================>
@@ -1643,14 +1643,14 @@ PURE ELEMENTAL TYPE(datetime) FUNCTION num2date(num)
 
   year = 1
   DO
-    IF(days < daysInYear(year))EXIT
+    IF(INT(days) <= daysInYear(year))EXIT
     days = days-daysInYear(year)
     year = year+1
   ENDDO
 
   month = 1
   DO
-    IF(days <= daysInMonth(month,year))EXIT
+    IF(INT(days) <= daysInMonth(month,year))EXIT
     days = days-daysInMonth(month,year)
     month = month+1
   ENDDO
