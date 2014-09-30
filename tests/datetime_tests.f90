@@ -194,6 +194,15 @@ SUBROUTINE test_datetime
                  'datetime + timedelta(minutes = 1)')
   n = n+1
 
+  !Increment minutes in chunks of 60
+  a = datetime(1980, 1, 1, 0, 0)
+  tests(n) = assert(a + timedelta(hours=-6)      &
+                 == a + timedelta(minutes=-360), &
+                'datetime + timedelta(minutes = -360) /= datetime + timedelta(hours = -6)')
+  n = n+1
+
+
+
   ! Decrement minutes
   tests(n) = assert(datetime(2014,1,1,0,0,0,0) + timedelta(minutes=-1)&
                  == datetime(2013,12,31,23,59,0,0),                   &
@@ -287,6 +296,12 @@ SUBROUTINE test_datetime
                  == datetime(2014,12,31,0,0,0,0),                    &
                  'decrement datetime into December')  
   n = n+1
+
+  tests(n) = assert(datetime(1980, 1, 1,0,0,0,0) + timedelta(minutes=-240)&
+                 == datetime(1979,12,31,20,0,0,0),                    &
+                 'decrement datetime into December (1)')
+  n = n+1
+
   !---------------------------------------------------------------------
 
   WRITE(UNIT=STDOUT,FMT='(71("-"))')
@@ -857,7 +872,14 @@ SUBROUTINE test_datetime
   !---------------------------------------------------------------------
   ! Test date2num and num2date
 
-  a = a % now()
+  a = datetime(1999, 1,1,0,17)
+  tests(n) = assert(a == num2date(date2num(a)),&
+                    'datetime = num2date(date2num(datetime))')
+  n = n+1
+
+  ! Test date2num and num2date
+
+  a = datetime(1999, 1,31,0,17)
   tests(n) = assert(a == num2date(date2num(a)),&
                     'datetime = num2date(date2num(datetime)) (now)')
   n = n+1
@@ -1081,7 +1103,7 @@ PROGRAM run_tests
 ! Unit test driver for datetime-fortran.
 !
 !=======================================================================
-USE datetime_tests 
+USE datetime_tests
 IMPLICIT NONE
 
 CALL test_datetime()

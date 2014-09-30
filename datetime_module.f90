@@ -456,14 +456,17 @@ PURE ELEMENTAL SUBROUTINE addMinutes(self,m)
   INTEGER,        INTENT(IN)    :: m
 
   self % minute = self % minute+m
-  IF(self % minute >= 60)THEN
-    CALL self % addHours(self % minute/60)
-    self % minute = MOD(self % minute,60)
-  ELSEIF(self % minute < 0)THEN
-    CALL self % addHours(self % minute/60-1)
-    self % minute = MOD(self % minute,60)+60
-  ENDIF
-
+  DO
+      IF(self % minute >= 60)THEN
+        CALL self % addHours(self % minute/60)
+        self % minute = MOD(self % minute,60)
+      ELSEIF(self % minute < 0)THEN
+        CALL self % addHours(self % minute/60-1)
+        self % minute = MOD(self % minute,60)+60
+      ELSE
+        EXIT
+      ENDIF
+  ENDDO
 ENDSUBROUTINE addMinutes
 !======================================================================>
 
