@@ -55,11 +55,11 @@ LOGICAL FUNCTION assert(condition,test_name)
   output_test_name = test_name
 
   IF(assert)THEN
-    WRITE(UNIT=STDOUT,FMT='(A)')'test '//output_test_name//&
-      CHAR(27)//'[32m: PASS'//CHAR(27)//'[0m'
+    WRITE(UNIT=STDOUT,FMT='(A)')'test '//output_test_name//': '//&
+      CHAR(27)//'[32mPASS'//CHAR(27)//'[0m'
   ELSE
-    WRITE(UNIT=STDOUT,FMT='(A)')'test '//output_test_name//&
-      CHAR(27)//'[31m: FAIL'//CHAR(27)//'[0m'
+    WRITE(UNIT=STDOUT,FMT='(A)')'test '//output_test_name//': '//&
+      CHAR(27)//'[31mFAIL'//CHAR(27)//'[0m'
   ENDIF
 
 ENDFUNCTION assert
@@ -126,7 +126,6 @@ SUBROUTINE test_datetime
 !
 !=======================================================================
 
-  USE iso_fortran_env
   USE iso_c_binding
 
   TYPE(datetime)  :: a
@@ -135,7 +134,7 @@ SUBROUTINE test_datetime
 
   TYPE(datetime),DIMENSION(:),ALLOCATABLE :: dtRange
 
-  REAL(KIND=real64) :: eps = TINY(1d0)
+  REAL(KIND=KIND(1d0)) :: eps = TINY(1d0)
 
   LOGICAL,DIMENSION(:),ALLOCATABLE :: tests
 
@@ -149,7 +148,7 @@ SUBROUTINE test_datetime
 
   ! Test counter; 
   ! modify if adding new tests
-  ntests = 159
+  ntests = 161
 
   CALL initialize_tests(tests,ntests)
 
@@ -882,10 +881,24 @@ SUBROUTINE test_datetime
 
   a = datetime(1999, 1,31,0,17)
   tests(n) = assert(a == num2date(date2num(a)),&
-                    'datetime = num2date(date2num(datetime))')
+                    'datetime = num2date(date2num(datetime)) (now)')
   n = n+1
 
+<<<<<<< HEAD
 
+=======
+  ! Test for overflowing month
+  a = datetime(2014,11,30,1)
+  tests(n) = assert(a == num2date(date2num(a)),&
+                    'datetime = num2date(date2num(datetime)) (overflowing month)')
+  n = n+1
+
+  ! Test for overflowing year
+  a = datetime(2014,12,31,1)
+  tests(n) = assert(a == num2date(date2num(a)),&
+                    'datetime = num2date(date2num(datetime)) (overflowing year)')
+  n = n+1
+>>>>>>> 85661cbad03619c2bf5611819724c24149edda75
 
   !---------------------------------------------------------------------
     

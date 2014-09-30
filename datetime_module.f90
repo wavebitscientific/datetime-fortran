@@ -20,9 +20,9 @@ MODULE datetime_module
 !
 ! MODULE: datetime
 !
-! VERSION: 1.0.0
+! VERSION: 1.0.2
 !
-! LAST UPDATE: 2014-09-27
+! LAST UPDATE: 2014-09-30
 !
 ! AUTHOR: Milan Curcic
 !         University of Miami
@@ -123,21 +123,20 @@ PUBLIC :: strptime
 PUBLIC :: tm2date
 
 ! Constants:
-INTEGER,PARAMETER :: real_sp = KIND(1e0)
 INTEGER,PARAMETER :: real_dp = KIND(1d0)
 
-REAL(KIND=real_sp),PARAMETER :: one = 1e0      ! 1
+REAL(KIND=real_dp),PARAMETER :: one = 1d0      ! 1
 REAL(KIND=real_dp),PARAMETER :: d2h = 24d0     ! day    -> hour
-REAL(KIND=real_dp),PARAMETER :: h2d = 1d0/d2h  ! hour   -> day
+REAL(KIND=real_dp),PARAMETER :: h2d = one/d2h  ! hour   -> day
 REAL(KIND=real_dp),PARAMETER :: d2m = d2h*60d0 ! day    -> minute
-REAL(KIND=real_dp),PARAMETER :: m2d = 1d0/d2m  ! minute -> day
-REAL(KIND=real_dp),PARAMETER :: m2h = 1d0/60d0 ! minute -> hour
+REAL(KIND=real_dp),PARAMETER :: m2d = one/d2m  ! minute -> day
+REAL(KIND=real_dp),PARAMETER :: m2h = one/60d0 ! minute -> hour
 REAL(KIND=real_dp),PARAMETER :: s2d = m2d/60d0 ! second -> day
 REAL(KIND=real_dp),PARAMETER :: d2s = 86400d0  ! day    -> second
 REAL(KIND=real_dp),PARAMETER :: h2s = 3600d0   ! hour   -> second
-REAL(KIND=real_dp),PARAMETER :: s2h = 1d0/h2s  ! second -> hour
+REAL(KIND=real_dp),PARAMETER :: s2h = one/h2s  ! second -> hour
 REAL(KIND=real_dp),PARAMETER :: m2s = 60d0     ! minute -> second
-REAL(KIND=real_dp),PARAMETER :: s2m = 1d0/m2s  ! second -> minute
+REAL(KIND=real_dp),PARAMETER :: s2m = one/m2s  ! second -> minute
  
 ! Maximum string length for strftime.
 ! Constant for now; may become a preprocessor macro later.
@@ -163,7 +162,7 @@ TYPE :: datetime
   INTEGER :: second      = 0 ! Second in minute       [0-59]
   INTEGER :: millisecond = 0 ! Milliseconds in second [0-999]
 
-  REAL(KIND=real_sp) :: tz = 0 ! Timezone offset from UTC [hours]
+  REAL(KIND=real_dp) :: tz = 0 ! Timezone offset from UTC [hours]
 
   CONTAINS
 
@@ -1026,7 +1025,7 @@ PURE ELEMENTAL FUNCTION datetime_minus_datetime(d0,d1) RESULT(t)
   INTEGER            :: days,hours,minutes,seconds,milliseconds
   INTEGER            :: sign_
 
-  daysDiff = date2num(d0%utc())-date2num(d1%utc())
+  daysDiff = date2num(d0 % utc())-date2num(d1 % utc())
 
   IF(daysDiff < 0)THEN
     sign_ = -1
@@ -1300,11 +1299,11 @@ PURE ELEMENTAL FUNCTION unary_minus_timedelta(t0) RESULT(t)
   TYPE(timedelta),INTENT(IN) :: t0
   TYPE(timedelta)            :: t
 
-  t%days         = -t0%days
-  t%hours        = -t0%hours
-  t%minutes      = -t0%minutes
-  t%seconds      = -t0%seconds
-  t%milliseconds = -t0%milliseconds
+  t % days         = -t0 % days
+  t % hours        = -t0 % hours
+  t % minutes      = -t0 % minutes
+  t % seconds      = -t0 % seconds
+  t % milliseconds = -t0 % milliseconds
 
 ENDFUNCTION unary_minus_timedelta
 !======================================================================>
@@ -1322,7 +1321,7 @@ PURE ELEMENTAL LOGICAL FUNCTION eq_td(td0,td1)
   ! ARGUMENTS:
   TYPE(timedelta),INTENT(IN) :: td0,td1
 
-  eq_td = td0%total_seconds() == td1%total_seconds()
+  eq_td = td0 % total_seconds() == td1 % total_seconds()
 
 ENDFUNCTION eq_td
 !======================================================================>
@@ -1341,7 +1340,7 @@ PURE ELEMENTAL LOGICAL FUNCTION neq_td(td0,td1)
   ! ARGUMENTS:
   TYPE(timedelta),INTENT(IN) :: td0,td1
 
-  neq_td = .NOT. (td0%total_seconds() == td1%total_seconds())
+  neq_td = .NOT. (td0 % total_seconds() == td1 % total_seconds())
 
 ENDFUNCTION neq_td
 !======================================================================>
@@ -1360,7 +1359,7 @@ PURE ELEMENTAL LOGICAL FUNCTION gt_td(td0,td1)
   ! ARGUMENTS:
   TYPE(timedelta),INTENT(IN) :: td0,td1
 
-  gt_td = td0%total_seconds() > td1%total_seconds()
+  gt_td = td0 % total_seconds() > td1 % total_seconds()
 
 ENDFUNCTION gt_td
 !======================================================================>
@@ -1379,7 +1378,7 @@ PURE ELEMENTAL LOGICAL FUNCTION ge_td(td0,td1)
   ! ARGUMENTS:
   TYPE(timedelta),INTENT(IN) :: td0,td1
 
-  ge_td = td0%total_seconds() >= td1%total_seconds()
+  ge_td = td0 % total_seconds() >= td1 % total_seconds()
 
 ENDFUNCTION ge_td
 !======================================================================>
@@ -1397,7 +1396,7 @@ PURE ELEMENTAL LOGICAL FUNCTION lt_td(td0,td1)
   ! ARGUMENTS:
   TYPE(timedelta),INTENT(IN) :: td0,td1
 
-  lt_td = td0%total_seconds() < td1%total_seconds()
+  lt_td = td0 % total_seconds() < td1 % total_seconds()
 
 ENDFUNCTION lt_td
 !======================================================================>
@@ -1416,7 +1415,7 @@ PURE ELEMENTAL LOGICAL FUNCTION le_td(td0,td1)
   ! ARGUMENTS:
   TYPE(timedelta),INTENT(IN) :: td0,td1
 
-  le_td = td0%total_seconds() <= td1%total_seconds()
+  le_td = td0 % total_seconds() <= td1 % total_seconds()
 
 ENDFUNCTION le_td
 !======================================================================>
@@ -1647,14 +1646,14 @@ PURE ELEMENTAL TYPE(datetime) FUNCTION num2date(num)
 
   year = 1
   DO
-    IF(days < daysInYear(year))EXIT
+    IF(INT(days) <= daysInYear(year))EXIT
     days = days-daysInYear(year)
     year = year+1
   ENDDO
 
   month = 1
   DO
-    IF(days <= daysInMonth(month,year))EXIT
+    IF(INT(days) <= daysInMonth(month,year))EXIT
     days = days-daysInMonth(month,year)
     month = month+1
   ENDDO
