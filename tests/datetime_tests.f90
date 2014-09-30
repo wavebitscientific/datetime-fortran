@@ -1072,16 +1072,16 @@ ENDMODULE datetime_tests
 
 
 
-PROGRAM run_tests
-!=======================================================================
+!PROGRAM run_tests
+!!=======================================================================
+!!
+!! Unit test driver for datetime-fortran.
+!!
+!!=======================================================================
+!USE datetime_tests
+!IMPLICIT NONE
 !
-! Unit test driver for datetime-fortran.
+!CALL test_datetime()
 !
-!=======================================================================
-USE datetime_tests
-IMPLICIT NONE
-
-CALL test_datetime()
-
-ENDPROGRAM run_tests
-!=======================================================================
+!ENDPROGRAM run_tests
+!!=======================================================================
