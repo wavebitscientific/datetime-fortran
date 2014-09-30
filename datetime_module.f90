@@ -457,15 +457,13 @@ PURE ELEMENTAL SUBROUTINE addMinutes(self,m)
   INTEGER,        INTENT(IN)    :: m
 
   self % minute = self % minute+m
-  DO
+  DO WHILE (self % minute >= 60 .or. self % minute < 0)
       IF(self % minute >= 60)THEN
         CALL self % addHours(self % minute/60)
         self % minute = MOD(self % minute,60)
       ELSEIF(self % minute < 0)THEN
         CALL self % addHours(self % minute/60-1)
         self % minute = MOD(self % minute,60)+60
-      ELSE
-        EXIT
       ENDIF
   ENDDO
 ENDSUBROUTINE addMinutes
@@ -486,14 +484,17 @@ PURE ELEMENTAL SUBROUTINE addHours(self,h)
   INTEGER,        INTENT(IN)    :: h
 
   self % hour = self % hour+h
-  IF(self % hour >= 24)THEN
-    CALL self % addDays(self % hour/24)
-    self % hour = MOD(self % hour,24)
-  ELSEIF(self % hour < 0)THEN
-    CALL self % addDays(self % hour/24-1)
-    self % hour = MOD(self % hour,24)+24
-  ENDIF
-
+  DO WHILE (self % hour >= 24 .or. self % hour < 0)
+      IF(self % hour >= 24)THEN
+        CALL self % addDays(self % hour/24)
+        self % hour = MOD(self % hour,24)
+      ELSEIF(self % hour < 0)THEN
+        CALL self % addDays(self % hour/24-1)
+        self % hour = MOD(self % hour,24)+24
+      ELSE
+        EXIT
+      ENDIF
+  ENDDO
 ENDSUBROUTINE addHours
 !======================================================================>
 
@@ -514,7 +515,8 @@ PURE ELEMENTAL SUBROUTINE addDays(self,d)
   INTEGER :: daysInCurrentMonth
 
   self % day = self % day+d
-  DO
+  daysInCurrentMonth = daysInMonth(self % month,self % year)
+  DO WHILE (self % day > daysInCurrentMonth .or. self % day < 1)
     daysInCurrentMonth = daysInMonth(self % month,self % year)
     IF(self % day > daysInCurrentMonth)THEN
       self % day = self % day-daysInCurrentMonth
@@ -530,8 +532,6 @@ PURE ELEMENTAL SUBROUTINE addDays(self,d)
         self % month = 12+MOD(self % month,12)
       ENDIF
       self % day = self % day+daysInMonth(self % month,self % year)
-    ELSE
-      EXIT
     ENDIF 
   ENDDO
 
