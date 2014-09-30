@@ -884,9 +884,6 @@ SUBROUTINE test_datetime
                     'datetime = num2date(date2num(datetime)) (now)')
   n = n+1
 
-<<<<<<< HEAD
-
-=======
   ! Test for overflowing month
   a = datetime(2014,11,30,1)
   tests(n) = assert(a == num2date(date2num(a)),&
@@ -898,7 +895,6 @@ SUBROUTINE test_datetime
   tests(n) = assert(a == num2date(date2num(a)),&
                     'datetime = num2date(date2num(datetime)) (overflowing year)')
   n = n+1
->>>>>>> 85661cbad03619c2bf5611819724c24149edda75
 
   !---------------------------------------------------------------------
     
@@ -1101,16 +1097,16 @@ ENDMODULE datetime_tests
 
 
 
-!PROGRAM run_tests
-!!=======================================================================
-!!
-!! Unit test driver for datetime-fortran.
-!!
-!!=======================================================================
-!USE datetime_tests
-!IMPLICIT NONE
+PROGRAM run_tests
+!=======================================================================
 !
-!CALL test_datetime()
+! Unit test driver for datetime-fortran.
 !
-!ENDPROGRAM run_tests
-!!=======================================================================
+!=======================================================================
+USE datetime_tests
+IMPLICIT NONE
+
+CALL test_datetime()
+
+ENDPROGRAM run_tests
+!=======================================================================
