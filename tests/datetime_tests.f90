@@ -297,6 +297,12 @@ SUBROUTINE test_datetime
                  == datetime(2014,12,31,0,0,0,0),                    &
                  'decrement datetime into December')  
   n = n+1
+
+  tests(n) = assert(datetime(1980, 1, 1,0,0,0,0) + timedelta(minutes=-240)&
+                 == datetime(1979,12,31,20,0,0,0),                    &
+                 'decrement datetime into December (1)')
+  n = n+1
+
   !---------------------------------------------------------------------
 
   WRITE(UNIT=STDOUT,FMT='(71("-"))')
@@ -867,10 +873,20 @@ SUBROUTINE test_datetime
   !---------------------------------------------------------------------
   ! Test date2num and num2date
 
-  a = a % now()
+  a = datetime(1999, 1,1,0,17)
   tests(n) = assert(a == num2date(date2num(a)),&
                     'datetime = num2date(date2num(datetime))')
   n = n+1
+
+  ! Test date2num and num2date
+
+  a = datetime(1999, 1,31,0,17)
+  tests(n) = assert(a == num2date(date2num(a)),&
+                    'datetime = num2date(date2num(datetime))')
+  n = n+1
+
+
+
   !---------------------------------------------------------------------
     
   WRITE(UNIT=STDOUT,FMT='(71("-"))')
