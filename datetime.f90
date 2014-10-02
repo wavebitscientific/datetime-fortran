@@ -20,9 +20,9 @@ MODULE datetime_module
 !
 ! MODULE: datetime
 !
-! VERSION: 1.0.2
+! VERSION: 1.0.3
 !
-! LAST UPDATE: 2014-09-30
+! LAST UPDATE: 2014-10-01
 !
 ! AUTHOR: Milan Curcic
 !         University of Miami
@@ -404,13 +404,17 @@ PURE ELEMENTAL SUBROUTINE addMilliseconds(self,ms)
 
   self % millisecond = self % millisecond+ms
 
-  IF(self % millisecond >= 1000)THEN
-    CALL self % addSeconds(self % millisecond/1000)
-    self % millisecond = MOD(self % millisecond,1000)
-  ELSEIF(self % millisecond < 0)THEN
-    CALL self % addSeconds(self % millisecond/1000-1)
-    self % millisecond = MOD(self % millisecond,1000)+1000
-  ENDIF
+  DO
+    IF(self % millisecond >= 1000)THEN
+      CALL self % addSeconds(self % millisecond/1000)
+      self % millisecond = MOD(self % millisecond,1000)
+    ELSEIF(self % millisecond < 0)THEN
+      CALL self % addSeconds(self % millisecond/1000-1)
+      self % millisecond = MOD(self % millisecond,1000)+1000
+    ELSE
+      EXIT
+    ENDIF
+  ENDDO
 
 ENDSUBROUTINE addMilliseconds
 !======================================================================>
@@ -430,13 +434,18 @@ PURE ELEMENTAL SUBROUTINE addSeconds(self,s)
   INTEGER,        INTENT(IN)    :: s
 
   self % second = self % second+s
-  IF(self % second >= 60)THEN
-    CALL self % addMinutes(self % second/60)
-    self % second = MOD(self % second,60)
-  ELSEIF(self % second < 0)THEN
-    CALL self % addMinutes(self % second/60-1)
-    self % second = MOD(self % second,60)+60
-  ENDIF
+
+  DO
+    IF(self % second >= 60)THEN
+      CALL self % addMinutes(self % second/60)
+      self % second = MOD(self % second,60)
+    ELSEIF(self % second < 0)THEN
+      CALL self % addMinutes(self % second/60-1)
+      self % second = MOD(self % second,60)+60
+    ELSE
+      EXIT
+    ENDIF
+  ENDDO
 
 ENDSUBROUTINE addSeconds
 !======================================================================>
@@ -456,13 +465,18 @@ PURE ELEMENTAL SUBROUTINE addMinutes(self,m)
   INTEGER,        INTENT(IN)    :: m
 
   self % minute = self % minute+m
-  IF(self % minute >= 60)THEN
-    CALL self % addHours(self % minute/60)
-    self % minute = MOD(self % minute,60)
-  ELSEIF(self % minute < 0)THEN
-    CALL self % addHours(self % minute/60-1)
-    self % minute = MOD(self % minute,60)+60
-  ENDIF
+
+  DO
+    IF(self % minute >= 60)THEN
+      CALL self % addHours(self % minute/60)
+      self % minute = MOD(self % minute,60)
+    ELSEIF(self % minute < 0)THEN
+      CALL self % addHours(self % minute/60-1)
+      self % minute = MOD(self % minute,60)+60
+    ELSE
+      EXIT
+    ENDIF
+  ENDDO
 
 ENDSUBROUTINE addMinutes
 !======================================================================>
@@ -482,13 +496,18 @@ PURE ELEMENTAL SUBROUTINE addHours(self,h)
   INTEGER,        INTENT(IN)    :: h
 
   self % hour = self % hour+h
-  IF(self % hour >= 24)THEN
-    CALL self % addDays(self % hour/24)
-    self % hour = MOD(self % hour,24)
-  ELSEIF(self % hour < 0)THEN
-    CALL self % addDays(self % hour/24-1)
-    self % hour = MOD(self % hour,24)+24
-  ENDIF
+
+  DO
+    IF(self % hour >= 24)THEN
+      CALL self % addDays(self % hour/24)
+      self % hour = MOD(self % hour,24)
+    ELSEIF(self % hour < 0)THEN
+      CALL self % addDays(self % hour/24-1)
+      self % hour = MOD(self % hour,24)+24
+    ELSE
+      EXIT
+    ENDIF
+  ENDDO
 
 ENDSUBROUTINE addHours
 !======================================================================>
