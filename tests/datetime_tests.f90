@@ -148,7 +148,7 @@ SUBROUTINE test_datetime
 
   ! Test counter; 
   ! modify if adding new tests
-  ntests = 161
+  ntests = 169
 
   CALL initialize_tests(tests,ntests)
 
@@ -215,13 +215,51 @@ SUBROUTINE test_datetime
   ! Increment days
   tests(n) = assert(datetime(2014,1,1,0,0,0,0) + timedelta(days= 1)&
                  == datetime(2014,1,2,0,0,0,0),                    &
-                 'datetime + timedelta(dasy = 1)')
+                 'datetime + timedelta(days = 1)')
   n = n+1
 
+  ! Decrement days
   tests(n) = assert(datetime(2014,1,1,0,0,0,0) + timedelta(days=-1)&
                  == datetime(2013,12,31,0,0,0,0),                  &
                  'datetime + timedelta(days = -1)')
   n = n+1
+
+  ! Test various overflow situations
+
+  a = datetime(2014,1,1,0,0,0)
+
+  tests(n) = assert(a+timedelta(seconds=3) == a+timedelta(milliseconds=3000),&
+                    'Seconds overflow in addMilliseconds (3000 milliseconds)')
+  n = n+1
+
+  tests(n) = assert(a-timedelta(seconds=3) == a-timedelta(milliseconds=3000),&
+                    'Seconds overflow in addMilliseconds (-3000 milliseconds)')
+  n = n+1
+
+  tests(n) = assert(a+timedelta(minutes=6) == a+timedelta(seconds=360),&
+                    'Minutes overflow in addSeconds (360 seconds)')
+  n = n+1
+
+  tests(n) = assert(a-timedelta(minutes=6) == a-timedelta(seconds=360),&
+                    'Minutes overflow in addSeconds (-360 seconds)')
+  n = n+1
+
+  tests(n) = assert(a+timedelta(hours=6) == a+timedelta(minutes=360),&
+                    'Hours overflow in addMinutes (360 minutes)')
+  n = n+1
+
+  tests(n) = assert(a-timedelta(hours=6) == a-timedelta(minutes=360),&
+                    'Hours overflow in addMinutes (-360 minutes)')
+  n = n+1
+
+  tests(n) = assert(a+timedelta(days=3) == a+timedelta(hours=72),&
+                    'Days overflow in addHours (72 hours)')
+  n = n+1
+
+  tests(n) = assert(a-timedelta(days=3) == a-timedelta(hours=72),&
+                    'Days overflow in addHours (-72 hours)')
+  n = n+1
+
   !---------------------------------------------------------------------
 
   WRITE(UNIT=STDOUT,FMT='(71("-"))')
