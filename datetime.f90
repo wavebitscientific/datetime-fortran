@@ -18,11 +18,9 @@
 MODULE datetime_module
 !======================================================================>
 !
-! MODULE: datetime
+! VERSION: 1.0.4
 !
-! VERSION: 1.0.3
-!
-! LAST UPDATE: 2014-10-01
+! LAST UPDATE: 2014-10-03
 !
 ! AUTHOR: Milan Curcic
 !         University of Miami
@@ -88,7 +86,7 @@ MODULE datetime_module
 !
 !======================================================================>
 
-USE,INTRINSIC :: iso_c_binding
+USE,INTRINSIC :: iso_c_binding,ONLY:c_char,c_int,c_null_char
 
 IMPLICIT NONE
 
@@ -348,6 +346,8 @@ INTERFACE
     IMPORT :: c_char,c_int
     IMPORT :: tm_struct
 
+    IMPLICIT NONE
+
     ! ARGUMENTS:
     CHARACTER(KIND=c_char),DIMENSION(*),INTENT(OUT) :: str
     INTEGER(KIND=c_int),VALUE,          INTENT(IN)  :: slen
@@ -371,6 +371,8 @@ INTERFACE
 
     IMPORT :: c_char,c_int
     IMPORT :: tm_struct
+
+    IMPLICIT NONE
 
     ! ARGUMENTS:
     CHARACTER(KIND=c_char),DIMENSION(*),INTENT(IN)  :: str
@@ -772,7 +774,7 @@ FUNCTION isocalendar(self)
   INTEGER              :: rc
   CHARACTER(LEN=20)    :: string
 
-  rc = c_strftime(string,LEN(string),'%G %V %u'//C_NULL_CHAR,&
+  rc = c_strftime(string,LEN(string),'%G %V %u'//c_null_char,&
                   self % tm())  
 
   READ(UNIT=string(1:4),FMT='(I4)')year
@@ -830,7 +832,7 @@ FUNCTION strftime(self,format)
   TYPE(tm_struct)          :: tm
 
   resultString = ""
-  rc = c_strftime(resultString,MAXSTRLEN,TRIM(format)//C_NULL_CHAR,&
+  rc = c_strftime(resultString,MAXSTRLEN,TRIM(format)//c_null_char,&
                   self % tm())
   strftime = TRIM(resultString)
   n = LEN(strftime)
@@ -1709,7 +1711,7 @@ TYPE(datetime) FUNCTION strptime(str,format)
   INTEGER         :: rc
   TYPE(tm_struct) :: tm
 
-  rc = c_strptime(TRIM(str)//C_NULL_CHAR,TRIM(format)//C_NULL_CHAR,tm)
+  rc = c_strptime(TRIM(str)//c_null_char,TRIM(format)//c_null_char,tm)
   strptime = tm2date(tm)
 
 ENDFUNCTION strptime
