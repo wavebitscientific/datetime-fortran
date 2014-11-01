@@ -128,7 +128,7 @@ SUBROUTINE test_datetime
 
   USE iso_c_binding
 
-  TYPE(datetime)  :: a
+  TYPE(datetime)  :: a,b
   TYPE(timedelta) :: td
   TYPE(clock)     :: c
 
@@ -148,7 +148,7 @@ SUBROUTINE test_datetime
 
   ! Test counter; 
   ! modify if adding new tests
-  ntests = 169
+  ntests = 171
 
   CALL initialize_tests(tests,ntests)
 
@@ -365,6 +365,16 @@ SUBROUTINE test_datetime
   tests(n) = assert(datetime(2014,1,2,3,4,5,6) &
                  == datetime(2014,1,2,3,4,5,6),&
                  'datetime == datetime')
+  n = n+1
+
+  tests(n) = assert(datetime(2014,1,2,9,4,5,6,tz=6) &
+                 == datetime(2014,1,2,3,4,5,6,tz=0),&
+                 'datetime == datetime, timezone test 1')
+  n = n+1
+
+  tests(n) = assert(datetime(2014,1,2,3,4,5,6,tz=-6) &
+                 == datetime(2014,1,2,9,4,5,6,tz= 0),&
+                 'datetime == datetime, timezone test 2')
   n = n+1
 
   tests(n) = assert(datetime(2013,1,2,3,4,5,6) &
@@ -660,13 +670,15 @@ SUBROUTINE test_datetime
   n = n+1
 
   a = datetime(2014,1,1,0,0,0,tz=6)
-  tests(n) = assert(a % utc() == a-timedelta(hours=6),&
-                    'datetime % utc(), +0600')
+  b = a-timedelta(hours=6)
+  b % tz = 0
+  tests(n) = assert(a % utc() == b,'datetime % utc(), +0600')
   n = n+1
 
   a = datetime(2014,1,1,0,0,0,tz=-6)
-  tests(n) = assert(a % utc() == a+timedelta(hours=6),&
-                    'datetime % utc(), -0600')
+  b = a+timedelta(hours=6)
+  b % tz = 0
+  tests(n) = assert(a % utc() == b,'datetime % utc(), -0600')
   n = n+1
   !---------------------------------------------------------------------
 
@@ -896,20 +908,20 @@ SUBROUTINE test_datetime
   ! Test date2num and num2date
 
   a = a % now()
-  tests(n) = assert(a == num2date(date2num(a)),&
-                    'datetime = num2date(date2num(datetime)) (now)')
+  tests(n) = assert(a % utc() == num2date(date2num(a)),&
+                    'datetime % utc() == num2date(date2num(datetime)) (now)')
   n = n+1
 
   ! Test for overflowing month
   a = datetime(2014,11,30,1)
   tests(n) = assert(a == num2date(date2num(a)),&
-                    'datetime = num2date(date2num(datetime)) (overflowing month)')
+                    'datetime == num2date(date2num(datetime)) (overflowing month)')
   n = n+1
 
   ! Test for overflowing year
   a = datetime(2014,12,31,1)
   tests(n) = assert(a == num2date(date2num(a)),&
-                    'datetime = num2date(date2num(datetime)) (overflowing year)')
+                    'datetime == num2date(date2num(datetime)) (overflowing year)')
   n = n+1
 
   !---------------------------------------------------------------------
