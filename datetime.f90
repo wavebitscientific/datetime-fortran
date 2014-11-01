@@ -18,9 +18,9 @@
 MODULE datetime_module
 !======================================================================>
 !
-! VERSION: 1.0.4
+! VERSION: 1.0.5
 !
-! LAST UPDATE: 2014-10-03
+! LAST UPDATE: 2014-11-01
 !
 ! AUTHOR: Milan Curcic
 !         University of Miami
@@ -120,9 +120,11 @@ PUBLIC :: num2date
 PUBLIC :: strptime
 PUBLIC :: tm2date
 
-! Constants:
+! 8-byte floating point kind:
 INTEGER,PARAMETER :: real_dp = KIND(1d0)
 
+! Constant multipliers that transform a number 
+! of some time unit to another:
 REAL(KIND=real_dp),PARAMETER :: one = 1d0      ! 1
 REAL(KIND=real_dp),PARAMETER :: d2h = 24d0     ! day    -> hour
 REAL(KIND=real_dp),PARAMETER :: h2d = one/d2h  ! hour   -> day
@@ -659,6 +661,7 @@ TYPE(datetime) FUNCTION now(self)
 
   INTEGER :: hour,minute
 
+  ! Obtain local machine time zone information
   CALL date_and_time(zone=zone,values=values)
 
   READ(UNIT=zone(1:3),FMT='(I3)')hour
@@ -1043,7 +1046,7 @@ PURE ELEMENTAL FUNCTION datetime_minus_datetime(d0,d1) RESULT(t)
   INTEGER            :: days,hours,minutes,seconds,milliseconds
   INTEGER            :: sign_
 
-  daysDiff = date2num(d0 % utc())-date2num(d1 % utc())
+  daysDiff = date2num(d0)-date2num(d1)
 
   IF(daysDiff < 0)THEN
     sign_ = -1
@@ -1122,50 +1125,56 @@ PURE ELEMENTAL LOGICAL FUNCTION gt(d0,d1)
   ! ARGUMENTS:
   TYPE(datetime),INTENT(IN) :: d0,d1
 
+  TYPE(datetime) :: d0_utc,d1_utc
+
+  ! Convert to UTC before making comparison
+  d0_utc = d0 % utc()
+  d1_utc = d1 % utc()
+
   ! Year comparison block
-  IF(d0 % year > d1 % year)THEN
+  IF(d0_utc % year > d1_utc % year)THEN
     gt = .TRUE.
-  ELSEIF(d0 % year < d1 % year)THEN
+  ELSEIF(d0_utc % year < d1_utc % year)THEN
     gt = .FALSE.
   ELSE
 
     ! Month comparison block
-    IF(d0 % month > d1 % month)THEN
+    IF(d0_utc % month > d1_utc % month)THEN
       gt = .TRUE.
-    ELSEIF(d0 % month < d1 % month)THEN
+    ELSEIF(d0_utc % month < d1_utc % month)THEN
       gt = .FALSE.
     ELSE
 
       ! Day comparison block
-      IF(d0 % day > d1 % day)THEN
+      IF(d0_utc % day > d1_utc % day)THEN
         gt = .TRUE.
-      ELSEIF(d0 % day < d1 % day)THEN
+      ELSEIF(d0_utc % day < d1_utc % day)THEN
         gt = .FALSE.
       ELSE
 
         ! Hour comparison block
-        IF(d0 % hour > d1 % hour)THEN
+        IF(d0_utc % hour > d1_utc % hour)THEN
           gt = .TRUE.
-        ELSEIF(d0 % hour < d1 % hour)THEN
+        ELSEIF(d0_utc % hour < d1_utc % hour)THEN
           gt = .FALSE.
         ELSE
 
           ! Minute comparison block
-          IF(d0 % minute > d1 % minute)THEN
+          IF(d0_utc % minute > d1_utc % minute)THEN
             gt = .TRUE.
-          ELSEIF(d0 % minute < d1 % minute)THEN
+          ELSEIF(d0_utc % minute < d1_utc % minute)THEN
             gt = .FALSE.
           ELSE
 
             ! Second comparison block
-            IF(d0 % second > d1 % second)THEN
+            IF(d0_utc % second > d1_utc % second)THEN
               gt = .TRUE.
-            ELSEIF(d0 % second < d1 % second)THEN
+            ELSEIF(d0_utc % second < d1_utc % second)THEN
               gt = .FALSE.
             ELSE
 
               ! Millisecond comparison block
-              IF(d0 % millisecond > d1 % millisecond)THEN
+              IF(d0_utc % millisecond > d1_utc % millisecond)THEN
                 gt = .TRUE.
               ELSE
                 gt = .FALSE.
@@ -1212,13 +1221,19 @@ PURE ELEMENTAL LOGICAL FUNCTION eq(d0,d1)
   ! ARGUMENTS:
   TYPE(datetime),INTENT(IN) :: d0,d1
 
-  eq = d0 % year        == d1 % year   .AND. &
-       d0 % month       == d1 % month  .AND. &
-       d0 % day         == d1 % day    .AND. &
-       d0 % hour        == d1 % hour   .AND. &
-       d0 % minute      == d1 % minute .AND. &
-       d0 % second      == d1 % second .AND. &
-       d0 % millisecond == d1 % millisecond
+  TYPE(datetime) :: d0_utc,d1_utc
+
+  ! Convert to UTC before making comparison
+  d0_utc = d0 % utc()
+  d1_utc = d1 % utc()
+
+  eq = d0_utc % year        == d1_utc % year   .AND. &
+       d0_utc % month       == d1_utc % month  .AND. &
+       d0_utc % day         == d1_utc % day    .AND. &
+       d0_utc % hour        == d1_utc % hour   .AND. &
+       d0_utc % minute      == d1_utc % minute .AND. &
+       d0_utc % second      == d1_utc % second .AND. &
+       d0_utc % millisecond == d1_utc % millisecond
 
 ENDFUNCTION eq
 !======================================================================>
@@ -1611,29 +1626,39 @@ ENDFUNCTION daysInYear
 PURE ELEMENTAL REAL(KIND=real_dp) FUNCTION date2num(d)
 !======================================================================>
 !
-! Given a datetime instance d, returns number of days
-! since 0001-01-01 00:00:00.
+! Given a datetime instance d, returns number of days since 
+! 0001-01-01 00:00:00.
+!
+! Since version 1.0.5, this function is timezone aware, i.e. we first
+! switch to UTC time, then we evaluate the number of days. This may
+! affect some of the existing programs using this function.
 !
 !======================================================================>
 
   ! ARGUMENTS:
   TYPE(datetime),INTENT(IN) :: d
 
+  TYPE(datetime) :: d_utc
   INTEGER :: year
 
-  ! d%year must be positive:
-  IF(d % year < 1)THEN
+  ! Convert to UTC first
+  d_utc = d % utc()
+
+  ! d_utc % year must be positive:
+  IF(d_utc % year < 1)THEN
     date2num = 0
     RETURN
   ENDIF
 
   date2num = 0
-  DO year = 1,d % year-1
-    date2num = date2num+daysInYear(year)
+  DO year = 1,d_utc % year-1
+    date2num = date2num + daysInYear(year)
   ENDDO
 
-  date2num = date2num+d % yearday()+d % hour*h2d+d % minute*m2d&
-            +(d % second+1d-3*d % millisecond)*s2d
+  date2num = date2num + d_utc % yearday()  &
+                      + d_utc % hour*h2d   &
+                      + d_utc % minute*m2d &
+                      + (d_utc % second+1d-3*d_utc % millisecond)*s2d
  
 ENDFUNCTION date2num
 !======================================================================>
@@ -1683,7 +1708,7 @@ PURE ELEMENTAL TYPE(datetime) FUNCTION num2date(num)
   second      = INT(totseconds-hour*h2s-minute*m2s)
   millisecond = NINT((totseconds-INT(totseconds))*1d3)
 
-  num2date = datetime(year,month,day,hour,minute,second,millisecond)
+  num2date = datetime(year,month,day,hour,minute,second,millisecond,tz=0)
 
   ! Handle a special case caused by floating-point arithmethic:
   IF(num2date % millisecond == 1000)THEN
