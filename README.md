@@ -1257,6 +1257,10 @@ The resulting `timedelta`thus  includes the difference between timezones.
 [*datetime*](#datetime) and [*timedelta*](#timedelta) objects:
 `==`, `/=`, `>`, `>=`, `<` and `<=`.
 
+Since version 1.0.5, all comparison operators respect the timezone
+parameter of the datetime instances, so the operands are first 
+adjusted to UTC time before making the comparison.
+
 [Back to top](#top)
 <hr>
 
@@ -1440,11 +1444,13 @@ as we consider it to be the least astonishing for the average user.
 Thus, MATLAB and Python users should be cautious when using 
 *datetime-fortran*'s [*date2num()*](#date2num) function.
 
+Since version 1.0.5, [date2num](#date2num) is timezone aware, i.e.
+the datetime instance is first converted to UTC before calculating
+the number of days.
+
 [date2num](#date2num) is the inverse function of [num2date](#num2date),
-so by definition, `a == num2date(date2num(a))` evaluates as `.TRUE.`
+so by definition, `a % utc() == num2date(date2num(a))` evaluates as `.TRUE.`
 for any `datetime` instance `a`.
-Similarly, `b == date2num(num2date(b))` evaluates as `.TRUE.`
-for any variable `b` of type `REAL(KIND=real_dp)`.
 
 #### Arguments
 
