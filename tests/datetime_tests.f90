@@ -148,7 +148,7 @@ SUBROUTINE test_datetime
 
   ! Test counter; 
   ! modify if adding new tests
-  ntests = 171
+  ntests = 172
 
   CALL initialize_tests(tests,ntests)
 
@@ -972,6 +972,26 @@ SUBROUTINE test_datetime
                         == dtRange),                           &
                     'datetimeRange, second increment')
   n = n+1
+
+  DEALLOCATE(dtRange)
+  ALLOCATE(dtRange(7))
+
+  dtRange = [datetime(2012,1,1,0,0,0),&
+             datetime(2012,1,1,1,0,0),&
+             datetime(2012,1,1,2,0,0),&
+             datetime(2012,1,1,3,0,0),&
+             datetime(2012,1,1,4,0,0),&
+             datetime(2012,1,1,5,0,0),&
+             datetime(2012,1,1,6,0,0)]
+  tests(n) = assert(ALL(datetimeRange(datetime(2012,1,1,0,0,0),       &
+                                      datetime(2012,1,1,6,0,0),       &
+                                      timedelta(hours=1)) == dtRange) &
+                    .AND. SIZE(datetimeRange(datetime(2012,1,1,0,0,0),&
+                                             datetime(2012,1,1,6,0,0),&
+                                             timedelta(hours=1)))     &
+                       == SIZE(dtRange),'datetimeRange, rounding test')
+  n = n+1
+
   !---------------------------------------------------------------------
 
   WRITE(UNIT=STDOUT,FMT='(71("-"))')
