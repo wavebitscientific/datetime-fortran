@@ -18,9 +18,9 @@
 MODULE datetime_module
 !======================================================================>
 !
-! VERSION: 1.0.5
+! VERSION: 1.0.6
 !
-! LAST UPDATE: 2014-11-01
+! LAST UPDATE: 2014-12-13
 !
 ! AUTHOR: Milan Curcic
 !         University of Miami
@@ -1544,17 +1544,20 @@ PURE FUNCTION datetimeRange(d0,d1,t)
   TYPE(timedelta),INTENT(IN) :: t
 
   REAL(KIND=real_dp) :: datenum0,datenum1,increment
+  REAL(KIND=real_dp) :: eps
 
   TYPE(datetime),DIMENSION(:),ALLOCATABLE :: datetimeRange
 
   INTEGER :: n,nm
+
+  eps = 1e-10_real_dp
 
   datenum0 = date2num(d0)
   datenum1 = date2num(d1)
 
   increment = t % total_seconds() * s2d
 
-  nm = FLOOR((datenum1-datenum0)/increment)+1
+  nm = FLOOR((datenum1-datenum0+eps)/increment)+1
 
   ALLOCATE(datetimeRange(nm))
 
