@@ -34,11 +34,11 @@ and function [*strptime*](#strptime) that return a *datetime* instance are avail
 
 * Tested with the following compilers:
 
-   * gfortran 4.7.2, 4.8.2
-   * ifort 13.1.1, 14.0.2, 15.0.0
-   * pgf90 13.6-0, 13.10-0 (thanks to Timothy Hilton)
-   * xlf 14.1.0.5 (thanks to Bjoern Hendrik Fock)
-   * Cray Fortran 8.3.11
+   * GNU (gfortran) 4.7.2, 4.8.2
+   * Intel (ifort) 13.1.1, 14.0.2, 15.0.0
+   * Portland Group (pgf90) 13.6-0, 13.10-0 (thanks to Timothy Hilton)
+   * IBM AIX (xlf) 14.1.0.5 (thanks to Bjoern Hendrik Fock)
+   * Cray Fortran (ftn) 8.3.11, on Cray XC-30
 
 ## API
 
