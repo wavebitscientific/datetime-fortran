@@ -34,7 +34,7 @@ and function [*strptime*](#strptime) that return a *datetime* instance are avail
 
 * Tested with the following compilers:
 
-   * GNU (gfortran) 4.7.2, 4.8.2
+   * GNU (gfortran) ~~4.7.2~~, 4.8.2
    * Intel (ifort) 13.1.1, 14.0.2, 15.0.0
    * Portland Group (pgf90) 13.6-0, 13.10-0 (thanks to Timothy Hilton)
    * IBM AIX (xlf) 14.1.0.5 (thanks to Bjoern Hendrik Fock)
