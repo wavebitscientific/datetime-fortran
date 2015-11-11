@@ -7,19 +7,18 @@
 MODULE datetime_module
 !======================================================================>
 !
-! VERSION: 1.1.0
+! VERSION: 1.1.1
 !
-! LAST UPDATE: 2015-06-19
+! LAST UPDATE: 2015-11-11
 !
 ! AUTHOR: Milan Curcic
 !         University of Miami
-!         e-mail: milan@orca.rsmas.miami.edu
+!         e-mail: caomaco@gmail.com
 !
 ! DESCRIPTION: A Fortran module that provides time and date manipulation 
 !              facilities. It tries to emulate Python's datetime module 
 !              API, but differs from it where convenient or necessary. 
-!              Conforms to standard Fortran 2003 and later, so a fairly 
-!              recent Fortran compiler is necessary.
+!              Conforms to Fortran 2003 standard.
 !
 ! CONTAINS:
 !
@@ -1706,6 +1705,19 @@ PURE ELEMENTAL TYPE(datetime) FUNCTION num2date(num)
   IF(num2date % millisecond == 1000)THEN
     num2date % millisecond = 0
     CALL num2date % addSeconds(1)
+  ENDIF
+
+  IF(num2date % second == 60)THEN
+    num2date % second = 0
+    CALL num2date % addMinutes(1)
+  ENDIF
+  IF(num2date % minute == 60)THEN
+    num2date % minute = 0
+    CALL num2date % addHours(1)
+  ENDIF
+  IF(num2date % hour == 60)THEN
+    num2date % hour = 0
+    CALL num2date % addDays(1)
   ENDIF
 
 ENDFUNCTION num2date
