@@ -1,5 +1,4 @@
 
-#FC      = ifort
 FC      = gfortran
 FCFLAGS = -O0 -Wall 
 
