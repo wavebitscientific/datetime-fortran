@@ -1,6 +1,6 @@
 
 FC      = gfortran
-FCFLAGS =
+FCFLAGS = -Wall -O0 -C -fbacktrace
 
 # Rules
 all: datetime.f90
