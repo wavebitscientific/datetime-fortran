@@ -1,570 +1,781 @@
 !
-! datetime-fortran - A Fortran library for time and date manipulation
-! Copyright (c) 2013-2015, Milan Curcic
+! datetime-fortran - A Fortran library for date and time manipulation
+! Copyright (c) 2013-2016, Wavebit Scientific LLC
+! All rights reserved.
 ! 
-! Licensed under the BSD-3 clause. See LICENSE for details.
+! Licensed under the BSD-3 clause license. See LICENSE for details.
 !
-MODULE datetime_module
-!======================================================================>
+module datetime_module
+!=======================================================================
 !
-! VERSION: 1.1.1
+! Version: 1.2.0
 !
-! LAST UPDATE: 2015-11-11
+! Last update: 2016-01-16
 !
-! AUTHOR: Milan Curcic
-!         University of Miami
-!         e-mail: caomaco@gmail.com
+! Author: Milan Curcic <mcurcic@wavebitscientific.com>
+!         Wavebit Scientific LLC
 !
-! DESCRIPTION: A Fortran module that provides time and date manipulation 
-!              facilities. It tries to emulate Python's datetime module 
-!              API, but differs from it where convenient or necessary. 
-!              Conforms to Fortran 2003 standard.
+! Description: A Fortran module that provides time and date manipulation 
+!              facilities. Conforms to Fortran 2003 standard.
 !
-! CONTAINS:
+! Contains:
 !
-!     TYPES: 
+!     types: 
 !
 !         datetime  - Main datetime object
 !         timedelta - Time difference object
 !         clock     - A generic clock container
 !         tm_struct - For compatibility with C/C++ procedures 
 !
-!     DATETIME METHODS:
+!     datetime methods:
 !
-!         PROCEDURE :: addMilliseconds
-!         PROCEDURE :: addSeconds
-!         PROCEDURE :: addMinutes
-!         PROCEDURE :: addHours
-!         PROCEDURE :: addDays
-!         PROCEDURE :: isocalendar
-!         PROCEDURE :: isoformat
-!         PROCEDURE :: isValid
-!         PROCEDURE :: now
-!         PROCEDURE :: secondsSinceEpoch
-!         PROCEDURE :: strftime
-!         PROCEDURE :: tm
-!         PROCEDURE :: tzOffset
-!         PROCEDURE :: utc
-!         PROCEDURE :: weekday
-!         PROCEDURE :: weekdayShort
-!         PROCEDURE :: weekdayLong
-!         PROCEDURE :: yearday
+!         procedure :: getYear
+!         procedure :: getMonth
+!         procedure :: getDay
+!         procedure :: getHour
+!         procedure :: getMinute
+!         procedure :: getSecond
+!         procedure :: getMillisecond
+!         procedure :: isocalendar
+!         procedure :: isoformat
+!         procedure :: isValid
+!         procedure :: now
+!         procedure :: secondsSinceEpoch
+!         procedure :: strftime
+!         procedure :: tm
+!         procedure :: tzOffset
+!         procedure :: utc
+!         procedure :: weekday
+!         procedure :: weekdayShort
+!         procedure :: weekdayLong
+!         procedure :: yearday
 !
-!     TIMEDELTA METHODS:
+!     timedelta methods:
 !
-!         PROCEDURE :: total_seconds
+!         procedure :: getDays
+!         procedure :: getHours
+!         procedure :: getMinutes
+!         procedure :: getSeconds
+!         procedure :: getMilliseconds
+!         procedure :: total_seconds
 !
-!     CLOCK METHODS:
+!     clock methods:
 !
-!         PROCEDURE :: reset
-!         PROCEDURE :: tick
+!         procedure :: reset
+!         procedure :: tick
 !
-!     PUBLIC PROCEDURES:
+!     public procedures:
 !
-!         FUNCTION c_strftime
-!         FUNCTION c_strptime
-!         FUNCTION date2num
-!         FUNCTION datetimeRange
-!         FUNCTION daysInMonth
-!         FUNCTION daysInYear
-!         FUNCTION isLeapYear
-!         FUNCTION num2date
-!         FUNCTION strptime
-!         FUNCTION tm2date
+!         function c_strftime
+!         function c_strptime
+!         function date2num
+!         function datetimeRange
+!         function daysInMonth
+!         function daysInYear
+!         function isLeapYear
+!         function num2date
+!         function strptime
+!         function tm2date
 !
-!======================================================================>
+!=======================================================================
 
-USE,INTRINSIC :: iso_c_binding,ONLY:c_char,c_int,c_null_char
+use,intrinsic :: iso_fortran_env,only:real32,real64
+use,intrinsic :: iso_c_binding,only:c_char,c_int,c_null_char
 
-IMPLICIT NONE
+implicit none
 
-PRIVATE
+private
 
 ! Derived types:
-PUBLIC :: clock
-PUBLIC :: datetime
-PUBLIC :: timedelta
-PUBLIC :: tm_struct ! May become PRIVATE in the future
+public :: clock
+public :: datetime
+public :: timedelta
+public :: tm_struct ! May become PRIVATE in the future
 
 ! Operators:
-PUBLIC :: OPERATOR(+)
-PUBLIC :: OPERATOR(-)
-PUBLIC :: OPERATOR(>)
-PUBLIC :: OPERATOR(<)
-PUBLIC :: OPERATOR(>=)
-PUBLIC :: OPERATOR(<=)
-PUBLIC :: OPERATOR(==)
-PUBLIC :: OPERATOR(/=)
+public :: operator(+)
+public :: operator(-)
+public :: operator(>)
+public :: operator(<)
+public :: operator(>=)
+public :: operator(<=)
+public :: operator(==)
+public :: operator(/=)
 
 ! Procedures:
-PUBLIC :: c_strftime ! May become PRIVATE in the future
-PUBLIC :: c_strptime ! May become PRIVATE in the future
-PUBLIC :: date2num
-PUBLIC :: datetimeRange
-PUBLIC :: daysInMonth
-PUBLIC :: daysInYear
-PUBLIC :: isLeapYear
-PUBLIC :: num2date
-PUBLIC :: strptime
-PUBLIC :: tm2date
-
-! 8-byte floating point kind:
-INTEGER,PARAMETER :: real_dp = KIND(1d0)
+public :: c_strftime ! May become private in the future
+public :: c_strptime ! May become private in the future
+public :: date2num
+public :: datetimeRange
+public :: daysInMonth
+public :: daysInYear
+public :: isLeapYear
+public :: num2date
+public :: strptime
+public :: tm2date
 
 ! Constant multipliers that transform a number 
 ! of some time unit to another:
-REAL(KIND=real_dp),PARAMETER :: one = 1d0      ! 1
-REAL(KIND=real_dp),PARAMETER :: d2h = 24d0     ! day    -> hour
-REAL(KIND=real_dp),PARAMETER :: h2d = one/d2h  ! hour   -> day
-REAL(KIND=real_dp),PARAMETER :: d2m = d2h*60d0 ! day    -> minute
-REAL(KIND=real_dp),PARAMETER :: m2d = one/d2m  ! minute -> day
-REAL(KIND=real_dp),PARAMETER :: m2h = one/60d0 ! minute -> hour
-REAL(KIND=real_dp),PARAMETER :: s2d = m2d/60d0 ! second -> day
-REAL(KIND=real_dp),PARAMETER :: d2s = 86400d0  ! day    -> second
-REAL(KIND=real_dp),PARAMETER :: h2s = 3600d0   ! hour   -> second
-REAL(KIND=real_dp),PARAMETER :: s2h = one/h2s  ! second -> hour
-REAL(KIND=real_dp),PARAMETER :: m2s = 60d0     ! minute -> second
-REAL(KIND=real_dp),PARAMETER :: s2m = one/m2s  ! second -> minute
+real(kind=real64),parameter :: zero = 0_real64      ! 0
+real(kind=real64),parameter :: one  = 1_real64      ! 1
+real(kind=real64),parameter :: d2h  = 24_real64     ! day    -> hour
+real(kind=real64),parameter :: h2d  = one/d2h       ! hour   -> day
+real(kind=real64),parameter :: d2m  = d2h*60_real64 ! day    -> minute
+real(kind=real64),parameter :: m2d  = one/d2m       ! minute -> day
+real(kind=real64),parameter :: m2h  = one/60_real64 ! minute -> hour
+real(kind=real64),parameter :: s2d  = m2d/60_real64 ! second -> day
+real(kind=real64),parameter :: d2s  = 86400_real64  ! day    -> second
+real(kind=real64),parameter :: h2s  = 3600_real64   ! hour   -> second
+real(kind=real64),parameter :: s2h  = one/h2s       ! second -> hour
+real(kind=real64),parameter :: m2s  = 60_real64     ! minute -> second
+real(kind=real64),parameter :: s2m  = one/m2s       ! second -> minute
  
 ! Maximum string length for strftime.
 ! Constant for now; may become a preprocessor macro later.
-INTEGER,PARAMETER :: MAXSTRLEN = 99
+integer,parameter :: MAXSTRLEN = 99
 
 ! Derived types:
 
-TYPE :: datetime
-!======================================================================>
+type :: datetime
+!=======================================================================
 !
 ! A main datetime class for date and time representation. It is modeled 
 ! after Python's datetime.datetime class, and has similar components 
 ! and methods (but not all).
 !
-!======================================================================>
+!=======================================================================
 
-  ! COMPONENTS:
-  INTEGER :: year        = 1 ! Year                   [1-HUGE(year)]
-  INTEGER :: month       = 1 ! Month in year          [1-12]
-  INTEGER :: day         = 1 ! Day in month           [1-31]
-  INTEGER :: hour        = 0 ! Hour in day            [0-23]
-  INTEGER :: minute      = 0 ! Minute in hour         [0-59]
-  INTEGER :: second      = 0 ! Second in minute       [0-59]
-  INTEGER :: millisecond = 0 ! Milliseconds in second [0-999]
+  private
 
-  REAL(KIND=real_dp) :: tz = 0 ! Timezone offset from UTC [hours]
+  integer :: year        = 1 ! Year                   [1-HUGE(year)]
+  integer :: month       = 1 ! Month in year          [1-12]
+  integer :: day         = 1 ! Day in month           [1-31]
+  integer :: hour        = 0 ! Hour in day            [0-23]
+  integer :: minute      = 0 ! Minute in hour         [0-59]
+  integer :: second      = 0 ! Second in minute       [0-59]
+  integer :: millisecond = 0 ! Milliseconds in second [0-999]
 
-  CONTAINS
+  real(kind=real64) :: tz = 0 ! Timezone offset from UTC [hours]
 
-  ! METHODS:
-  PROCEDURE :: addMilliseconds
-  PROCEDURE :: addSeconds
-  PROCEDURE :: addMinutes
-  PROCEDURE :: addHours
-  PROCEDURE :: addDays
-  PROCEDURE :: isocalendar
-  PROCEDURE :: isoformat
-  PROCEDURE :: isValid
-  PROCEDURE :: now
-  PROCEDURE :: secondsSinceEpoch
-  PROCEDURE :: strftime
-  PROCEDURE :: tm
-  PROCEDURE :: tzOffset
-  PROCEDURE :: utc
-  PROCEDURE :: weekday
-  PROCEDURE :: weekdayLong
-  PROCEDURE :: weekdayShort
-  PROCEDURE :: yearday
+  contains
 
-ENDTYPE datetime
-!======================================================================>
+  procedure,pass(self),public :: getYear
+  procedure,pass(self),public :: getMonth
+  procedure,pass(self),public :: getDay
+  procedure,pass(self),public :: getHour
+  procedure,pass(self),public :: getMinute
+  procedure,pass(self),public :: getSecond
+  procedure,pass(self),public :: getMillisecond
+  procedure,pass(self),public :: getTz
+  procedure,pass(self),public :: isocalendar
+  procedure,pass(self),public :: isoformat
+  procedure,pass(self),public :: isValid
+  procedure,nopass,    public :: now
+  procedure,pass(self),public :: secondsSinceEpoch
+  procedure,pass(self),public :: strftime
+  procedure,pass(self),public :: tm
+  procedure,pass(self),public :: tzOffset
+  procedure,pass(self),public :: utc
+  procedure,pass(self),public :: weekday
+  procedure,pass(self),public :: weekdayLong
+  procedure,pass(self),public :: weekdayShort
+  procedure,pass(self),public :: yearday
+
+  procedure :: addMilliseconds
+  procedure :: addSeconds
+  procedure :: addMinutes
+  procedure :: addHours
+  procedure :: addDays
+
+endtype datetime
+
+interface datetime
+  module procedure :: datetime_constructor
+endinterface datetime
+
+!=======================================================================
 
 
 
-TYPE :: timedelta
-!======================================================================>
+type :: timedelta
+!=======================================================================
 !
 ! Class of objects that define difference between two datetime 
 ! instances. Modeled after Python's datetime.timedelta class.
 !
-!======================================================================>
+!=======================================================================
 
-  ! COMPONENTS:
-  INTEGER :: days         = 0
-  INTEGER :: hours        = 0
-  INTEGER :: minutes      = 0
-  INTEGER :: seconds      = 0
-  INTEGER :: milliseconds = 0
+  private
 
-  CONTAINS
+  integer :: days         = 0
+  integer :: hours        = 0
+  integer :: minutes      = 0
+  integer :: seconds      = 0
+  integer :: milliseconds = 0
 
-  ! METHODS:
-  PROCEDURE :: total_seconds
+  contains
 
-ENDTYPE timedelta
-!======================================================================>
+  procedure,public :: getDays
+  procedure,public :: getHours
+  procedure,public :: getMinutes
+  procedure,public :: getSeconds
+  procedure,public :: getMilliseconds
+  procedure,public :: total_seconds
+
+endtype timedelta
+
+interface timedelta
+  module procedure :: timedelta_constructor
+endinterface timedelta
+
+!=======================================================================
 
 
 
-TYPE :: clock
-!======================================================================>
+type :: clock
+!=======================================================================
 !
 ! A clock object with a start, stop and current times, tick interval 
 ! and tick methods. 
 !
-!======================================================================>
+!=======================================================================
 
-  ! COMPONENTS:
-  TYPE(datetime) :: startTime   = datetime(1)
-  TYPE(datetime) :: stopTime    = datetime(1)
-  TYPE(datetime) :: currentTime = datetime(1)
+  type(datetime) :: startTime   = datetime(1)
+  type(datetime) :: stopTime    = datetime(1)
+  type(datetime) :: currentTime = datetime(1)
 
-  TYPE(timedelta) :: tickInterval = timedelta(0)
+  type(timedelta) :: tickInterval = timedelta(0)
 
   ! May become Alarm class in some future release; 
   ! for now, just a switch
-  LOGICAL :: alarm = .FALSE.
+  logical :: alarm = .false.
 
   ! Clock status flags 
-  LOGICAL :: started = .FALSE.
-  LOGICAL :: stopped = .FALSE.
+  logical :: started = .false.
+  logical :: stopped = .false.
 
-  CONTAINS
+  contains
 
-  ! METHODS:
-  PROCEDURE :: reset
-  PROCEDURE :: tick 
+  procedure :: reset
+  procedure :: tick 
 
-ENDTYPE clock
-!======================================================================>
-
+endtype clock
+!=======================================================================
 
 
-TYPE,BIND(c) :: tm_struct
-!======================================================================>
+
+type,bind(c) :: tm_struct
+!=======================================================================
 !
 ! A derived type provided for compatibility with C/C++ time struct. 
 ! Allows for calling strftime and strptime procedures through the 
 ! iso_c_binding.
 !
-!======================================================================>
+!=======================================================================
 
-  ! COMPONENTS:
-  INTEGER(KIND=c_int) :: tm_sec   ! Seconds      [0-60] (1 leap second)
-  INTEGER(KIND=c_int) :: tm_min   ! Minutes      [0-59]
-  INTEGER(KIND=c_int) :: tm_hour  ! Hours        [0-23]
-  INTEGER(KIND=c_int) :: tm_mday  ! Day          [1-31]
-  INTEGER(KIND=c_int) :: tm_mon   ! Month        [0-11]
-  INTEGER(KIND=c_int) :: tm_year  ! Year - 1900
-  INTEGER(KIND=c_int) :: tm_wday  ! Day of week  [0-6]
-  INTEGER(KIND=c_int) :: tm_yday  ! Days in year [0-365]
-  INTEGER(KIND=c_int) :: tm_isdst ! DST          [-1/0/1]
+  integer(kind=c_int) :: tm_sec   ! Seconds      [0-60] (1 leap second)
+  integer(kind=c_int) :: tm_min   ! Minutes      [0-59]
+  integer(kind=c_int) :: tm_hour  ! Hours        [0-23]
+  integer(kind=c_int) :: tm_mday  ! Day          [1-31]
+  integer(kind=c_int) :: tm_mon   ! Month        [0-11]
+  integer(kind=c_int) :: tm_year  ! Year - 1900
+  integer(kind=c_int) :: tm_wday  ! Day of week  [0-6]
+  integer(kind=c_int) :: tm_yday  ! Days in year [0-365]
+  integer(kind=c_int) :: tm_isdst ! DST          [-1/0/1]
 
   ! METHODS: None.
 
-ENDTYPE tm_struct
-!======================================================================>
+endtype tm_struct
+!=======================================================================
 
 
 
-!======================================================================>
+!=======================================================================
 ! Operator procedure interfaces:
 
-INTERFACE OPERATOR(+)
-  MODULE PROCEDURE datetime_plus_timedelta
-  MODULE PROCEDURE timedelta_plus_datetime
-  MODULE PROCEDURE timedelta_plus_timedelta
-ENDINTERFACE
+interface operator(+)
+  module procedure datetime_plus_timedelta
+  module procedure timedelta_plus_datetime
+  module procedure timedelta_plus_timedelta
+endinterface
 
-INTERFACE OPERATOR(-)
-  MODULE PROCEDURE datetime_minus_datetime
-  MODULE PROCEDURE datetime_minus_timedelta
-  MODULE PROCEDURE timedelta_minus_timedelta
-  MODULE PROCEDURE unary_minus_timedelta
-ENDINTERFACE
+interface operator(-)
+  module procedure datetime_minus_datetime
+  module procedure datetime_minus_timedelta
+  module procedure timedelta_minus_timedelta
+  module procedure unary_minus_timedelta
+endinterface
 
-INTERFACE OPERATOR(==)
-  MODULE PROCEDURE eq
-  MODULE PROCEDURE eq_td
-ENDINTERFACE
+interface operator(==)
+  module procedure eq
+  module procedure eq_td
+endinterface
 
-INTERFACE OPERATOR(/=)
-  MODULE PROCEDURE neq
-  MODULE PROCEDURE neq_td
-ENDINTERFACE
+interface operator(/=)
+  module procedure neq
+  module procedure neq_td
+endinterface
 
-INTERFACE OPERATOR(>)
-  MODULE PROCEDURE gt
-  MODULE PROCEDURE gt_td
-ENDINTERFACE
+interface operator(>)
+  module procedure gt
+  module procedure gt_td
+endinterface
 
-INTERFACE OPERATOR(<)
-  MODULE PROCEDURE lt
-  MODULE PROCEDURE lt_td
-ENDINTERFACE
+interface operator(<)
+  module procedure lt
+  module procedure lt_td
+endinterface
 
-INTERFACE OPERATOR(>=)
-  MODULE PROCEDURE ge
-  MODULE PROCEDURE ge_td
-ENDINTERFACE
+interface operator(>=)
+  module procedure ge
+  module procedure ge_td
+endinterface
 
-INTERFACE OPERATOR(<=)
-  MODULE PROCEDURE le
-  MODULE PROCEDURE le_td
-ENDINTERFACE
+interface operator(<=)
+  module procedure le
+  module procedure le_td
+endinterface
 
-!======================================================================>
+!=======================================================================
 
 
 
-!======================================================================>
+!=======================================================================
 !
-! INTERFACE: To C procedures strftime and strptime through 
+! interface: To C procedures strftime and strptime through 
 ! iso_c_binding.
 !
-!======================================================================>
-INTERFACE
+!=======================================================================
+interface
 
 
 
-  FUNCTION c_strftime(str,slen,format,tm)BIND(c,name='strftime')RESULT(rc)
-  !====================================================================>
+  function c_strftime(str,slen,format,tm)&
+    bind(c,name='strftime') result(rc)
+  !=====================================================================
   !
   ! Returns a formatted time string, given input time struct and format. 
   ! Refer to C standard library documentation for more information. 
   ! 
-  !====================================================================>
+  !=====================================================================
 
-    IMPORT :: c_char,c_int
-    IMPORT :: tm_struct
+    import :: c_char,c_int
+    import :: tm_struct
 
-    IMPLICIT NONE
+    implicit none
 
     ! ARGUMENTS:
-    CHARACTER(KIND=c_char),DIMENSION(*),INTENT(OUT) :: str
-    INTEGER(KIND=c_int),VALUE,          INTENT(IN)  :: slen
-    CHARACTER(KIND=c_char),DIMENSION(*),INTENT(IN)  :: format
-    TYPE(tm_struct),                    INTENT(IN)  :: tm
-    INTEGER(KIND=c_int)                             :: rc
+    character(kind=c_char),dimension(*),intent(out) :: str
+    integer(kind=c_int),value,          intent(in)  :: slen
+    character(kind=c_char),dimension(*),intent(in)  :: format
+    type(tm_struct),                    intent(in)  :: tm
+    integer(kind=c_int)                             :: rc
 
-  ENDFUNCTION c_strftime
-  !====================================================================>
+  endfunction c_strftime
+  !=====================================================================
 
 
 
-  FUNCTION c_strptime(str,format,tm)BIND(c,name='strptime')RESULT(rc)
-  !====================================================================>
+  function c_strptime(str,format,tm)&
+    bind(c,name='strptime') result(rc)
+  !=====================================================================
   !
   ! Returns a time struct object based on the input time string str, 
   ! formatted using format. Refer to C standard library documentation 
   ! for more information.
   ! 
-  !====================================================================>
+  !=====================================================================
 
-    IMPORT :: c_char,c_int
-    IMPORT :: tm_struct
+    import :: c_char,c_int
+    import :: tm_struct
 
-    IMPLICIT NONE
+    implicit none
 
     ! ARGUMENTS:
-    CHARACTER(KIND=c_char),DIMENSION(*),INTENT(IN)  :: str
-    CHARACTER(KIND=c_char),DIMENSION(*),INTENT(IN)  :: format
-    TYPE(tm_struct),                    INTENT(OUT) :: tm
-    INTEGER(KIND=c_int)                             :: rc
+    character(kind=c_char),dimension(*),intent(in)  :: str
+    character(kind=c_char),dimension(*),intent(in)  :: format
+    type(tm_struct),                    intent(out) :: tm
+    integer(kind=c_int)                             :: rc
 
-  ENDFUNCTION c_strptime
-  !====================================================================>
+  endfunction c_strptime
+  !=====================================================================
 
 
-ENDINTERFACE
-!======================================================================>
-CONTAINS
+endinterface
+!=======================================================================
+contains
 
+
+!::: Constructor functions :::::::::::::::::::::::::::::::::::::::::::::
+
+!=======================================================================
+pure elemental type(datetime) function datetime_constructor(&
+  year,month,day,hour,minute,second,millisecond,tz)
+
+  integer,          intent(in),optional :: year
+  integer,          intent(in),optional :: month
+  integer,          intent(in),optional :: day
+  integer,          intent(in),optional :: hour
+  integer,          intent(in),optional :: minute
+  integer,          intent(in),optional :: second
+  integer,          intent(in),optional :: millisecond
+  real(kind=real64),intent(in),optional :: tz
+
+  if(present(year))then
+    datetime_constructor % year = year    
+  else
+    datetime_constructor % year = 1
+  endif
+
+  if(present(month))then
+    datetime_constructor % month = month
+  else
+    datetime_constructor % month = 1
+  endif
+
+  if(present(day))then
+    datetime_constructor % day = day
+  else
+    datetime_constructor % day = 1
+  endif
+
+  if(present(hour))then
+    datetime_constructor % hour = hour
+  else
+    datetime_constructor % hour = 0
+  endif
+
+  if(present(minute))then
+    datetime_constructor % minute = minute
+  else
+    datetime_constructor % minute = 0
+  endif
+
+  if(present(second))then
+    datetime_constructor % second = second
+  else
+    datetime_constructor % second = 0
+  endif
+
+  if(present(millisecond))then
+    datetime_constructor % millisecond = millisecond
+  else
+    datetime_constructor % millisecond = 0
+  endif
+
+  if(present(tz))then
+    datetime_constructor % tz = tz
+  else
+    datetime_constructor % tz = 0
+  endif
+
+endfunction datetime_constructor
+!=======================================================================
+
+
+!=======================================================================
+pure elemental type(timedelta) function timedelta_constructor(&
+  days,hours,minutes,seconds,milliseconds)
+
+  integer,intent(in),optional :: days
+  integer,intent(in),optional :: hours
+  integer,intent(in),optional :: minutes
+  integer,intent(in),optional :: seconds
+  integer,intent(in),optional :: milliseconds
+
+  if(present(days))then
+    timedelta_constructor % days = days
+  else
+    timedelta_constructor % days = 0
+  endif
+
+  if(present(hours))then
+    timedelta_constructor % hours = hours
+  else
+    timedelta_constructor % hours = 0
+  endif
+
+  if(present(minutes))then
+    timedelta_constructor % minutes = minutes
+  else
+    timedelta_constructor % minutes = 0
+  endif
+
+  if(present(seconds))then
+    timedelta_constructor % seconds = seconds
+  else
+    timedelta_constructor % seconds = 0
+  endif
+
+  if(present(milliseconds))then
+    timedelta_constructor % milliseconds = milliseconds
+  else
+    timedelta_constructor % milliseconds = 0
+  endif
+
+endfunction timedelta_constructor
+!=======================================================================
 
 
 !::: Datetime-bound methods ::::::::::::::::::::::::::::::::::::::::::::
 
-PURE ELEMENTAL SUBROUTINE addMilliseconds(self,ms)
-!======================================================================>
+
+!=======================================================================
+! datetime getters  
+pure elemental integer function getYear(self)
+  class(datetime),intent(in) :: self
+  getYear = self % year
+endfunction getYear
+
+pure elemental integer function getMonth(self)
+  class(datetime),intent(in) :: self
+  getMonth = self % month
+endfunction getMonth
+
+pure elemental integer function getDay(self)
+  class(datetime),intent(in) :: self
+  getDay = self % day
+endfunction getDay
+
+pure elemental integer function getHour(self)
+  class(datetime),intent(in) :: self
+  getHour = self % hour
+endfunction getHour
+
+pure elemental integer function getMinute(self)
+  class(datetime),intent(in) :: self
+  getMinute = self % minute
+endfunction getMinute
+
+pure elemental integer function getSecond(self)
+  class(datetime),intent(in) :: self
+  getSecond = self % second
+endfunction getSecond
+
+pure elemental integer function getMillisecond(self)
+  class(datetime),intent(in) :: self
+  getMillisecond = self % millisecond
+endfunction getMillisecond
+
+pure elemental real(kind=real64) function getTz(self)
+  class(datetime),intent(in) :: self
+  getTz = self % tz
+endfunction getTz
+!=======================================================================
+
+
+!=======================================================================
+! timedelta getters
+pure elemental integer function getDays(self)
+  class(timedelta),intent(in) :: self
+  getDays = self % days
+endfunction getDays
+
+pure elemental integer function getHours(self)
+  class(timedelta),intent(in) :: self
+  getHours = self % hours
+endfunction getHours
+
+pure elemental integer function getMinutes(self)
+  class(timedelta),intent(in) :: self
+  getMinutes = self % minutes
+endfunction getMinutes
+
+pure elemental integer function getSeconds(self)
+  class(timedelta),intent(in) :: self
+  getSeconds = self % seconds
+endfunction getSeconds
+
+pure elemental integer function getMilliseconds(self)
+  class(timedelta),intent(in) :: self
+  getMilliseconds = self % milliseconds
+endfunction getMilliseconds
+!=======================================================================
+
+
+pure elemental subroutine addMilliseconds(self,ms)
+!=======================================================================
 !
 ! datetime-bound procedure. Adds an integer number of milliseconds to 
 ! self. Called by datetime addition (+) and subtraction (-) operators.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  CLASS(datetime),INTENT(INOUT) :: self
-  INTEGER,        INTENT(IN)    :: ms
+  class(datetime),intent(inout) :: self
+  integer,        intent(in)    :: ms
 
   self % millisecond = self % millisecond+ms
 
-  DO
-    IF(self % millisecond >= 1000)THEN
-      CALL self % addSeconds(self % millisecond/1000)
-      self % millisecond = MOD(self % millisecond,1000)
-    ELSEIF(self % millisecond < 0)THEN
-      CALL self % addSeconds(self % millisecond/1000-1)
-      self % millisecond = MOD(self % millisecond,1000)+1000
-    ELSE
-      EXIT
-    ENDIF
-  ENDDO
+  do
+    if(self % millisecond >= 1000)then
+      call self % addSeconds(self % millisecond/1000)
+      self % millisecond = mod(self % millisecond,1000)
+    elseif(self % millisecond < 0)then
+      call self % addSeconds(self % millisecond/1000-1)
+      self % millisecond = mod(self % millisecond,1000)+1000
+    else
+      exit
+    endif
+  enddo
 
-ENDSUBROUTINE addMilliseconds
-!======================================================================>
+endsubroutine addMilliseconds
+!=======================================================================
 
 
 
-PURE ELEMENTAL SUBROUTINE addSeconds(self,s)
-!======================================================================>
+pure elemental subroutine addSeconds(self,s)
+!=======================================================================
 !
 ! datetime-bound procedure. Adds an integer number of seconds to self. 
 ! Called by datetime addition (+) and subtraction (-) operators.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  CLASS(datetime),INTENT(INOUT) :: self
-  INTEGER,        INTENT(IN)    :: s
+  class(datetime),intent(inout) :: self
+  integer,        intent(in)    :: s
 
   self % second = self % second+s
 
-  DO
-    IF(self % second >= 60)THEN
-      CALL self % addMinutes(self % second/60)
-      self % second = MOD(self % second,60)
-    ELSEIF(self % second < 0)THEN
-      CALL self % addMinutes(self % second/60-1)
-      self % second = MOD(self % second,60)+60
-    ELSE
-      EXIT
-    ENDIF
-  ENDDO
+  do
+    if(self % second >= 60)then
+      call self % addMinutes(self % second/60)
+      self % second = mod(self % second,60)
+    elseif(self % second < 0)then
+      call self % addMinutes(self % second/60-1)
+      self % second = mod(self % second,60)+60
+    else
+      exit
+    endif
+  enddo
 
-ENDSUBROUTINE addSeconds
-!======================================================================>
+endsubroutine addSeconds
+!=======================================================================
 
 
 
-PURE ELEMENTAL SUBROUTINE addMinutes(self,m)
-!======================================================================>
+pure elemental subroutine addMinutes(self,m)
+!=======================================================================
 !
 ! datetime-bound procedure. Adds an integer number of minutes to self. 
 ! Called by datetime addition (+) and subtraction (-) operators.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  CLASS(datetime),INTENT(INOUT) :: self
-  INTEGER,        INTENT(IN)    :: m
+  class(datetime),intent(inout) :: self
+  integer,        intent(in)    :: m
 
   self % minute = self % minute+m
 
-  DO
-    IF(self % minute >= 60)THEN
-      CALL self % addHours(self % minute/60)
-      self % minute = MOD(self % minute,60)
-    ELSEIF(self % minute < 0)THEN
-      CALL self % addHours(self % minute/60-1)
-      self % minute = MOD(self % minute,60)+60
-    ELSE
-      EXIT
-    ENDIF
-  ENDDO
+  do
+    if(self % minute >= 60)then
+      call self % addHours(self % minute/60)
+      self % minute = mod(self % minute,60)
+    elseif(self % minute < 0)then
+      call self % addHours(self % minute/60-1)
+      self % minute = mod(self % minute,60)+60
+    else
+      exit
+    endif
+  enddo
 
-ENDSUBROUTINE addMinutes
-!======================================================================>
+endsubroutine addMinutes
+!=======================================================================
 
 
 
-PURE ELEMENTAL SUBROUTINE addHours(self,h)
-!======================================================================>
+pure elemental subroutine addHours(self,h)
+!=======================================================================
 !
 ! datetime-bound procedure. Adds an integer number of hours to self. 
 ! Called by datetime addition (+) and subtraction (-) operators.
 !
-!======================================================================>
+!=======================================================================
   
   ! ARGUMENTS:
-  CLASS(datetime),INTENT(INOUT) :: self
-  INTEGER,        INTENT(IN)    :: h
+  class(datetime),intent(inout) :: self
+  integer,        intent(in)    :: h
 
   self % hour = self % hour+h
 
-  DO
-    IF(self % hour >= 24)THEN
-      CALL self % addDays(self % hour/24)
-      self % hour = MOD(self % hour,24)
-    ELSEIF(self % hour < 0)THEN
-      CALL self % addDays(self % hour/24-1)
-      self % hour = MOD(self % hour,24)+24
-    ELSE
-      EXIT
-    ENDIF
-  ENDDO
+  do
+    if(self % hour >= 24)then
+      call self % addDays(self % hour/24)
+      self % hour = mod(self % hour,24)
+    elseif(self % hour < 0)then
+      call self % addDays(self % hour/24-1)
+      self % hour = mod(self % hour,24)+24
+    else
+      exit
+    endif
+  enddo
 
-ENDSUBROUTINE addHours
-!======================================================================>
+endsubroutine addHours
+!=======================================================================
 
 
 
-PURE ELEMENTAL SUBROUTINE addDays(self,d)
-!======================================================================>
+pure elemental subroutine addDays(self,d)
+!=======================================================================
 !
 ! datetime-bound procedure. Adds an integer number of days to self. 
 ! Called by datetime addition (+) and subtraction (-) operators.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  CLASS(datetime),INTENT(INOUT) :: self
-  INTEGER,        INTENT(IN)    :: d
+  class(datetime),intent(inout) :: self
+  integer,        intent(in)    :: d
 
-  INTEGER :: daysInCurrentMonth
+  integer :: daysInCurrentMonth
 
   self % day = self % day+d
-  DO
+  do
     daysInCurrentMonth = daysInMonth(self % month,self % year)
-    IF(self % day > daysInCurrentMonth)THEN
+    if(self % day > daysInCurrentMonth)then
       self % day = self % day-daysInCurrentMonth
       self % month = self % month+1
-      IF(self % month > 12)THEN
+      if(self % month > 12)then
         self % year = self % year+self % month/12
-        self % month = MOD(self % month,12)
-      ENDIF
-    ELSEIF(self % day < 1)THEN
+        self % month = mod(self % month,12)
+      endif
+    elseif(self % day < 1)then
       self % month = self % month-1
-      IF(self % month < 1)THEN
+      if(self % month < 1)then
         self % year = self % year+self % month/12-1
-        self % month = 12+MOD(self % month,12)
-      ENDIF
+        self % month = 12+mod(self % month,12)
+      endif
       self % day = self % day+daysInMonth(self % month,self % year)
-    ELSE
-      EXIT
-    ENDIF 
-  ENDDO
+    else
+      exit
+    endif 
+  enddo
 
-ENDSUBROUTINE addDays
-!======================================================================>
+endsubroutine addDays
+!=======================================================================
 
 
 
-PURE ELEMENTAL CHARACTER(LEN=23) FUNCTION isoformat(self,sep)
-!======================================================================>
+pure elemental character(len=23) function isoformat(self,sep)
+!=======================================================================
 !
 ! Returns character string with time in ISO 8601 format.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  CLASS(datetime), INTENT(IN)          :: self
-  CHARACTER(LEN=1),INTENT(IN),OPTIONAL :: sep
+  class(datetime), intent(in)          :: self
+  character(len=1),intent(in),OPTIONAL :: sep
 
-  CHARACTER(LEN=1)                     :: separator
+  character(len=1)                     :: separator
 
-  IF(PRESENT(sep))THEN
+  if(PRESENT(sep))then
     separator = sep
-  ELSE
+  else
     separator = 'T'
-  ENDIF
+  endif
 
   isoformat = int2str(self % year,       4)//'-'//      &
               int2str(self % month,      2)//'-'//      &
@@ -574,86 +785,83 @@ PURE ELEMENTAL CHARACTER(LEN=23) FUNCTION isoformat(self,sep)
               int2str(self % second,     2)//'.'//      &
               int2str(self % millisecond,3)
 
-ENDFUNCTION isoformat
-!======================================================================>
+endfunction isoformat
+!=======================================================================
 
 
 
-PURE ELEMENTAL LOGICAL FUNCTION isValid(self)
-!======================================================================>
+pure elemental logical function isValid(self)
+!=======================================================================
 !
 ! datetime-bound method that checks whether the datetime
-! instance has valid component values. Returns .TRUE. if the datetime
-! instance is valid, and .FALSE. otherwise.
+! instance has valid component values. Returns .true. if the datetime
+! instance is valid, and .false. otherwise.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  CLASS(datetime),INTENT(IN) :: self
+  class(datetime),intent(in) :: self
 
-  isValid = .TRUE.
+  isValid = .true.
 
-  IF(self % year < 1)THEN
-    isValid = .FALSE.
-    RETURN
-  ENDIF
+  if(self % year < 1)then
+    isValid = .false.
+    return
+  endif
 
-  IF(self % month < 1 .OR. self % month > 12)THEN
-    isValid = .FALSE.
-    RETURN
-  ENDIF
+  if(self % month < 1 .or. self % month > 12)then
+    isValid = .false.
+    return
+  endif
 
-  IF(self % day < 1 .OR. &
-     self % day > daysInMonth(self % month,self % year))THEN
-    isValid = .FALSE.
-    RETURN
-  ENDIF
+  if(self % day < 1 .or. &
+     self % day > daysInMonth(self % month,self % year))then
+    isValid = .false.
+    return
+  endif
  
-  IF(self % hour < 0 .OR. self % hour > 23)THEN    
-    isValid = .FALSE.
-    RETURN
-  ENDIF
+  if(self % hour < 0 .or. self % hour > 23)then    
+    isValid = .false.
+    return
+  endif
 
-  IF(self % minute < 0 .OR. self % minute > 59)THEN    
-    isValid = .FALSE.
-    RETURN
-  ENDIF
+  if(self % minute < 0 .or. self % minute > 59)then    
+    isValid = .false.
+    return
+  endif
 
-  IF(self % second < 0 .OR. self % second > 59)THEN    
-    isValid = .FALSE.
-    RETURN
-  ENDIF
+  if(self % second < 0 .or. self % second > 59)then    
+    isValid = .false.
+    return
+  endif
 
-  IF(self % millisecond < 0 .OR. self % millisecond > 999)THEN    
-    isValid = .FALSE.
-    RETURN
-  ENDIF
+  if(self % millisecond < 0 .or. self % millisecond > 999)then    
+    isValid = .false.
+    return
+  endif
 
-ENDFUNCTION isValid
-!======================================================================>
+endfunction isValid
+!=======================================================================
 
 
 
-TYPE(datetime) FUNCTION now(self)
-!======================================================================>
+type(datetime) function now()
+!=======================================================================
 !
 ! datetime-bound procedure. Returns current time.
 !
-!======================================================================>
+!=======================================================================
 
-  ! ARGUMENTS:
-  CLASS(datetime),INTENT(IN) :: self
+  character(len=5)     :: zone
+  integer,dimension(8) :: values
 
-  CHARACTER(LEN=5)     :: zone
-  INTEGER,DIMENSION(8) :: values
-
-  INTEGER :: hour,minute
+  integer :: hour,minute
 
   ! Obtain local machine time zone information
-  CALL date_and_time(zone=zone,values=values)
+  call date_and_time(zone=zone,values=values)
 
-  READ(UNIT=zone(1:3),FMT='(I3)')hour
-  READ(UNIT=zone(4:5),FMT='(I2)')minute
+  read(unit=zone(1:3),fmt='(I3)')hour
+  read(unit=zone(4:5),fmt='(I2)')minute
 
   now = datetime(year        = values(1),&
                  month       = values(2),&
@@ -665,122 +873,122 @@ TYPE(datetime) FUNCTION now(self)
 
   now % tz = hour+minute*m2h
 
-ENDFUNCTION now
-!======================================================================>
+endfunction now
+!=======================================================================
 
 
 
-PURE ELEMENTAL INTEGER FUNCTION weekday(self)
-!======================================================================>
+pure elemental integer function weekday(self)
+!=======================================================================
 !
 ! datetime-bound method to calculate day of the week using
 ! Zeller's congruence. Returns an integer scalar in the range of [0-6], 
 ! starting from Sunday.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  CLASS(datetime),INTENT(IN) :: self
+  class(datetime),intent(in) :: self
 
-  INTEGER :: year,month
-  INTEGER :: j,k
+  integer :: year,month
+  integer :: j,k
 
   year  = self % year
   month = self % month
 
-  IF(month <= 2)THEN
+  if(month <= 2)then
     month = month+12
     year  = year-1
-  ENDIF
+  endif
 
   j = year/100
-  k = MOD(year,100)
+  k = mod(year,100)
 
-  weekday = MOD(self % day+((month+1)*26)/10+k+k/4+j/4+5*j,7)-1
+  weekday = mod(self % day+((month+1)*26)/10+k+k/4+j/4+5*j,7)-1
 
-  IF(weekday < 0)weekday = 6
+  if(weekday < 0)weekday = 6
 
-ENDFUNCTION weekday
-!======================================================================>
+endfunction weekday
+!=======================================================================
 
 
 
-PURE ELEMENTAL CHARACTER(LEN=9) FUNCTION weekdayLong(self)
-!======================================================================>
+pure elemental character(len=9) function weekdayLong(self)
+!=======================================================================
 !
 ! datetime-bound procedure. Returns the name of the day
 ! of the week.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  CLASS(datetime),INTENT(IN) :: self
+  class(datetime),intent(in) :: self
 
-  CHARACTER(LEN=9),PARAMETER,DIMENSION(7) :: &
+  character(len=9),parameter,dimension(7) :: &
   days = ['Sunday   ','Monday   ','Tuesday  ','Wednesday',&
           'Thursday ','Friday   ','Saturday ']
 
   weekdayLong = days(self % weekday()+1)
 
-ENDFUNCTION weekdayLong
-!======================================================================>
+endfunction weekdayLong
+!=======================================================================
 
 
 
-PURE ELEMENTAL CHARACTER(LEN=3) FUNCTION weekdayShort(self)
-!======================================================================>
+pure elemental character(len=3) function weekdayShort(self)
+!=======================================================================
 !
 ! datetime-bound procedure. Returns a 3-character 
 ! representation of the name of the day of the week.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  CLASS(datetime),INTENT(IN) :: self
+  class(datetime),intent(in) :: self
 
-  CHARACTER(LEN=3),PARAMETER,DIMENSION(7) :: &
+  character(len=3),parameter,dimension(7) :: &
                    days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
 
   weekdayShort = days(self % weekday()+1)
 
-ENDFUNCTION weekdayShort
-!======================================================================>
+endfunction weekdayShort
+!=======================================================================
 
 
 
-FUNCTION isocalendar(self)
-!======================================================================>
+function isocalendar(self)
+!=======================================================================
 !
 ! datetime-bound procedure. Returns an array of 3 integers,
 ! year, week number, and week day, as defined by ISO 8601 week date.
 ! Essentially a wrapper around C strftime() function.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  CLASS(datetime),INTENT(IN) :: self
+  class(datetime),intent(in) :: self
 
-  INTEGER,DIMENSION(3) :: isocalendar
-  INTEGER              :: year,week,wday
-  INTEGER              :: rc
-  CHARACTER(LEN=20)    :: string
+  integer,dimension(3) :: isocalendar
+  integer              :: year,week,wday
+  integer              :: rc
+  character(len=20)    :: string
 
-  rc = c_strftime(string,LEN(string),'%G %V %u'//c_null_char,&
+  rc = c_strftime(string,len(string),'%G %V %u'//c_null_char,&
                   self % tm())  
 
-  READ(UNIT=string(1:4),FMT='(I4)')year
-  READ(UNIT=string(6:7),FMT='(I2)')week
-  READ(UNIT=string(9:9),FMT='(I1)')wday
+  read(unit=string(1:4),fmt='(I4)')year
+  read(unit=string(6:7),fmt='(I2)')week
+  read(unit=string(9:9),fmt='(I1)')wday
 
   isocalendar = [year,week,wday]
 
-ENDFUNCTION isocalendar
-!======================================================================>
+endfunction isocalendar
+!=======================================================================
 
 
 
-INTEGER FUNCTION secondsSinceEpoch(self)
-!======================================================================>
+integer function secondsSinceEpoch(self)
+!=======================================================================
 !
 ! datetime-bound procedure. Returns an integer number of 
 ! seconds since the UNIX Epoch, 1970-01-01 00:00:00.
@@ -788,62 +996,60 @@ INTEGER FUNCTION secondsSinceEpoch(self)
 ! of seconds will reflect the time zone of the local machine on which
 ! the function is being called. 
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  CLASS(datetime),INTENT(IN) :: self
+  class(datetime),intent(in) :: self
 
-  INTEGER           :: rc
-  CHARACTER(LEN=11) :: string
+  character(len=11) :: string
 
   string = self % strftime('%s')
-  READ(UNIT=string,FMT='(I10)')secondsSinceEpoch
+  read(unit=string,fmt='(I10)')secondsSinceEpoch
 
-ENDFUNCTION secondsSinceEpoch
-!======================================================================>
+endfunction secondsSinceEpoch
+!=======================================================================
 
 
 
-FUNCTION strftime(self,format)
-!======================================================================>
+function strftime(self,format)
+!=======================================================================
 !
 ! datetime-bound procedure that provides a wrapper around C/C++
 ! strftime function. 
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  CLASS(datetime), INTENT(IN)  :: self
-  CHARACTER(LEN=*),INTENT(IN)  :: format
+  class(datetime), intent(in)  :: self
+  character(len=*),intent(in)  :: format
 
-  CHARACTER(LEN=:),ALLOCATABLE :: strftime
+  character(len=:),allocatable :: strftime
 
-  INTEGER                  :: n,rc
-  CHARACTER(LEN=MAXSTRLEN) :: resultString
-  TYPE(tm_struct)          :: tm
+  integer                  :: n,rc
+  character(len=MAXSTRLEN) :: resultString
 
   resultString = ""
-  rc = c_strftime(resultString,MAXSTRLEN,TRIM(format)//c_null_char,&
+  rc = c_strftime(resultString,MAXSTRLEN,trim(format)//c_null_char,&
                   self % tm())
-  strftime = TRIM(resultString)
-  n = LEN(strftime)
+  strftime = trim(resultString)
+  n = len(strftime)
   strftime = strftime(1:n-1)
 
-ENDFUNCTION strftime
-!======================================================================>
+endfunction strftime
+!=======================================================================
 
 
 
-PURE ELEMENTAL TYPE(tm_struct) FUNCTION tm(self)
-!======================================================================>
+pure elemental type(tm_struct) function tm(self)
+!=======================================================================
 !
 ! datetime-bound procedure. Returns a respective tm_struct 
 ! instance.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  CLASS(datetime),INTENT(IN) :: self
+  class(datetime),intent(in) :: self
 
   tm % tm_sec   = self % second
   tm % tm_min   = self % minute
@@ -855,221 +1061,221 @@ PURE ELEMENTAL TYPE(tm_struct) FUNCTION tm(self)
   tm % tm_yday  = self % yearday()-1
   tm % tm_isdst = -1
 
-ENDFUNCTION tm
-!======================================================================>
+endfunction tm
+!=======================================================================
 
 
 
-PURE ELEMENTAL CHARACTER(LEN=5) FUNCTION tzOffset(self)
-!======================================================================>
+pure elemental character(len=5) function tzOffset(self)
+!=======================================================================
 !
 ! Returns a character string with timezone offset in hours from UTC,
 ! in format +/-[hh][mm].
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  CLASS(datetime),INTENT(IN) :: self
+  class(datetime),intent(in) :: self
 
-  INTEGER :: hours,minutes
+  integer :: hours,minutes
 
-  IF(self % tz < 0)THEN
+  if(self % tz < 0)then
     tzOffset(1:1) = '-'
-  ELSE
+  else
     tzOffset(1:1) = '+'
-  ENDIF
+  endif
 
-  hours   = INT(ABS(self % tz))
-  minutes = NINT((ABS(self % tz)-hours)*60)
+  hours   = int(abs(self % tz))
+  minutes = nint((abs(self % tz)-hours)*60)
 
-  IF(minutes == 60)THEN
+  if(minutes == 60)then
     minutes = 0
     hours = hours+1
-  ENDIF
+  endif
 
-  WRITE(UNIT=tzOffset(2:5),FMT='(2I2.2)')hours,minutes
+  write(unit=tzOffset(2:5),fmt='(2I2.2)')hours,minutes
 
-ENDFUNCTION tzOffset
-!======================================================================>
+endfunction tzOffset
+!=======================================================================
 
 
 
-PURE ELEMENTAL TYPE(datetime) FUNCTION utc(self)
-!======================================================================>
+pure elemental type(datetime) function utc(self)
+!=======================================================================
 !
 ! Returns the datetime instance at Coordinated Universal Time (UTC). 
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  CLASS(datetime),INTENT(IN) :: self
+  class(datetime),intent(in) :: self
 
-  INTEGER :: hours,minutes,sgn
+  integer :: hours,minutes,sgn
 
-  hours   = INT(ABS(self % tz))
-  minutes = NINT((ABS(self % tz)-hours)*60)
-  sgn     = INT(SIGN(one,self % tz))
+  hours   = int(abs(self % tz))
+  minutes = nint((abs(self % tz)-hours)*60)
+  sgn     = int(sign(one,self % tz))
 
   utc      = self-timedelta(hours=sgn*hours,minutes=sgn*minutes)
   utc % tz = 0
 
-ENDFUNCTION utc
-!======================================================================>
+endfunction utc
+!=======================================================================
 
 
 
-PURE ELEMENTAL INTEGER FUNCTION yearday(self)
-!======================================================================>
+pure elemental integer function yearday(self)
+!=======================================================================
 !
 ! datetime-bound procedure. Returns integer day of the
 ! year (ordinal date).
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  CLASS(datetime),INTENT(IN) :: self
+  class(datetime),intent(in) :: self
 
-  INTEGER :: month
+  integer :: month
 
   yearday = 0
-  DO month=1,self % month-1
+  do month=1,self % month-1
     yearday = yearday+daysInMonth(month,self % year)
-  ENDDO
+  enddo
   yearday = yearday+self % day
 
-ENDFUNCTION yearday
-!======================================================================>
+endfunction yearday
+!=======================================================================
 
 
 
 !::: Datetime operators ::::::::::::::::::::::::::::::::::::::::::::::::
 
-PURE ELEMENTAL FUNCTION datetime_plus_timedelta(d0,t) RESULT(d)
-!======================================================================>
+pure elemental function datetime_plus_timedelta(d0,t) result(d)
+!=======================================================================
 !
 ! Adds a timedelta instance to a datetime instance.
 ! Returns a new datetime instance. Overloads the operator +.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  TYPE(datetime), INTENT(IN) :: d0
-  TYPE(timedelta),INTENT(IN) :: t
-  TYPE(datetime)             :: d
+  type(datetime), intent(in) :: d0
+  type(timedelta),intent(in) :: t
+  type(datetime)             :: d
 
   ! Initialize:
   d = d0 
 
-  IF(t % milliseconds /= 0)CALL d % addMilliseconds(t % milliseconds)
-  IF(t % seconds      /= 0)CALL d % addSeconds(t % seconds)
-  IF(t % minutes      /= 0)CALL d % addMinutes(t % minutes)
-  IF(t % hours        /= 0)CALL d % addHours(t % hours)
-  IF(t % days         /= 0)CALL d % addDays(t % days)
+  if(t % milliseconds /= 0)call d % addMilliseconds(t % milliseconds)
+  if(t % seconds      /= 0)call d % addSeconds(t % seconds)
+  if(t % minutes      /= 0)call d % addMinutes(t % minutes)
+  if(t % hours        /= 0)call d % addHours(t % hours)
+  if(t % days         /= 0)call d % addDays(t % days)
 
-ENDFUNCTION datetime_plus_timedelta
-!======================================================================>
+endfunction datetime_plus_timedelta
+!=======================================================================
 
 
 
-PURE ELEMENTAL FUNCTION timedelta_plus_datetime(t,d0) RESULT(d)
-!======================================================================>
+pure elemental function timedelta_plus_datetime(t,d0) result(d)
+!=======================================================================
 !
 ! Adds a timedelta instance to a datetime instance.
 ! Returns a new datetime instance. Overloads the operator +.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  TYPE(timedelta),INTENT(IN) :: t
-  TYPE(datetime), INTENT(IN) :: d0
-  TYPE(datetime)             :: d
+  type(timedelta),intent(in) :: t
+  type(datetime), intent(in) :: d0
+  type(datetime)             :: d
 
   d = d0+t
 
-ENDFUNCTION timedelta_plus_datetime
-!======================================================================>
+endfunction timedelta_plus_datetime
+!=======================================================================
 
 
 
-PURE ELEMENTAL FUNCTION datetime_minus_timedelta(d0,t) RESULT(d)
-!======================================================================>
+pure elemental function datetime_minus_timedelta(d0,t) result(d)
+!=======================================================================
 !
 ! Subtracts a timedelta instance from a datetime instance.
 ! Returns a new datetime instance. Overloads the operator -.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  TYPE(datetime), INTENT(IN) :: d0
-  TYPE(timedelta),INTENT(IN) :: t
-  TYPE(datetime)             :: d
+  type(datetime), intent(in) :: d0
+  type(timedelta),intent(in) :: t
+  type(datetime)             :: d
 
   ! Initialize:
   d = d0
 
-  IF(t % milliseconds /= 0)CALL d % addMilliseconds(-t % milliseconds)
-  IF(t % seconds      /= 0)CALL d % addSeconds(-t % seconds)
-  IF(t % minutes      /= 0)CALL d % addMinutes(-t % minutes)
-  IF(t % hours        /= 0)CALL d % addHours(-t % hours)
-  IF(t % days         /= 0)CALL d % addDays(-t % days)
+  if(t % milliseconds /= 0)call d % addMilliseconds(-t % milliseconds)
+  if(t % seconds      /= 0)call d % addSeconds(-t % seconds)
+  if(t % minutes      /= 0)call d % addMinutes(-t % minutes)
+  if(t % hours        /= 0)call d % addHours(-t % hours)
+  if(t % days         /= 0)call d % addDays(-t % days)
 
-ENDFUNCTION datetime_minus_timedelta
-!======================================================================>
+endfunction datetime_minus_timedelta
+!=======================================================================
 
 
 
-PURE ELEMENTAL FUNCTION datetime_minus_datetime(d0,d1) RESULT(t)
-!======================================================================>
+pure elemental function datetime_minus_datetime(d0,d1) result(t)
+!=======================================================================
 !
 ! Subtracts a datetime instance from another datetime 
 ! instance. Returns a timedelta instance. Overloads the operator -.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  TYPE(datetime),INTENT(IN) :: d0,d1
-  TYPE(timedelta)           :: t
+  type(datetime),intent(in) :: d0,d1
+  type(timedelta)           :: t
 
-  REAL(KIND=real_dp) :: daysDiff
-  INTEGER            :: days,hours,minutes,seconds,milliseconds
-  INTEGER            :: sign_
+  real(kind=real64) :: daysDiff
+  integer :: days,hours,minutes,seconds,milliseconds
+  integer :: sign_
 
   daysDiff = date2num(d0)-date2num(d1)
 
-  IF(daysDiff < 0)THEN
+  if(daysDiff < 0)then
     sign_ = -1
     daysDiff = ABS(daysDiff)
-  ELSE
+  else
     sign_ = 1
-  ENDIF
+  endif
 
-  days         = INT(daysDiff)
-  hours        = INT((daysDiff-days)*d2h)
-  minutes      = INT((daysDiff-days-hours*h2d)*d2m)
-  seconds      = INT((daysDiff-days-hours*h2d-minutes*m2d)*d2s)
-  milliseconds = NINT((daysDiff-days-hours*h2d-minutes*m2d&
-                               -seconds*s2d)*d2s*1d3)
+  days         = int(daysDiff)
+  hours        = int((daysDiff-days)*d2h)
+  minutes      = int((daysDiff-days-hours*h2d)*d2m)
+  seconds      = int((daysDiff-days-hours*h2d-minutes*m2d)*d2s)
+  milliseconds = nint((daysDiff-days-hours*h2d-minutes*m2d&
+                               -seconds*s2d)*d2s*1e3_real64)
 
   t = timedelta(sign_*days,sign_*hours,sign_*minutes,sign_*seconds,&
                 sign_*milliseconds)
 
-ENDFUNCTION datetime_minus_datetime
-!======================================================================>
+endfunction datetime_minus_datetime
+!=======================================================================
 
 
 
-PURE ELEMENTAL FUNCTION timedelta_plus_timedelta(t0,t1) RESULT(t)
-!======================================================================>
+pure elemental function timedelta_plus_timedelta(t0,t1) result(t)
+!=======================================================================
 ! 
 ! Adds two timedelta instances together. Returns a timedelta instance. 
 ! Overloads the operator +.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  TYPE(timedelta),INTENT(IN) :: t0
-  TYPE(timedelta),INTENT(IN) :: t1
-  TYPE(timedelta)            :: t
+  type(timedelta),intent(in) :: t0
+  type(timedelta),intent(in) :: t1
+  type(timedelta)            :: t
 
   t = timedelta(days         = t0 % days         + t1 % days,   &
                 hours        = t0 % hours        + t1 % hours,  &
@@ -1077,224 +1283,224 @@ PURE ELEMENTAL FUNCTION timedelta_plus_timedelta(t0,t1) RESULT(t)
                 seconds      = t0 % seconds      + t1 % seconds,&
                 milliseconds = t0 % milliseconds + t1 % milliseconds)
 
-ENDFUNCTION timedelta_plus_timedelta
-!======================================================================>
+endfunction timedelta_plus_timedelta
+!=======================================================================
 
 
-PURE ELEMENTAL FUNCTION timedelta_minus_timedelta(t0,t1) RESULT(t)
-!======================================================================>
+pure elemental function timedelta_minus_timedelta(t0,t1) result(t)
+!=======================================================================
 ! 
 ! Subtracts a timedelta instance from another. Returns a timedelta 
 ! instance. Overloads the operator +.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  TYPE(timedelta),INTENT(IN) :: t0
-  TYPE(timedelta),INTENT(IN) :: t1
-  TYPE(timedelta)            :: t
+  type(timedelta),intent(in) :: t0
+  type(timedelta),intent(in) :: t1
+  type(timedelta)            :: t
 
   t = t0 + (-t1)
 
-ENDFUNCTION timedelta_minus_timedelta
-!======================================================================>
+endfunction timedelta_minus_timedelta
+!=======================================================================
 
 
 
-PURE ELEMENTAL LOGICAL FUNCTION gt(d0,d1)
-!======================================================================>
+pure elemental logical function gt(d0,d1)
+!=======================================================================
 !
-! datetime object comparison operator. Returns .TRUE. if
-! d0 is greater than d1, and .FALSE. otherwise. Overloads the 
+! datetime object comparison operator. Returns .true. if
+! d0 is greater than d1, and .false. otherwise. Overloads the 
 ! operator >.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  TYPE(datetime),INTENT(IN) :: d0,d1
+  type(datetime),intent(in) :: d0,d1
 
-  TYPE(datetime) :: d0_utc,d1_utc
+  type(datetime) :: d0_utc,d1_utc
 
   ! Convert to UTC before making comparison
   d0_utc = d0 % utc()
   d1_utc = d1 % utc()
 
   ! Year comparison block
-  IF(d0_utc % year > d1_utc % year)THEN
-    gt = .TRUE.
-  ELSEIF(d0_utc % year < d1_utc % year)THEN
-    gt = .FALSE.
-  ELSE
+  if(d0_utc % year > d1_utc % year)then
+    gt = .true.
+  elseif(d0_utc % year < d1_utc % year)then
+    gt = .false.
+  else
 
     ! Month comparison block
-    IF(d0_utc % month > d1_utc % month)THEN
-      gt = .TRUE.
-    ELSEIF(d0_utc % month < d1_utc % month)THEN
-      gt = .FALSE.
-    ELSE
+    if(d0_utc % month > d1_utc % month)then
+      gt = .true.
+    elseif(d0_utc % month < d1_utc % month)then
+      gt = .false.
+    else
 
       ! Day comparison block
-      IF(d0_utc % day > d1_utc % day)THEN
-        gt = .TRUE.
-      ELSEIF(d0_utc % day < d1_utc % day)THEN
-        gt = .FALSE.
-      ELSE
+      if(d0_utc % day > d1_utc % day)then
+        gt = .true.
+      elseif(d0_utc % day < d1_utc % day)then
+        gt = .false.
+      else
 
         ! Hour comparison block
-        IF(d0_utc % hour > d1_utc % hour)THEN
-          gt = .TRUE.
-        ELSEIF(d0_utc % hour < d1_utc % hour)THEN
-          gt = .FALSE.
-        ELSE
+        if(d0_utc % hour > d1_utc % hour)then
+          gt = .true.
+        elseif(d0_utc % hour < d1_utc % hour)then
+          gt = .false.
+        else
 
           ! Minute comparison block
-          IF(d0_utc % minute > d1_utc % minute)THEN
-            gt = .TRUE.
-          ELSEIF(d0_utc % minute < d1_utc % minute)THEN
-            gt = .FALSE.
-          ELSE
+          if(d0_utc % minute > d1_utc % minute)then
+            gt = .true.
+          elseif(d0_utc % minute < d1_utc % minute)then
+            gt = .false.
+          else
 
             ! Second comparison block
-            IF(d0_utc % second > d1_utc % second)THEN
-              gt = .TRUE.
-            ELSEIF(d0_utc % second < d1_utc % second)THEN
-              gt = .FALSE.
-            ELSE
+            if(d0_utc % second > d1_utc % second)then
+              gt = .true.
+            elseif(d0_utc % second < d1_utc % second)then
+              gt = .false.
+            else
 
               ! Millisecond comparison block
-              IF(d0_utc % millisecond > d1_utc % millisecond)THEN
-                gt = .TRUE.
-              ELSE
-                gt = .FALSE.
-              ENDIF
+              if(d0_utc % millisecond > d1_utc % millisecond)then
+                gt = .true.
+              else
+                gt = .false.
+              endif
 
-            ENDIF
-          ENDIF
-        ENDIF
-      ENDIF
-    ENDIF
-  ENDIF
+            endif
+          endif
+        endif
+      endif
+    endif
+  endif
 
-ENDFUNCTION gt
-!======================================================================>
+endfunction gt
+!=======================================================================
 
 
 
-PURE ELEMENTAL LOGICAL FUNCTION lt(d0,d1)
-!======================================================================>
+pure elemental logical function lt(d0,d1)
+!=======================================================================
 !
-! datetime object comparison operator. Returns .TRUE. if
-! d0 is less than d1, and .FALSE. otherwise. Overloads the operator <.
+! datetime object comparison operator. Returns .true. if
+! d0 is less than d1, and .false. otherwise. Overloads the operator <.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  TYPE(datetime),INTENT(IN) :: d0,d1
+  type(datetime),intent(in) :: d0,d1
 
   lt = d1 > d0
 
-ENDFUNCTION lt
-!======================================================================>
+endfunction lt
+!=======================================================================
 
 
 
-PURE ELEMENTAL LOGICAL FUNCTION eq(d0,d1)
-!======================================================================>
+pure elemental logical function eq(d0,d1)
+!=======================================================================
 !
-! datetime object comparison operator. Returns .TRUE. if
-! d0 is equal to d1, and .FALSE. otherwise. Overloads the operator ==.
+! datetime object comparison operator. Returns .true. if
+! d0 is equal to d1, and .false. otherwise. Overloads the operator ==.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  TYPE(datetime),INTENT(IN) :: d0,d1
+  type(datetime),intent(in) :: d0,d1
 
-  TYPE(datetime) :: d0_utc,d1_utc
+  type(datetime) :: d0_utc,d1_utc
 
   ! Convert to UTC before making comparison
   d0_utc = d0 % utc()
   d1_utc = d1 % utc()
 
-  eq = d0_utc % year        == d1_utc % year   .AND. &
-       d0_utc % month       == d1_utc % month  .AND. &
-       d0_utc % day         == d1_utc % day    .AND. &
-       d0_utc % hour        == d1_utc % hour   .AND. &
-       d0_utc % minute      == d1_utc % minute .AND. &
-       d0_utc % second      == d1_utc % second .AND. &
+  eq = d0_utc % year        == d1_utc % year   .and. &
+       d0_utc % month       == d1_utc % month  .and. &
+       d0_utc % day         == d1_utc % day    .and. &
+       d0_utc % hour        == d1_utc % hour   .and. &
+       d0_utc % minute      == d1_utc % minute .and. &
+       d0_utc % second      == d1_utc % second .and. &
        d0_utc % millisecond == d1_utc % millisecond
 
-ENDFUNCTION eq
-!======================================================================>
+endfunction eq
+!=======================================================================
 
 
 
-PURE ELEMENTAL LOGICAL FUNCTION neq(d0,d1)
-!======================================================================>
+pure elemental logical function neq(d0,d1)
+!=======================================================================
 !
-! datetime object comparison operator. Returns .TRUE. if d0 is not equal 
-! to d1, and .FALSE. otherwise. Overloads the operator /=.
+! datetime object comparison operator. Returns .true. if d0 is not equal 
+! to d1, and .false. otherwise. Overloads the operator /=.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  TYPE(datetime),INTENT(IN) :: d0,d1
+  type(datetime),intent(in) :: d0,d1
 
-  neq = .NOT. d0 == d1
+  neq = .not. d0 == d1
 
-ENDFUNCTION neq
-!======================================================================>
+endfunction neq
+!=======================================================================
 
 
 
-PURE ELEMENTAL LOGICAL FUNCTION ge(d0,d1)
-!======================================================================>
+pure elemental logical function ge(d0,d1)
+!=======================================================================
 !
-! datetime object comparison operator. Returns .TRUE. if
-! d0 is greater or equal than d1, and .FALSE. otherwise. Overloads the 
+! datetime object comparison operator. Returns .true. if
+! d0 is greater or equal than d1, and .false. otherwise. Overloads the 
 ! operator >=.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  TYPE(datetime),INTENT(IN) :: d0,d1
+  type(datetime),intent(in) :: d0,d1
 
-  ge = d0 > d1 .OR. d0 == d1
+  ge = d0 > d1 .or. d0 == d1
 
-ENDFUNCTION ge
-!======================================================================>
+endfunction ge
+!=======================================================================
 
 
 
-PURE ELEMENTAL LOGICAL FUNCTION le(d0,d1)
-!======================================================================>
+pure elemental logical function le(d0,d1)
+!=======================================================================
 !
-! datetime object comparison operator. Returns .TRUE. if
-! d0 is less or equal than d1, and .FALSE. otherwise. Overloads the 
+! datetime object comparison operator. Returns .true. if
+! d0 is less or equal than d1, and .false. otherwise. Overloads the 
 ! operator <=.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  TYPE(datetime),INTENT(IN) :: d0,d1
+  type(datetime),intent(in) :: d0,d1
 
-  le = d1 > d0 .OR. d0 == d1
+  le = d1 > d0 .or. d0 == d1
 
-ENDFUNCTION le
-!======================================================================>
+endfunction le
+!=======================================================================
 
 
 !::: Timedelta-bound methods :::::::::::::::::::::::::::::::::::::::::::
 
-PURE ELEMENTAL REAL(KIND=real_dp) FUNCTION total_seconds(self)
-!======================================================================>
+pure elemental real(kind=real64) function total_seconds(self)
+!=======================================================================
 !
 ! timedelta-bound procedure. Returns a total number of 
 ! seconds contained in a timedelta instance.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  CLASS(timedelta),INTENT(IN) :: self
+  class(timedelta),intent(in) :: self
 
   total_seconds = self % days*86400d0 &
                  +self % hours*3600d0 &
@@ -1302,23 +1508,23 @@ PURE ELEMENTAL REAL(KIND=real_dp) FUNCTION total_seconds(self)
                  +self % seconds      &
                  +self % milliseconds*1d-3
 
-ENDFUNCTION total_seconds
-!======================================================================>
+endfunction total_seconds
+!=======================================================================
 
 
 !::: Timedelta operators :::::::::::::::::::::::::::::::::::::::::::::::
 
-PURE ELEMENTAL FUNCTION unary_minus_timedelta(t0) RESULT(t)
-!======================================================================>
+pure elemental function unary_minus_timedelta(t0) result(t)
+!=======================================================================
 !
 ! Takes a negative of a timedelta instance. Overloads the 
 ! operator -.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  TYPE(timedelta),INTENT(IN) :: t0
-  TYPE(timedelta)            :: t
+  type(timedelta),intent(in) :: t0
+  type(timedelta)            :: t
 
   t % days         = -t0 % days
   t % hours        = -t0 % hours
@@ -1326,296 +1532,296 @@ PURE ELEMENTAL FUNCTION unary_minus_timedelta(t0) RESULT(t)
   t % seconds      = -t0 % seconds
   t % milliseconds = -t0 % milliseconds
 
-ENDFUNCTION unary_minus_timedelta
-!======================================================================>
+endfunction unary_minus_timedelta
+!=======================================================================
   
 
 
-PURE ELEMENTAL LOGICAL FUNCTION eq_td(td0,td1)
-!======================================================================>
+pure elemental logical function eq_td(td0,td1)
+!=======================================================================
 !
-! timedelta object comparison operator. Returns .TRUE. if
-! td0 is equal to td1, and .FALSE. otherwise. Overloads the operator ==.
+! timedelta object comparison operator. Returns .true. if
+! td0 is equal to td1, and .false. otherwise. Overloads the operator ==.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  TYPE(timedelta),INTENT(IN) :: td0,td1
+  type(timedelta),intent(in) :: td0,td1
 
   eq_td = td0 % total_seconds() == td1 % total_seconds()
 
-ENDFUNCTION eq_td
-!======================================================================>
+endfunction eq_td
+!=======================================================================
 
 
 
-PURE ELEMENTAL LOGICAL FUNCTION neq_td(td0,td1)
-!======================================================================>
+pure elemental logical function neq_td(td0,td1)
+!=======================================================================
 !
-! timedelta object comparison operator. Returns .TRUE. if
-! td0 is not equal to td1, and .FALSE. otherwise. Overloads the 
+! timedelta object comparison operator. Returns .true. if
+! td0 is not equal to td1, and .false. otherwise. Overloads the 
 ! operator /=.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  TYPE(timedelta),INTENT(IN) :: td0,td1
+  type(timedelta),intent(in) :: td0,td1
 
-  neq_td = .NOT. (td0 % total_seconds() == td1 % total_seconds())
+  neq_td = .not. (td0 % total_seconds() == td1 % total_seconds())
 
-ENDFUNCTION neq_td
-!======================================================================>
+endfunction neq_td
+!=======================================================================
 
 
 
-PURE ELEMENTAL LOGICAL FUNCTION gt_td(td0,td1)
-!======================================================================>
+pure elemental logical function gt_td(td0,td1)
+!=======================================================================
 !
-! timedelta object comparison operator. Returns .TRUE. if
-! td0 is greater than td1, and .FALSE. otherwise. Overloads the 
+! timedelta object comparison operator. Returns .true. if
+! td0 is greater than td1, and .false. otherwise. Overloads the 
 ! operator >.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  TYPE(timedelta),INTENT(IN) :: td0,td1
+  type(timedelta),intent(in) :: td0,td1
 
   gt_td = td0 % total_seconds() > td1 % total_seconds()
 
-ENDFUNCTION gt_td
-!======================================================================>
+endfunction gt_td
+!=======================================================================
 
 
 
-PURE ELEMENTAL LOGICAL FUNCTION ge_td(td0,td1)
-!======================================================================>
+pure elemental logical function ge_td(td0,td1)
+!=======================================================================
 !
-! timedelta object comparison operator. Returns .TRUE. if
-! td0 is greater than or equal to td1, and .FALSE. otherwise. Overloads 
+! timedelta object comparison operator. Returns .true. if
+! td0 is greater than or equal to td1, and .false. otherwise. Overloads 
 ! the operator >=.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  TYPE(timedelta),INTENT(IN) :: td0,td1
+  type(timedelta),intent(in) :: td0,td1
 
   ge_td = td0 % total_seconds() >= td1 % total_seconds()
 
-ENDFUNCTION ge_td
-!======================================================================>
+endfunction ge_td
+!=======================================================================
 
 
 
-PURE ELEMENTAL LOGICAL FUNCTION lt_td(td0,td1)
-!======================================================================>
+pure elemental logical function lt_td(td0,td1)
+!=======================================================================
 !
-! timedelta object comparison operator. Returns .TRUE. if
-! td0 is less than td1, and .FALSE. otherwise. Overloads the operator <.
+! timedelta object comparison operator. Returns .true. if
+! td0 is less than td1, and .false. otherwise. Overloads the operator <.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  TYPE(timedelta),INTENT(IN) :: td0,td1
+  type(timedelta),intent(in) :: td0,td1
 
   lt_td = td0 % total_seconds() < td1 % total_seconds()
 
-ENDFUNCTION lt_td
-!======================================================================>
+endfunction lt_td
+!=======================================================================
 
 
 
-PURE ELEMENTAL LOGICAL FUNCTION le_td(td0,td1)
-!======================================================================>
+pure elemental logical function le_td(td0,td1)
+!=======================================================================
 !
-! timedelta object comparison operator. Returns .TRUE. if
-! td0 is less than or equal to td1, and .FALSE. otherwise. Overloads the 
+! timedelta object comparison operator. Returns .true. if
+! td0 is less than or equal to td1, and .false. otherwise. Overloads the 
 ! operator <=.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  TYPE(timedelta),INTENT(IN) :: td0,td1
+  type(timedelta),intent(in) :: td0,td1
 
   le_td = td0 % total_seconds() <= td1 % total_seconds()
 
-ENDFUNCTION le_td
-!======================================================================>
+endfunction le_td
+!=======================================================================
 
 
 
 !::: Clock-bound methods :::::::::::::::::::::::::::::::::::::::::::::::
 
-PURE ELEMENTAL SUBROUTINE reset(self)
-!======================================================================>
+pure elemental subroutine reset(self)
+!=======================================================================
 !
 ! Resets the clock to its start time.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  CLASS(clock),INTENT(INOUT) :: self
+  class(clock),intent(inout) :: self
 
   self % currentTime = self % startTime
 
-  self % started = .FALSE.
-  self % stopped = .FALSE.
+  self % started = .false.
+  self % stopped = .false.
 
-ENDSUBROUTINE reset
-!======================================================================>
+endsubroutine reset
+!=======================================================================
 
 
 
-PURE ELEMENTAL SUBROUTINE tick(self)
-!======================================================================>
+pure elemental subroutine tick(self)
+!=======================================================================
 !
 ! Increments the currentTime of the clock instance by one tickInterval.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  CLASS(clock),INTENT(INOUT) :: self
+  class(clock),intent(inout) :: self
 
-  IF(self % stopped)THEN
-    RETURN
-  ENDIF
+  if(self % stopped)then
+    return
+  endif
 
-  IF(.NOT.self % started)THEN
-    self % started = .TRUE.
+  if(.not.self % started)then
+    self % started = .true.
     self % currentTime = self % startTime
-  ENDIF
+  endif
 
   self % currentTime = self % currentTime + self % tickInterval
 
-  IF(self % currentTime >= self % stopTime)THEN
-    self % stopped = .TRUE.
-  ENDIF
+  if(self % currentTime >= self % stopTime)then
+    self % stopped = .true.
+  endif
 
-ENDSUBROUTINE tick
-!======================================================================>
+endsubroutine tick
+!=======================================================================
 
 
 
-!--- PUBLIC PROCEDURES ----------------------------------------------->
+!--- public procedures -------------------------------------------------
 
-PURE ELEMENTAL LOGICAL FUNCTION isLeapYear(year)
-!======================================================================>
+pure elemental logical function isLeapYear(year)
+!=======================================================================
 !
-! Given an integer year, returns .TRUE. if year is leap
-! year, and .FALSE. otherwise.
+! Given an integer year, returns .true. if year is leap
+! year, and .false. otherwise.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  INTEGER,INTENT(IN) :: year
+  integer,intent(in) :: year
 
-  isLeapYear = (MOD(year,4) == 0 .AND. .NOT. MOD(year,100) == 0)&
-          .OR. (MOD(year,400) == 0)
+  isLeapYear = (mod(year,4) == 0 .and. .not. mod(year,100) == 0)&
+          .or. (mod(year,400) == 0)
 
-ENDFUNCTION isLeapYear
-!======================================================================>
+endfunction isLeapYear
+!=======================================================================
 
 
 
-PURE FUNCTION datetimeRange(d0,d1,t)
-!======================================================================>
+pure function datetimeRange(d0,d1,t)
+!=======================================================================
 !
 ! Given start and end datetime instances d0 and d1, and time increment
 ! as timedelta instance t, returns an array of datetime instances.
 ! The number of elements is the number of whole time increments 
 ! contained between datetimes d0 and d1.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  TYPE(datetime), INTENT(IN) :: d0
-  TYPE(datetime), INTENT(IN) :: d1
-  TYPE(timedelta),INTENT(IN) :: t
+  type(datetime), intent(in) :: d0
+  type(datetime), intent(in) :: d1
+  type(timedelta),intent(in) :: t
 
-  REAL(KIND=real_dp) :: datenum0,datenum1,increment
-  REAL(KIND=real_dp) :: eps
+  real(kind=real64) :: datenum0,datenum1,increment
+  real(kind=real64) :: eps
 
-  TYPE(datetime),DIMENSION(:),ALLOCATABLE :: datetimeRange
+  type(datetime),dimension(:),allocatable :: datetimeRange
 
-  INTEGER :: n,nm
+  integer :: n,nm
 
-  eps = 1e-10_real_dp
+  eps = 1e-10_real64
 
   datenum0 = date2num(d0)
   datenum1 = date2num(d1)
 
   increment = t % total_seconds() * s2d
 
-  nm = FLOOR((datenum1-datenum0+eps)/increment)+1
+  nm = floor((datenum1-datenum0+eps)/increment)+1
 
-  ALLOCATE(datetimeRange(nm))
+  allocate(datetimeRange(nm))
 
-  DO n = 1,nm
+  do n = 1,nm
     datetimeRange(n) = num2date(datenum0 + (n-1)*increment)
-  ENDDO
+  enddo
 
-ENDFUNCTION datetimeRange
-!======================================================================>
+endfunction datetimeRange
+!=======================================================================
 
 
 
-PURE ELEMENTAL INTEGER FUNCTION daysInMonth(month,year)
-!======================================================================>
+pure elemental integer function daysInMonth(month,year)
+!=======================================================================
 !
 ! Given integer month and year, returns an integer number
 ! of days in that particular month.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  INTEGER,INTENT(IN) :: month
-  INTEGER,INTENT(IN) :: year
+  integer,intent(in) :: month
+  integer,intent(in) :: year
 
-  INTEGER,PARAMETER,DIMENSION(12) :: &
+  integer,parameter,dimension(12) :: &
           days = [31,28,31,30,31,30,31,31,30,31,30,31]
 
-  IF(month < 1 .OR. month > 12)THEN
+  if(month < 1 .or. month > 12)then
     ! Should raise an error and abort here, however we want to keep
     ! the pure and elemental attributes. Make sure this function is 
     ! called with the month argument in range. 
     daysInMonth = 0
-    RETURN
-  ENDIF
+    return
+  endif
 
-  IF(month == 2 .AND. isLeapYear(year))THEN
+  if(month == 2 .and. isLeapYear(year))then
     daysInMonth = 29
-  ELSE
+  else
     daysInMonth = days(month)
-  ENDIF
+  endif
 
-ENDFUNCTION daysInMonth
-!======================================================================>
+endfunction daysInMonth
+!=======================================================================
 
 
 
-PURE ELEMENTAL INTEGER FUNCTION daysInYear(year)
-!======================================================================>
+pure elemental integer function daysInYear(year)
+!=======================================================================
 !
 ! Given an integer year, returns an integer number of days
 ! in that year.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  INTEGER,INTENT(IN) :: year
+  integer,intent(in) :: year
 
-  IF(isLeapYear(year))THEN
+  if(isLeapYear(year))then
     daysInYear = 366
-  ELSE
+  else
     daysInYear = 365
-  ENDIF
+  endif
 
-ENDFUNCTION daysInYear
-!======================================================================>
+endfunction daysInYear
+!=======================================================================
 
 
 
-PURE ELEMENTAL REAL(KIND=real_dp) FUNCTION date2num(d)
-!======================================================================>
+pure elemental real(kind=real64) function date2num(d)
+!=======================================================================
 !
 ! Given a datetime instance d, returns number of days since 
 ! 0001-01-01 00:00:00.
@@ -1624,174 +1830,175 @@ PURE ELEMENTAL REAL(KIND=real_dp) FUNCTION date2num(d)
 ! switch to UTC time, then we evaluate the number of days. This may
 ! affect some of the existing programs using this function.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  TYPE(datetime),INTENT(IN) :: d
+  type(datetime),intent(in) :: d
 
-  TYPE(datetime) :: d_utc
-  INTEGER :: year
+  type(datetime) :: d_utc
+  integer :: year
 
   ! Convert to UTC first
   d_utc = d % utc()
 
   ! d_utc % year must be positive:
-  IF(d_utc % year < 1)THEN
+  if(d_utc % year < 1)then
     date2num = 0
-    RETURN
-  ENDIF
+    return
+  endif
 
   date2num = 0
-  DO year = 1,d_utc % year-1
+  do year = 1,d_utc % year-1
     date2num = date2num + daysInYear(year)
-  ENDDO
+  enddo
 
-  date2num = date2num + d_utc % yearday()  &
-                      + d_utc % hour*h2d   &
-                      + d_utc % minute*m2d &
-                      + (d_utc % second+1d-3*d_utc % millisecond)*s2d
+  date2num = date2num          &
+           + d_utc % yearday() &
+           + d_utc % hour*h2d  &
+           + d_utc % minute*m2d&
+           + (d_utc % second+1e-3_real64*d_utc % millisecond)*s2d
  
-ENDFUNCTION date2num
-!======================================================================>
+endfunction date2num
+!=======================================================================
 
 
 
-PURE ELEMENTAL TYPE(datetime) FUNCTION num2date(num)
-!======================================================================>
+pure elemental type(datetime) function num2date(num)
+!=======================================================================
 !
 ! Given number of days since 0001-01-01 00:00:00, returns a 
 ! correspoding datetime instance.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  REAL(KIND=real_dp),INTENT(IN) :: num
+  real(kind=real64),intent(in) :: num
 
-  INTEGER :: year,month,day,hour,minute,second,millisecond
-  REAL(KIND=real_dp) :: days,totseconds
+  integer :: year,month,day,hour,minute,second,millisecond
+  real(kind=real64) :: days,totseconds
 
   ! num must be positive:
-  IF(num < 0)THEN
+  if(num < 0)then
     num2date = datetime(1)
-    RETURN
-  ENDIF
+    return
+  endif
 
   days = num
 
   year = 1
-  DO
-    IF(INT(days) <= daysInYear(year))EXIT
+  do
+    if(int(days) <= daysInYear(year))exit
     days = days-daysInYear(year)
     year = year+1
-  ENDDO
+  enddo
 
   month = 1
-  DO
-    IF(INT(days) <= daysInMonth(month,year))EXIT
+  do
+    if(inT(days) <= daysInMonth(month,year))exit
     days = days-daysInMonth(month,year)
     month = month+1
-  ENDDO
+  enddo
 
-  day         = INT(days)
+  day         = int(days)
   totseconds  = (days-day)*d2s
-  hour        = INT(totseconds*s2h)
-  minute      = INT((totseconds-hour*h2s)*s2m)
-  second      = INT(totseconds-hour*h2s-minute*m2s)
-  millisecond = NINT((totseconds-INT(totseconds))*1d3)
+  hour        = int(totseconds*s2h)
+  minute      = int((totseconds-hour*h2s)*s2m)
+  second      = int(totseconds-hour*h2s-minute*m2s)
+  millisecond = nint((totseconds-int(totseconds))*1e3_real64)
 
-  num2date = datetime(year,month,day,hour,minute,second,millisecond,tz=0)
+  num2date = datetime(year,month,day,hour,minute,second,millisecond,tz=zero)
 
   ! Handle a special case caused by floating-point arithmethic:
-  IF(num2date % millisecond == 1000)THEN
+  if(num2date % millisecond == 1000)then
     num2date % millisecond = 0
-    CALL num2date % addSeconds(1)
-  ENDIF
+    call num2date % addSeconds(1)
+  endif
 
-  IF(num2date % second == 60)THEN
+  if(num2date % second == 60)then
     num2date % second = 0
-    CALL num2date % addMinutes(1)
-  ENDIF
-  IF(num2date % minute == 60)THEN
+    call num2date % addMinutes(1)
+  endif
+  if(num2date % minute == 60)then
     num2date % minute = 0
-    CALL num2date % addHours(1)
-  ENDIF
-  IF(num2date % hour == 60)THEN
+    call num2date % addHours(1)
+  endif
+  if(num2date % hour == 60)then
     num2date % hour = 0
-    CALL num2date % addDays(1)
-  ENDIF
+    call num2date % addDays(1)
+  endif
 
-ENDFUNCTION num2date
-!======================================================================>
+endfunction num2date
+!=======================================================================
 
 
 
-TYPE(datetime) FUNCTION strptime(str,format)
-!======================================================================>
+type(datetime) function strptime(str,format)
+!=======================================================================
 !
 ! A wrapper function around C/C++ strptime. 
 ! Returns a datetime instance. 
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  CHARACTER(LEN=*),INTENT(IN) :: str
-  CHARACTER(LEN=*),INTENT(IN) :: format
+  character(len=*),intent(in) :: str
+  character(len=*),intent(in) :: format
 
-  INTEGER         :: rc
-  TYPE(tm_struct) :: tm
+  integer         :: rc
+  type(tm_struct) :: tm
 
-  rc = c_strptime(TRIM(str)//c_null_char,TRIM(format)//c_null_char,tm)
+  rc = c_strptime(trim(str)//c_null_char,trim(format)//c_null_char,tm)
   strptime = tm2date(tm)
 
-ENDFUNCTION strptime
-!======================================================================>
+endfunction strptime
+!=======================================================================
 
 
 
-PURE ELEMENTAL TYPE(datetime) FUNCTION tm2date(ctime)
-!======================================================================>
+pure elemental type(datetime) function tm2date(ctime)
+!=======================================================================
 !
 ! Given a tm_struct instance, returns a corresponding datetime instance.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  TYPE(tm_struct),INTENT(IN) :: ctime
+  type(tm_struct),intent(in) :: ctime
 
-  tm2date%millisecond = 0
-  tm2date%second      = ctime % tm_sec
-  tm2date%minute      = ctime % tm_min
-  tm2date%hour        = ctime % tm_hour
-  tm2date%day         = ctime % tm_mday
-  tm2date%month       = ctime % tm_mon+1
-  tm2date%year        = ctime % tm_year+1900
-  tm2date%tz          = 0
+  tm2date % millisecond = 0
+  tm2date % second      = ctime % tm_sec
+  tm2date % minute      = ctime % tm_min
+  tm2date % hour        = ctime % tm_hour
+  tm2date % day         = ctime % tm_mday
+  tm2date % month       = ctime % tm_mon+1
+  tm2date % year        = ctime % tm_year+1900
+  tm2date % tz          = 0
 
-ENDFUNCTION tm2date
-!======================================================================>
+endfunction tm2date
+!=======================================================================
 
 
 
-!--- PRIVATE PROCEDURES ----------------------------------------------->
+!--- private procedures ------------------------------------------------
 
-PURE FUNCTION int2str(i,length)
-!======================================================================>
+pure function int2str(i,length)
+!=======================================================================
 !
 ! Converts an integer i into a character string of requested length, 
 ! pre-pending zeros if necessary.
 !
-!======================================================================>
+!=======================================================================
 
   ! ARGUMENTS:
-  INTEGER,INTENT(IN) :: i
-  INTEGER,INTENT(IN) :: length
+  integer,intent(in) :: i
+  integer,intent(in) :: length
 
-  CHARACTER(LEN=length) :: int2str
-  CHARACTER(LEN=2)      :: string
+  character(len=length) :: int2str
+  character(len=2)      :: string
 
-  WRITE(UNIT=string,FMT='(I2)')length
-  WRITE(UNIT=int2str,FMT='(I'//string//'.'//string//')')i
+  write(unit=string,fmt='(I2)')length
+  write(unit=int2str,fmt='(I'//string//'.'//string//')')i
 
-ENDFUNCTION int2str
-!======================================================================>
-ENDMODULE datetime_module
+endfunction int2str
+!=======================================================================
+endmodule datetime_module
