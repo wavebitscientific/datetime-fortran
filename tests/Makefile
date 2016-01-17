@@ -1,6 +1,6 @@
 
 FC      = gfortran
-FCFLAGS = -O0 -Wall 
+FCFLAGS = -O0 -C -fbacktrace -Wall
 
 # Object list
 OBJS = datetime.o
@@ -13,7 +13,7 @@ tests: datetime.o datetime_tests.f90
 	 
 # Dependencies
 datetime.o: datetime.f90
-	$(FC) -c datetime.f90
+	$(FC) -c $(FCFLAGS) datetime.f90
 
 .PHONY:
 clean:
