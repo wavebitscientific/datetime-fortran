@@ -2,3 +2,13 @@
 *.a
 *.mod
 TODO
+Makefile.in
+aclocal.m4
+autom4te.cache/
+autoscan.log
+configure
+configure.scan
+depcomp
+install-sh
+missing
+                                                                    
