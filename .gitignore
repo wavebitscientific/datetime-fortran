@@ -11,4 +11,10 @@ configure.scan
 depcomp
 install-sh
 missing
-                                                                    
+Makefile
+config.log
+config.status
+tests/Makefile
+*.tar.gz
+datetime-fortran.pc
+

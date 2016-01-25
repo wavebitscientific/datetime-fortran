@@ -2,6 +2,9 @@
 
 AM_FCFLAGS = -Wall -O0 -C -fbacktrace
 
+# Note that we specify '.' first to ensure this dir is build before tests
+SUBDIRS = . tests
+
 pkgconfig_DATA = datetime-fortran.pc
 
 #datetime_SOURCES = datetime.f90
