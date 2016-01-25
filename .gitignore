@@ -17,4 +17,5 @@ config.status
 tests/Makefile
 *.tar.gz
 datetime-fortran.pc
+tests/datetime_tests
 

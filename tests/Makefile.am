@@ -1,6 +1,8 @@
+AM_FCFLAGS = -Wall -O0 -C -fbacktrace
+
 # we use `check' to denote that we don't want them installed
-check_PROGRAMS = datetime_tests
-TESTS=datetime_tests
+noinst_PROGRAMS = datetime_tests
+#TESTS=datetime_tests
 #datetime_tests_SOURCES = datetime_tests
 
 datetime_tests_SOURCES = datetime_tests.f90

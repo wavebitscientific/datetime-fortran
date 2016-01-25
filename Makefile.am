@@ -22,6 +22,13 @@ libdatetime.a : datetime.o
 
 CLEANFILES =*.mod datetime-fortran.pc
 
+#MAINTAINERCLEANFILES = *.gz aclocal.m4 depcomp install.sh missing \
+#	autoscan.log Makefile.in test-driver
+
+scrub-clean :
+	scrub-clean.sh
+
+
 install-exec-hook : datetime_module.mod
 	cp datetime_module.mod $(libdir)
 
