@@ -1,0 +1,7 @@
+prefix=@prefix@
+ 
+Name: @PACKAGE_NAME@
+Description: A Fortran library that provides time and date manipulation facilities
+Version: @PACKAGE_VERSION@
+Libs: -L${prefix}/lib  -ldatetime
+Cflags: -I${prefix}/include
