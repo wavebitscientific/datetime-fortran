@@ -3,5 +3,5 @@ prefix=@prefix@
 Name: @PACKAGE_NAME@
 Description: A Fortran library that provides time and date manipulation facilities
 Version: @PACKAGE_VERSION@
-Cflags: -I${prefix}/lib
-Libs: -ldatetime
+Libs: -L${prefix}/lib  -ldatetime
+Cflags: -I${prefix}/include

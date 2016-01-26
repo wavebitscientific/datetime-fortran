@@ -1,6 +1,8 @@
 # Items needed specifically by autotools
 AM_FCFLAGS = -Wall -O0 -C -fbacktrace
 
+include_HEADERS = datetime_module.mod
+
 lib_LIBRARIES = libdatetime.a
 
 libdatetime_a_SOURCES = datetime.f90 mod_datetime.f90 mod_timedelta.f90 \
@@ -19,11 +21,11 @@ libdatetime.a : datetime.o
 
 datetime_module.mod : datetime.o
 
-install-exec-hook : datetime_module.mod
-	cp datetime_module.mod $(libdir)
+#install-exec-hook : datetime_module.mod
+#	cp datetime_module.mod $(libdir)
 
-uninstall-hook :
-	rm $(libdir)/datetime_module.mod
+#uninstall-hook :
+#	rm $(libdir)/datetime_module.mod
 
 datetime.o :      datetime.f90 mod_clock.o mod_datetime.o mod_strftime.o mod_timedelta.o
 mod_clock.o:     mod_clock.f90 mod_datetime.o mod_timedelta.o
