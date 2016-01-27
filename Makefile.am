@@ -6,3 +6,5 @@ scrub-clean :
 	scrub-clean.sh
 
 CLEANFILES = datetime-fortran.pc
+
+EXTRA_DIST = CONTRIBUTORS LICENSE README.md
