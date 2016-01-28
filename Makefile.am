@@ -6,3 +6,9 @@ scrub-clean :
 	scrub-clean.sh
 
 CLEANFILES = datetime-fortran.pc
+
+EXTRA_DIST = CONTRIBUTORS LICENSE README.md \
+	mkdist.sh scrub-clean.sh
+
+dist-hook:
+	mkdist.sh
