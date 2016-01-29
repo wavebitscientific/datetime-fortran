@@ -8,9 +8,9 @@
 module datetime_module
 !=======================================================================
 !
-! Version: 1.4.0
+! Version: 1.4.1
 !
-! Last update: 2016-01-26
+! Last update: 2016-01-28
 !
 ! Author: Milan Curcic <mcurcic@wavebitscientific.com>
 !         Wavebit Scientific LLC
