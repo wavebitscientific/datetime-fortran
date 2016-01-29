@@ -1,7 +1,10 @@
 # Items needed specifically by autotools
 AM_FCFLAGS = -Wall -O0 -C -fbacktrace
 
-include_HEADERS = datetime_module.mod
+nodist_include_HEADERS = datetime_module.mod
+
+#nodist_HEADERS = datetime_module.mod
+nodist_SOURCES = *.mod
 
 lib_LIBRARIES = libdatetime.a
 
