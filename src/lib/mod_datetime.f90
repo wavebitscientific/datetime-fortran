@@ -93,7 +93,6 @@ type :: datetime
 
   ! operator overloading procedures
   procedure,private :: datetime_plus_timedelta
-  !procedure,private :: timedelta_plus_datetime
   procedure,private :: datetime_minus_datetime
   procedure,private :: datetime_minus_timedelta 
   procedure,private :: eq
@@ -103,11 +102,9 @@ type :: datetime
   procedure,private :: lt
   procedure,private :: le
 
-  generic :: operator(+) => datetime_plus_timedelta!,&
-                            !timedelta_plus_datetime
-  generic :: operator(-) => datetime_minus_datetime,&
-                            datetime_minus_timedelta
-
+  generic :: operator(+)  => datetime_plus_timedelta
+  generic :: operator(-)  => datetime_minus_datetime,&
+                             datetime_minus_timedelta
   generic :: operator(==) => eq
   generic :: operator(/=) => neq
   generic :: operator(>)  => gt
@@ -836,14 +833,23 @@ pure elemental function datetime_plus_timedelta(d0,t) result(d)
 !
 !=======================================================================
 
-  class(datetime),intent(in) :: d0
+  class(datetime), intent(in) :: d0
   class(timedelta),intent(in) :: t
-  type(datetime)             :: d
+  type(datetime)              :: d
 
   integer :: milliseconds,seconds,minutes,hours,days
 
   ! initialize:
-  d = d0
+  !d = d0
+
+  d = datetime(year        = d0 % getYear(),       &
+               month       = d0 % getMonth(),      &
+               day         = d0 % getDay(),        &
+               hour        = d0 % getHour(),       &
+               minute      = d0 % getMinute(),     &
+               second      = d0 % getSecond(),     &
+               millisecond = d0 % getMillisecond(),&
+               tz          = d0 % getTz())
 
   milliseconds = t % getMilliseconds()
   seconds      = t % getSeconds()
@@ -872,7 +878,7 @@ pure elemental function timedelta_plus_datetime(t,d0) result(d)
   ! ARGUMENTS:
   class(timedelta),intent(in) :: t
   class(datetime), intent(in) :: d0
-  type(datetime)             :: d
+  type(datetime)              :: d
 
   d = d0 + t
 
@@ -891,19 +897,10 @@ pure elemental function datetime_minus_timedelta(d0,t) result(d)
 
   ! ARGUMENTS:
   class(datetime), intent(in) :: d0
-  type(timedelta),intent(in) :: t
-  type(datetime)             :: d
+  class(timedelta),intent(in) :: t
+  type(datetime)              :: d
 
   d = d0 + (-t)
-
-  ! Initialize:
-  !d = d0
-
-  !if(t % milliseconds /= 0)call d % addMilliseconds(-t % milliseconds)
-  !if(t % seconds      /= 0)call d % addSeconds(-t % seconds)
-  !if(t % minutes      /= 0)call d % addMinutes(-t % minutes)
-  !if(t % hours        /= 0)call d % addHours(-t % hours)
-  !if(t % days         /= 0)call d % addDays(-t % days)
 
 endfunction datetime_minus_timedelta
 !=======================================================================
@@ -920,8 +917,8 @@ pure elemental function datetime_minus_datetime(d0,d1) result(t)
 !=======================================================================
 
   class(datetime),intent(in) :: d0
-  type(datetime),intent(in) :: d1
-  type(timedelta)           :: t
+  class(datetime),intent(in) :: d1
+  type(timedelta)            :: t
 
   real(kind=real64) :: daysDiff
   integer :: days,hours,minutes,seconds,milliseconds
@@ -963,7 +960,7 @@ pure elemental logical function gt(d0,d1)
 
   ! ARGUMENTS:
   class(datetime),intent(in) :: d0
-  type(datetime), intent(in) :: d1
+  class(datetime),intent(in) :: d1
 
   type(datetime) :: d0_utc,d1_utc
 
@@ -1041,7 +1038,7 @@ pure elemental logical function lt(d0,d1)
 !=======================================================================
 
   class(datetime),intent(in) :: d0
-  type(datetime), intent(in) :: d1
+  class(datetime),intent(in) :: d1
 
   lt = d1 > d0
 
@@ -1059,7 +1056,7 @@ pure elemental logical function eq(d0,d1)
 !=======================================================================
 
   class(datetime),intent(in) :: d0
-  type(datetime), intent(in) :: d1
+  class(datetime),intent(in) :: d1
 
   type(datetime) :: d0_utc,d1_utc
 
@@ -1089,7 +1086,7 @@ pure elemental logical function neq(d0,d1)
 !=======================================================================
 
   class(datetime),intent(in) :: d0
-  type(datetime), intent(in) :: d1
+  class(datetime),intent(in) :: d1
 
   neq = .not. d0 == d1
 
@@ -1108,7 +1105,7 @@ pure elemental logical function ge(d0,d1)
 !=======================================================================
 
   class(datetime),intent(in) :: d0
-  type(datetime), intent(in) :: d1
+  class(datetime),intent(in) :: d1
 
   ge = d0 > d1 .or. d0 == d1
 
@@ -1127,7 +1124,7 @@ pure elemental logical function le(d0,d1)
 !=======================================================================
 
   class(datetime),intent(in) :: d0
-  type(datetime), intent(in) :: d1
+  class(datetime),intent(in) :: d1
 
   le = d1 > d0 .or. d0 == d1
 
