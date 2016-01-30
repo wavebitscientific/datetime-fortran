@@ -7,6 +7,7 @@ AC_CONFIG_SRCDIR([src/lib/datetime.f90])
 AM_INIT_AUTOMAKE([foreign]) 
 
 
+
 # for package configuration
 PKG_PROG_PKG_CONFIG
 PKG_INSTALLDIR

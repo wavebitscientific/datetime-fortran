@@ -3,6 +3,8 @@ AM_FCFLAGS = -Wall -O0 -C -fbacktrace
 
 noinst_PROGRAMS = datetime_tests
 
+
+
 datetime_tests_SOURCES = datetime_tests.f90
 
 #datetime_tests$(EXEEXT) : datetime_tests.f90 ../datetime_module.mod
