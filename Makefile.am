@@ -13,7 +13,5 @@ EXTRA_DIST = CONTRIBUTORS LICENSE README.md \
 dist-hook:
 	./mkdist.sh
 
-AM_TESTS_ENVIRONMENT = . $(srcdir)/test/tests-env.sh
-AM_TESTS_FD_REDIRECT = 9>&2
 
-TESTS = tests-env.sh
+

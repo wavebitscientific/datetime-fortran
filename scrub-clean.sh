@@ -17,3 +17,5 @@ rm -rf autom4te.cache
 
 clean_dir src/lib
 clean_dir src/tests
+rm -f src/tests/*log src/tests/*.trs
+test-driver
