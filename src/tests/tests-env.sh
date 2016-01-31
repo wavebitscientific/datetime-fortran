@@ -1,12 +1,17 @@
 #!/usr/bin/env bash
 
 # remove escape codes
-# Obtained from
-# http://www.commandlinefu.com/commands/view/3584/remove-color-codes-special-characters-with-sed
-noesc () { sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g" ; }
+
+OS=$(uname -s)
+if [ "X$OS" = "XDarwin" ]; then
+    noesc () { sed 's/\[[0-9]*m*//g' ; }
+else
+    # http://www.commandlinefu.com/commands/view/3584/remove-color-codes-special-characters-with-sed
+    noesc () { sed -r 's/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g' ; }
+fi
 
 LOG=tests-env.sh.log
-datetime_tests | noesc > $LOG
+./datetime_tests | noesc > $LOG
 
 TRS=tests-env.sh.trs
 
