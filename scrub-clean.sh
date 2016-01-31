@@ -13,9 +13,7 @@ rm -f config.log config.status configure.scan
 
 rm -rf autom4te.cache
 
-#(cd tests ; rm -f Makefile Makefile.in datetime_tests)
-
 clean_dir src/lib
 clean_dir src/tests
 rm -f src/tests/*log src/tests/*.trs
-test-driver
+rm -f test-driver

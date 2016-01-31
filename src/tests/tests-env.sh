@@ -18,7 +18,7 @@ TRS=tests-env.sh.trs
 # extract lines that end in PASS or FAIL
 pof () { awk '/PASS$/ {print $0} ; /FAIL$/ {print $0}' ; }
 
-# back to front. Replace the first work by the last
+# back to front. Replace the first word by the last
 btf () { awk '{$1=$NF;}1'; }
 
 rmres () { sed 's/: PASS$//' | sed 's/: FAIL$//' ; }
