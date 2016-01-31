@@ -77,7 +77,7 @@ ENDSUBROUTINE initialize_tests
 
 
 
-SUBROUTINE report_tests(tests)
+SUBROUTINE report_tests(tests,test_failed)
 !=======================================================================
 !
 ! Takes the test counter as input and reports the total number of test 
@@ -86,6 +86,7 @@ SUBROUTINE report_tests(tests)
 !=======================================================================
 
   LOGICAL,DIMENSION(:),INTENT(IN) :: tests
+  LOGICAL,OPTIONAL,INTENT(OUT)    :: test_failed
 
   INTEGER :: n,ntests,nsuccess,nfailure
 
@@ -104,6 +105,10 @@ SUBROUTINE report_tests(tests)
   WRITE(UNIT=STDOUT,FMT='(A,I3,A)')'Ran a total of ',ntests,' tests.'
   WRITE(UNIT=STDOUT,FMT='(I3,A,I3,A)')nsuccess,' tests PASSED, ',nfailure,' tests FAILED.'
 
+  IF( PRESENT(test_failed) ) THEN
+    test_failed = .FALSE.
+    IF ( nfailure /= 0 ) test_failed = .TRUE.
+  ENDIF
 ENDSUBROUTINE report_tests
 !=======================================================================
 
@@ -127,6 +132,7 @@ SUBROUTINE test_datetime
   REAL(KIND=KIND(1d0)) :: eps = TINY(1d0)
 
   LOGICAL,DIMENSION(:),ALLOCATABLE :: tests
+  LOGICAL :: test_failed
 
   INTEGER :: ntests
   INTEGER :: i,n
@@ -1124,8 +1130,11 @@ SUBROUTINE test_datetime
   !---------------------------------------------------------------------
   WRITE(UNIT=STDOUT,FMT='(71("-"))')
 
-  CALL report_tests(tests)
+  test_failed = .FALSE.
 
+  CALL report_tests(tests,test_failed)
+
+  IF ( test_failed ) STOP 1
   !---------------------------------------------------------------------
 
 ENDSUBROUTINE test_datetime
