@@ -4,7 +4,7 @@ AM_FCFLAGS = -Wall -O0 -C -fbacktrace
 nodist_include_HEADERS = datetime_module.mod
 
 #nodist_HEADERS = datetime_module.mod
-nodist_SOURCES = *.mod
+#nodist_SOURCES = *.mod
 
 lib_LIBRARIES = libdatetime.a
 

@@ -19,3 +19,8 @@ tests/Makefile
 datetime-fortran.pc
 src/tests/datetime_tests
 
+src/tests/test-suite.log
+src/tests/tests-env.sh.log
+src/tests/tests-env.sh.trs
+test-driver
+
