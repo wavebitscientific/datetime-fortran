@@ -13,6 +13,14 @@ PKG_PROG_PKG_CONFIG
 PKG_INSTALLDIR
 
 AC_PROG_FC([gfortran], [Fortran 90]) # we need a Fortran 90 compiler
+# If we are using gfortran, but user hasn't set FCFLAGS for 'configure'
+# then override autotool defaults
+AS_IF([test x$FC = xgfortran -a x$ac_cv_env_FCFLAGS_set = x],
+   AC_SUBST([FCFLAGS], ["-Wall -O0 -C -fbacktrace"])
+   [Set some flags automatically if using gfortran])
+
+
+
 AC_PROG_RANLIB # needed to create libraries
 
 AC_CONFIG_FILES([Makefile src/lib/Makefile src/tests/Makefile])

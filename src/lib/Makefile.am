@@ -1,8 +1,4 @@
-# Items needed specifically by autotools
-AM_FCFLAGS = -Wall -O0 -C -fbacktrace
-
 nodist_include_HEADERS = datetime_module.mod
-
 #nodist_HEADERS = datetime_module.mod
 #nodist_SOURCES = *.mod
 
@@ -17,7 +13,7 @@ CLEANFILES = *.mod
 OBJS = datetime.o mod_clock.o  mod_datetime.o mod_timedelta.o mod_strftime.o  mod_constants.o
 
 .f90.o:
-	$(FC) -c $(AM_FCFLAGS) $<
+	$(FC) -c $(FCFLAGS) $<
 
 libdatetime.a : datetime.o
 	ar ruv libdatetime.a $(OBJS)
