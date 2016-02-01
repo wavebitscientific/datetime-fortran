@@ -1,5 +1,6 @@
 SUBDIRS = src/lib src/tests
 
+pkgconfigdir = $(libdir)/pkgconfig # needed for automake < 1.15
 pkgconfig_DATA = datetime-fortran.pc
 
 scrub-clean :
