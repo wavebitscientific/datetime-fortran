@@ -27,6 +27,6 @@ datetime_tests$(EXEEXT): datetime_tests.o
 	$(FC) $(FCFLAGS) $(OBJ) -L$(LIB) -ldatetime -o $@
 
 #bin_SCRIPTS = . tests/tests-env.sh
-AM_TESTS_ENVIRONMENT = . tests-env.sh
+AM_TESTS_ENVIRONMENT = . ./tests-env.sh
 AM_TESTS_FD_REDIRECT = 9>&2
 TESTS = tests-env.sh
