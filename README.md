@@ -32,13 +32,26 @@ and function [*strptime*](#strptime) that return a *datetime* instance are avail
 
 * Free to modify and distribute under the terms of the [BSD-3](http://opensource.org/licenses/BSD-3-Clause) license.
 
-* Tested with the following compilers:
+* Release version 1.1.0 compiles and passes all tests with the following compilers:
 
    * GNU (gfortran) ~~4.7.2~~, 4.8.2, 4.8.4, 5.1.1, 5.2.0
    * Intel (ifort) 13.1.1, 14.0.2, 15.0.0, 16.0.0
    * Portland Group (pgf90) 13.6-0, 13.10-0 (thanks to Timothy Hilton)
    * IBM AIX (xlf) 14.1.0.5 (thanks to Bjoern Hendrik Fock)
    * Cray Fortran (ftn) 8.3.11, on Cray XC-30
+
+* Releases 1.2.0 and later have so far been tested only with:
+  * GNU (gfortran) 5.1.1, 5.2.0
+
+## Contributing
+
+You can contribute to the project in the following ways:
+  * Use it
+  * Compile it on different machines and different Fortran compilers and report successes or failures
+  * Find and report bugs
+  * Request a new feature or functionality
+  * Fork the repo, implement new feature or functionality, submit a pull request
+  * Show it to your friends and colleagues
 
 ## API
 
