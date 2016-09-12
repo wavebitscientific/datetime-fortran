@@ -8,9 +8,9 @@
 module datetime_module
 !=======================================================================
 !
-! Version: 1.4.2
+! Version: 1.4.3
 !
-! Last update: 2016-01-28
+! Last update: 2016-09-12
 !
 ! Author: Milan Curcic <mcurcic@wavebitscientific.com>
 !         Wavebit Scientific LLC
@@ -79,11 +79,10 @@ module datetime_module
 !
 !=======================================================================
 
-use mod_datetime, only:datetime,date2num,datetimeRange,daysInMonth,&
-                       daysInYear,isLeapYear,num2date,strptime,tm2date
-use mod_timedelta,only:timedelta
-use mod_clock,    only:clock
-use mod_strftime, only:tm_struct,c_strftime,c_strptime
+use mod_datetime
+use mod_timedelta
+use mod_clock
+use mod_strftime
 
 !=======================================================================
 endmodule datetime_module

@@ -3,7 +3,7 @@
 ! Copyright (c) 2013-2016, Wavebit Scientific LLC
 ! All rights reserved.
 ! 
-! Licensed under the BSD-3 clause license. See LICENSE for details.
+! Licensed under the BSD 3-clause license. See LICENSE for details.
 !
 module mod_strftime
 !=======================================================================
