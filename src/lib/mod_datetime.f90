@@ -3,7 +3,7 @@
 ! Copyright (c) 2013-2016, Wavebit Scientific LLC
 ! All rights reserved.
 ! 
-! Licensed under the BSD-3 clause license. See LICENSE for details.
+! Licensed under the BSD 3-clause license. See LICENSE for details.
 !
 module mod_datetime
 !=======================================================================
@@ -26,7 +26,6 @@ implicit none
 private
 
 public :: datetime
-public :: operator(+)
 public :: date2num
 public :: datetimeRange
 public :: daysInMonth
@@ -80,24 +79,26 @@ type :: datetime
   procedure,pass(self),public :: yearday
 
   ! private methods
-  procedure :: addMilliseconds
-  procedure :: addSeconds
-  procedure :: addMinutes
-  procedure :: addHours
-  procedure :: addDays
+  procedure,pass(self),private :: addMilliseconds
+  procedure,pass(self),private :: addSeconds
+  procedure,pass(self),private :: addMinutes
+  procedure,pass(self),private :: addHours
+  procedure,pass(self),private :: addDays
 
   ! operator overloading procedures
-  procedure,private :: datetime_plus_timedelta
-  procedure,private :: datetime_minus_datetime
-  procedure,private :: datetime_minus_timedelta 
-  procedure,private :: eq
-  procedure,private :: neq
-  procedure,private :: gt
-  procedure,private :: ge
-  procedure,private :: lt
-  procedure,private :: le
+  procedure,pass(d0),private :: datetime_plus_timedelta
+  procedure,pass(d0),private :: timedelta_plus_datetime
+  procedure,pass(d0),private :: datetime_minus_datetime
+  procedure,pass(d0),private :: datetime_minus_timedelta 
+  procedure,pass(d0),private :: eq
+  procedure,pass(d0),private :: neq
+  procedure,pass(d0),private :: gt
+  procedure,pass(d0),private :: ge
+  procedure,pass(d0),private :: lt
+  procedure,pass(d0),private :: le
 
-  generic :: operator(+)  => datetime_plus_timedelta
+  generic :: operator(+)  => datetime_plus_timedelta,&
+                             timedelta_plus_datetime
   generic :: operator(-)  => datetime_minus_datetime,&
                              datetime_minus_timedelta
   generic :: operator(==) => eq
@@ -113,9 +114,9 @@ interface datetime
   module procedure :: datetime_constructor
 endinterface datetime
 
-interface operator(+)
-  module procedure :: timedelta_plus_datetime
-endinterface
+!interface operator(+)
+!  module procedure :: timedelta_plus_datetime
+!endinterface
 
 !=======================================================================
 contains
