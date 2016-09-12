@@ -25,8 +25,6 @@ if you would like to contribute to the code.
 * Basic timezone handling and arithmetic;
 
 * Interfaces to C/C++ routines [*c_strftime*](#c_strftime) and [*c_strptime*](#c_strptime) through `ISO_C_BINDING`.
-Since version `0.3.0`, *datetime*-bound method [*strftime*](#strftime)
-and function [*strptime*](#strptime) that return a *datetime* instance are available.
 
 * Lightweight and portable;
 
@@ -40,8 +38,9 @@ and function [*strptime*](#strptime) that return a *datetime* instance are avail
    * IBM AIX (xlf) 14.1.0.5 (thanks to Bjoern Hendrik Fock)
    * Cray Fortran (ftn) 8.3.11, on Cray XC-30
 
-* Releases 1.2.0 and later have so far been tested only with:
-  * GNU (gfortran) 5.1.1, 5.2.0
+* Releases 1.2.0 and later compile and pass all tests with the following compilers:
+  * GNU (gfortran) 5.1.1, 5.2.0, 5.3.1
+  * Intel (ifort) 16.0.0, 17.0.0 
 
 ## Contributing
 
