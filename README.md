@@ -38,7 +38,7 @@ if you would like to contribute to the code.
    * IBM AIX (xlf) 14.1.0.5 (thanks to Bjoern Hendrik Fock)
    * Cray Fortran (ftn) 8.3.11, on Cray XC-30
 
-* Releases 1.2.0 and later compile and pass all tests with the following compilers:
+* Current release (1.4.3) compiles and passes all tests with the following compilers:
   * GNU (gfortran) 5.1.1, 5.2.0, 5.3.1
   * Intel (ifort) 16.0.0, 17.0.0 
 
