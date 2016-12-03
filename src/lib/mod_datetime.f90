@@ -115,10 +115,6 @@ interface datetime
   module procedure :: datetime_constructor
 endinterface datetime
 
-!interface operator(+)
-!  module procedure :: timedelta_plus_datetime
-!endinterface
-
 !=======================================================================
 contains
 
