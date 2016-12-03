@@ -717,6 +717,41 @@ SUBROUTINE test_datetime
   WRITE(UNIT=STDOUT,FMT='(71("-"))')
 
   !---------------------------------------------------------------------
+  ! datetime % isoweekday()
+
+  a = datetime(2014,1,1)
+  tests(n) = assert(a % isoweekday() == 3,'datetime % isoweekday(), Wednesday')
+  n = n+1
+
+  a = datetime(2014,1,2)
+  tests(n) = assert(a % isoweekday() == 4,'datetime % isoweekday(), Thursday')
+  n = n+1
+
+  a = datetime(2014,1,3)
+  tests(n) = assert(a % isoweekday() == 5,'datetime % isoweekday(), Friday')
+  n = n+1
+
+  a = datetime(2014,1,4)
+  tests(n) = assert(a % isoweekday() == 6,'datetime % isoweekday(), Saturday')
+  n = n+1
+
+  a = datetime(2014,1,5)
+  tests(n) = assert(a % isoweekday() == 7,'datetime % isoweekday(), Sunday')
+  n = n+1
+
+  a = datetime(2014,1,6)
+  tests(n) = assert(a % isoweekday() == 1,'datetime % isoweekday(), Monday')
+  n = n+1
+
+  a = datetime(2014,1,7)
+  tests(n) = assert(a % isoweekday() == 2,'datetime % isoweekday(), Tuesday')
+  n = n+1
+
+  !---------------------------------------------------------------------
+
+  WRITE(UNIT=STDOUT,FMT='(71("-"))')
+
+  !---------------------------------------------------------------------
   ! datetime % weekdayLong()
 
   a = datetime(2014,1,1)
