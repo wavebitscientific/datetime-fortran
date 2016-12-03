@@ -74,6 +74,7 @@ type :: datetime
   procedure,pass(self),public :: tzOffset
   procedure,pass(self),public :: utc
   procedure,pass(self),public :: weekday
+  procedure,pass(self),public :: isoweekday
   procedure,pass(self),public :: weekdayLong
   procedure,pass(self),public :: weekdayShort
   procedure,pass(self),public :: yearday
@@ -548,7 +549,28 @@ pure elemental integer function weekday(self)
 
 endfunction weekday
 
+pure elemental integer function isoweekday(self)
 
+  !! Returns the day of the week per ISO 8601 returned from weekday().
+  !! Returned value is an integer scalar in the range [1-7], such that:
+  !!
+  !! 1: Monday
+  !! 2: Tuesday
+  !! 3: Wednesday
+  !! 4: Thursday
+  !! 5: Friday
+  !! 6: Saturday
+  !! 7: Sunday
+
+  class(datetime),intent(in) :: self !! `datetime` instance
+
+  isoweekday = self % weekday()
+  
+  if (isoweekday == 0) then
+    isoweekday = 7
+  end if
+
+endfunction isoweekday
 
 pure elemental character(len=9) function weekdayLong(self)
 
