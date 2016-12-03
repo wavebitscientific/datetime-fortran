@@ -8,12 +8,7 @@
 module datetime_module
 !=======================================================================
 !
-! Version: 1.4.3
-!
-! Last update: 2016-09-12
-!
-! Author: Milan Curcic <mcurcic@wavebitscientific.com>
-!         Wavebit Scientific LLC
+! Version: 1.5.0
 !
 ! Description: A Fortran module that provides time and date manipulation 
 !              facilities. Conforms to Fortran 2003 standard.
@@ -38,6 +33,7 @@ module datetime_module
 !         procedure :: getMillisecond
 !         procedure :: isocalendar
 !         procedure :: isoformat
+!         procedure :: isoweekday
 !         procedure :: isValid
 !         procedure :: now
 !         procedure :: secondsSinceEpoch
