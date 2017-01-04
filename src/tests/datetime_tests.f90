@@ -144,7 +144,7 @@ SUBROUTINE test_datetime
 
   ! Test counter; 
   ! modify if adding new tests
-  ntests = 177
+  ntests = 191
 
   CALL initialize_tests(tests,ntests)
 
@@ -793,6 +793,48 @@ SUBROUTINE test_datetime
   WRITE(UNIT=STDOUT,FMT='(71("-"))')
 
   !---------------------------------------------------------------------
+  ! datetime % isoweekdayLong()
+
+  a = datetime(2014,1,1)
+  tests(n) = assert(a % isoweekdayLong() == 'Wednesday',&
+                    'datetime % isoweekdayLong(), Wednesday')
+  n = n+1
+
+  a = datetime(2014,1,2)
+  tests(n) = assert(a % isoweekdayLong() == 'Thursday',&
+                    'datetime % isoweekdayLong(), Thursday')
+  n = n+1
+
+  a = datetime(2014,1,3)
+  tests(n) = assert(a % isoweekdayLong() == 'Friday',&
+                    'datetime % isoweekdayLong(), Friday')
+  n = n+1
+
+  a = datetime(2014,1,4)
+  tests(n) = assert(a % isoweekdayLong() == 'Saturday',&
+                    'datetime % isoweekdayLong(), Saturday')
+  n = n+1
+
+  a = datetime(2014,1,5)
+  tests(n) = assert(a % isoweekdayLong() == 'Sunday',&
+                    'datetime % isoweekdayLong(), Sunday')
+  n = n+1
+
+  a = datetime(2014,1,6)
+  tests(n) = assert(a % isoweekdayLong() == 'Monday',&
+                    'datetime % isoweekdayLong(), Monday')
+  n = n+1
+
+  a = datetime(2014,1,7)
+  tests(n) = assert(a % isoweekdayLong() == 'Tuesday',&
+                    'datetime % isoweekdayLong(), Tuesday')
+  n = n+1
+
+  !---------------------------------------------------------------------
+
+  WRITE(UNIT=STDOUT,FMT='(71("-"))')
+
+  !---------------------------------------------------------------------
   ! datetime % weekdayShort()
 
   a = datetime(2014,1,1)
@@ -828,6 +870,47 @@ SUBROUTINE test_datetime
   a = datetime(2014,1,7)
   tests(n) = assert(a % weekdayShort() == 'Tue',&
                     'datetime % weekdayShort(), Tue')
+  n = n+1
+  !---------------------------------------------------------------------
+
+  WRITE(UNIT=STDOUT,FMT='(71("-"))')
+
+  !---------------------------------------------------------------------
+  ! datetime % isoweekdayShort()
+
+  a = datetime(2014,1,1)
+  tests(n) = assert(a % isoweekdayShort() == 'Wed',&
+                    'datetime % isoweekdayShort(), Wed')
+  n = n+1
+
+  a = datetime(2014,1,2)
+  tests(n) = assert(a % isoweekdayShort() == 'Thu',&
+                    'datetime % isoweekdayShort(), Thu')
+  n = n+1
+
+  a = datetime(2014,1,3)
+  tests(n) = assert(a % isoweekdayShort() == 'Fri',&
+                    'datetime % isoweekdayShort(), Fri')
+  n = n+1
+
+  a = datetime(2014,1,4)
+  tests(n) = assert(a % isoweekdayShort() == 'Sat',&
+                    'datetime % isoweekdayShort(), Sat')
+  n = n+1
+
+  a = datetime(2014,1,5)
+  tests(n) = assert(a % isoweekdayShort() == 'Sun',&
+                    'datetime % isoweekdayShort(), Sun')
+  n = n+1
+
+  a = datetime(2014,1,6)
+  tests(n) = assert(a % isoweekdayShort() == 'Mon',&
+                    'datetime % isoweekdayShort(), Mon')
+  n = n+1
+
+  a = datetime(2014,1,7)
+  tests(n) = assert(a % isoweekdayShort() == 'Tue',&
+                    'datetime % isoweekdayShort(), Tue')
   n = n+1
   !---------------------------------------------------------------------
 
