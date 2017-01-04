@@ -76,7 +76,9 @@ type :: datetime
   procedure,pass(self),public :: weekday
   procedure,pass(self),public :: isoweekday
   procedure,pass(self),public :: weekdayLong
+  procedure,pass(self),public :: isoweekdayLong
   procedure,pass(self),public :: weekdayShort
+  procedure,pass(self),public :: isoweekdayShort
   procedure,pass(self),public :: yearday
 
   ! private methods
@@ -549,6 +551,8 @@ pure elemental integer function weekday(self)
 
 endfunction weekday
 
+
+
 pure elemental integer function isoweekday(self)
 
   !! Returns the day of the week per ISO 8601 returned from weekday().
@@ -572,6 +576,8 @@ pure elemental integer function isoweekday(self)
 
 endfunction isoweekday
 
+
+
 pure elemental character(len=9) function weekdayLong(self)
 
   !! Returns the full name of the day of the week.
@@ -588,6 +594,23 @@ endfunction weekdayLong
 
 
 
+pure elemental character(len=9) function isoweekdayLong(self)
+
+  !! Returns the full name of the day of the week for ISO 8601
+  !! ordered weekdays.
+
+  class(datetime),intent(in) :: self !! `datetime` instance
+
+  character(len=9),parameter,dimension(7) :: &
+  days = ['Monday   ','Tuesday  ','Wednesday','Thursday ',&
+          'Friday   ','Saturday ','Sunday   ']
+
+  isoweekdayLong = days(self % isoweekday())
+
+endfunction isoweekdayLong
+
+
+
 pure elemental character(len=3) function weekdayShort(self)
 
   !! Returns the short (3-letter) name of the day of the week.
@@ -601,6 +624,21 @@ pure elemental character(len=3) function weekdayShort(self)
 
 endfunction weekdayShort
 
+
+
+pure elemental character(len=3) function isoweekdayShort(self)
+
+  !! Returns the short (3-letter) name of the day of the week
+  !! based on ISO 8601 ordering.
+
+  class(datetime),intent(in) :: self !! `datetime` instance
+
+  character(len=3),parameter,dimension(7) :: &
+                   days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
+
+  isoweekdayShort = days(self % isoweekday())
+
+endfunction isoweekdayShort
 
 
 function isocalendar(self)
