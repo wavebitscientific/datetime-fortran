@@ -1,6 +1,6 @@
 !
 ! datetime-fortran - A Fortran library for date and time manipulation
-! Copyright (c) 2013-2016, Wavebit Scientific LLC
+! Copyright (c) 2013-2017, Wavebit Scientific LLC
 ! All rights reserved.
 ! 
 ! Licensed under the BSD-3 clause license. See LICENSE for details.
@@ -8,7 +8,7 @@
 module datetime_module
 !=======================================================================
 !
-! Version: 1.5.0
+! Version: 1.6.0
 !
 ! Description: A Fortran module that provides time and date manipulation 
 !              facilities. Conforms to Fortran 2003 standard.
@@ -34,6 +34,8 @@ module datetime_module
 !         procedure :: isocalendar
 !         procedure :: isoformat
 !         procedure :: isoweekday
+!         procedure :: isoweekdayShort
+!         procedure :: isoweekdayLong
 !         procedure :: isValid
 !         procedure :: now
 !         procedure :: secondsSinceEpoch
