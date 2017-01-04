@@ -17,7 +17,7 @@ AC_PROG_FC([gfortran], [Fortran 90]) # we need a Fortran 90 compiler
 # then override autotool defaults
 AS_IF([test x$FC = xgfortran -a x$ac_cv_env_FCFLAGS_set = x],
    AC_SUBST([FCFLAGS], ["-Wall"])
-   [Set some flags automatically if using gfortran])
+   [# Set some flags automatically if using gfortran])
 
 
 
