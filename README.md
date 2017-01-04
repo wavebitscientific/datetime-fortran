@@ -1,6 +1,9 @@
-## Description
+## datetime-fortran
 
-*datetime-fortran* is a time and date manipulation library for Fortran.
+[![Build Status](https://travis-ci.org/wavebitscientific/datetime-fortran.svg?branch=master)](https://travis-ci.org/wavebitscientific/datetime-fortran)
+[![GitHub issues](https://img.shields.io/github/issues/wavebitscientific/datetime-fortran.svg)](https://github.com/wavebitscientific/datetime-fortran/issues)
+
+datetime-fortran is a time and date manipulation library for Fortran.
 It provides classes for date and time ([*datetime*](#datetime)), 
 and time difference representation ([*timedelta*](#timedelta))
 as well as arithmetic and comparison operators and associated methods for their manipulation.

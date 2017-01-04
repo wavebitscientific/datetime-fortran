@@ -144,8 +144,7 @@ SUBROUTINE test_datetime
 
   ! Test counter; 
   ! modify if adding new tests
-  !ntests = 172
-  ntests = 170
+  ntests = 177
 
   CALL initialize_tests(tests,ntests)
 
