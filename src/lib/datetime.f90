@@ -8,8 +8,6 @@
 module datetime_module
 !=======================================================================
 !
-! Version: 1.6.0
-!
 ! Description: A Fortran module that provides time and date manipulation 
 !              facilities. Conforms to Fortran 2003 standard.
 !
