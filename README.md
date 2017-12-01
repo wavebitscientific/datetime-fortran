@@ -1,4 +1,4 @@
-## datetime-fortran
+# datetime-fortran
 
 [![Build Status](https://travis-ci.org/wavebitscientific/datetime-fortran.svg?branch=master)](https://travis-ci.org/wavebitscientific/datetime-fortran)
 [![GitHub issues](https://img.shields.io/github/issues/wavebitscientific/datetime-fortran.svg)](https://github.com/wavebitscientific/datetime-fortran/issues)
@@ -84,14 +84,13 @@ use datetime_module, only: datetime, timedelta, clock
     * [*strptime*](#strptime)
     * [*tm2date*](#tm2date)
 
-
-<a id="derived-types"><h2>Derived Types</h2></a>
+## Derived Types<a id="derived-types"></a>
 
 *datetime-fortran* library provides the following derived types:
 [*datetime*](#datetime), [*timedelta*](#timedelta),  
 [*clock*](#clock) and [*tm_struct*](#tm_struct).
 
-<a id="datetime"><h3>**datetime**</h3></a>
+### datetime <a id="datetime"></a>
 
 Main date and time object, defined as:
 
@@ -761,7 +760,7 @@ write(*,*)a % yearday() ! 121
 [Back to top](#top)
 <hr>
 
-### **timedelta**
+### timedelta<a id="timedelta"></a>
 
 Represents a duration of time, and a difference between
 two [*datetime*](#datetime) objects. It is defined as:
@@ -883,7 +882,7 @@ write(*,*)td%total_seconds() ! 476107.12300000002
 [Back to top](#top)
 <hr>
 
-### **clock**<a id="clock"></a>
+### clock<a id="clock"></a>
 
 A generic clock object that contains start and stop times,
 tick increment and reset and tick methods.
@@ -1041,7 +1040,7 @@ endtype tm_struct
 [Back to top](#top)
 <hr>
 
-## Overloaded operators<a id="#operators"></a>
+## Overloaded operators<a id="overloaded-operators"></a>
 
 *datetime-fortran* provides arithmetic and comparison operators
 for [*datetime*](#datetime) and [*timedelta*](#timedelta) objects.
