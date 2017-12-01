@@ -3,69 +3,51 @@
 [![Build Status](https://travis-ci.org/wavebitscientific/datetime-fortran.svg?branch=master)](https://travis-ci.org/wavebitscientific/datetime-fortran)
 [![GitHub issues](https://img.shields.io/github/issues/wavebitscientific/datetime-fortran.svg)](https://github.com/wavebitscientific/datetime-fortran/issues)
 
-datetime-fortran is a time and date manipulation library for Fortran.
-It provides classes for date and time ([*datetime*](#datetime)), 
-and time difference representation ([*timedelta*](#timedelta))
-as well as arithmetic and comparison operators and associated methods for their manipulation.
-It also provides an interface to C/C++ **tm** struct, and associated
-[*strftime*](#strftime) and [*strptime*](#strptime) functions.
-Since version 0.2.0, also provides a [*clock*](#clock) class.
-*datetime-fortran* came about due to the lack of time handling facilities in standard Fortran language.
-It is freely available under the [BSD-3](http://opensource.org/licenses/BSD-3-Clause) license.
-Please send suggestions and bug reports by [e-mail](mailto:caomaco@gmail.com) or
-through this Github page. See the list of [current issues](https://github.com/milancurcic/datetime-fortran/issues)
-if you would like to contribute to the code.
+Date and time manipulation for modern Fortran.
 
-## Features
+## Getting started
 
-* Classes: [*datetime*](#datetime), [*timedelta*](#timedelta), 
-[*clock*](#clock), [*tm_struct*](#tm_struct);
+### Building with cmake
 
-* Arithmetic operators `+` and `-` for *datetime* and *timedelta* objects;
+```
+git clone https://github.com/wavebitscientific/datetime-fortran
+cd datetime-fortran
+mkdir build
+cd build
+cmake ..
+make
+ctest
+```
 
-* Comparison operators `>`, `>=`, `<`, `<=`, `==` and `/=` for *datetime* and *timedelta* objects;
+### Building with autotools
 
-* Basic timezone handling and arithmetic;
+Download and unpack a [release tarball](https://github.com/wavebitscientific/datetime-fortran/releases).
+In datetime-fortran source directory:
 
-* Interfaces to C/C++ routines [*c_strftime*](#c_strftime) and [*c_strptime*](#c_strptime) through `ISO_C_BINDING`.
+```
+./configure
+make check
+make install
+```
 
-* Lightweight and portable;
+### Usage
 
-* Free to modify and distribute under the terms of the [BSD-3](http://opensource.org/licenses/BSD-3-Clause) license.
+To start using datetime-fortran in your code by importing the module:
 
-* Release version 1.1.0 compiles and passes all tests with the following compilers:
-
-   * GNU (gfortran) ~~4.7.2~~, 4.8.2, 4.8.4, 5.1.1, 5.2.0
-   * Intel (ifort) 13.1.1, 14.0.2, 15.0.0, 16.0.0
-   * Portland Group (pgf90) 13.6-0, 13.10-0 (thanks to Timothy Hilton)
-   * IBM AIX (xlf) 14.1.0.5 (thanks to Bjoern Hendrik Fock)
-   * Cray Fortran (ftn) 8.3.11, on Cray XC-30
-
-* Current release (1.4.3) compiles and passes all tests with the following compilers:
-  * GNU (gfortran) 5.1.1, 5.2.0, 5.3.1
-  * Intel (ifort) 16.0.0, 17.0.0 
-
-## Contributing
-
-You can contribute to the project in the following ways:
-  * Use it
-  * Compile it on different machines and different Fortran compilers and report successes or failures
-  * Find and report bugs
-  * Request a new feature or functionality
-  * Fork the repo, implement new feature or functionality, submit a pull request
-  * Show it to your friends and colleagues
+```fortran
+use datetime_module, only: datetime, timedelta, clock
+```
+<a id="top"></a>
 
 ## API
 
-<a id="top"></a>
-
 * [Derived Types](#derived-types)
     * [*datetime*](#datetime)
-        * [*addMilliseconds*](#addmilliseconds)
-        * [*addSeconds*](#addseconds)
-        * [*addMinutes*](#addminutes)
-        * [*addHours*](#addhours)
-        * [*addDays*](#adddays)
+        * [*getMillisecond*](#getmilliseconds)
+        * [*getSecond*](#getseconds)
+        * [*getMinute*](#getminutes)
+        * [*getHour*](#gethours)
+        * [*getDay*](#getdays)
         * [*isocalendar*](#isocalendar)
         * [*isoformat*](#isoformat)
         * [*isValid*](#isvalid)
@@ -112,76 +94,117 @@ You can contribute to the project in the following ways:
 Main date and time object, defined as:
 
 ```fortran
-TYPE :: datetime
+type :: datetime
 
-  ! COMPONENTS:
-  INTEGER :: year        = 1 ! Year                   [1-HUGE(year)]
-  INTEGER :: month       = 1 ! Month in year          [1-12]
-  INTEGER :: day         = 1 ! Day in month           [1-31]
-  INTEGER :: hour        = 0 ! Hour in day            [0-23]
-  INTEGER :: minute      = 0 ! Minute in hour         [0-59]
-  INTEGER :: second      = 0 ! Second in minute       [0-59]
-  INTEGER :: millisecond = 0 ! Milliseconds in second [0-999]
+  !! Main datetime class for date and time representation.
 
-  REAL :: tz = 0 ! Timezone offset from UTC [hours]
+  private
 
-  CONTAINS
+  integer :: year        = 1 !! year [1-HUGE(year)]
+  integer :: month       = 1 !! month in year [1-12]
+  integer :: day         = 1 !! day in month [1-31]
+  integer :: hour        = 0 !! hour in day [0-23]
+  integer :: minute      = 0 !! minute in hour [0-59]
+  integer :: second      = 0 !! second in minute [0-59]
+  integer :: millisecond = 0 !! milliseconds in second [0-999]
 
-  ! METHODS:
-  PROCEDURE :: addMilliseconds
-  PROCEDURE :: addSeconds
-  PROCEDURE :: addMinutes
-  PROCEDURE :: addHours
-  PROCEDURE :: addDays
-  PROCEDURE :: isocalendar
-  PROCEDURE :: isoformat
-  PROCEDURE :: isValid
-  PROCEDURE :: now
-  PROCEDURE :: secondsSinceEpoch
-  PROCEDURE :: strftime
-  PROCEDURE :: tm
-  PROCEDURE :: tzOffset
-  PROCEDURE :: utc
-  PROCEDURE :: weekday
-  PROCEDURE :: weekdayLong
-  PROCEDURE :: weekdayShort
-  PROCEDURE :: yearday
+  real(kind=real64) :: tz = 0 !! timezone offset from UTC [hours]
 
-ENDTYPE datetime
+  contains
+
+  ! getter functions
+  procedure,pass(self),public :: getYear
+  procedure,pass(self),public :: getMonth
+  procedure,pass(self),public :: getDay
+  procedure,pass(self),public :: getHour
+  procedure,pass(self),public :: getMinute
+  procedure,pass(self),public :: getSecond
+  procedure,pass(self),public :: getMillisecond
+  procedure,pass(self),public :: getTz
+
+  ! public methods
+  procedure,pass(self),public :: isocalendar
+  procedure,pass(self),public :: isoformat
+  procedure,pass(self),public :: isValid
+  procedure,nopass,    public :: now
+  procedure,pass(self),public :: secondsSinceEpoch
+  procedure,pass(self),public :: strftime
+  procedure,pass(self),public :: tm
+  procedure,pass(self),public :: tzOffset
+  procedure,pass(self),public :: utc
+  procedure,pass(self),public :: weekday
+  procedure,pass(self),public :: isoweekday
+  procedure,pass(self),public :: weekdayLong
+  procedure,pass(self),public :: isoweekdayLong
+  procedure,pass(self),public :: weekdayShort
+  procedure,pass(self),public :: isoweekdayShort
+  procedure,pass(self),public :: yearday
+
+  ! private methods
+  procedure,pass(self),private :: addMilliseconds
+  procedure,pass(self),private :: addSeconds
+  procedure,pass(self),private :: addMinutes
+  procedure,pass(self),private :: addHours
+  procedure,pass(self),private :: addDays
+
+  ! operator overloading procedures
+  procedure,pass(d0),private :: datetime_plus_timedelta
+  procedure,pass(d0),private :: timedelta_plus_datetime
+  procedure,pass(d0),private :: datetime_minus_datetime
+  procedure,pass(d0),private :: datetime_minus_timedelta
+  procedure,pass(d0),private :: eq
+  procedure,pass(d0),private :: neq
+  procedure,pass(d0),private :: gt
+  procedure,pass(d0),private :: ge
+  procedure,pass(d0),private :: lt
+  procedure,pass(d0),private :: le
+
+  generic :: operator(+)  => datetime_plus_timedelta,&
+                             timedelta_plus_datetime
+  generic :: operator(-)  => datetime_minus_datetime,&
+                             datetime_minus_timedelta
+  generic :: operator(==) => eq
+  generic :: operator(/=) => neq
+  generic :: operator(>)  => gt
+  generic :: operator(>=) => ge
+  generic :: operator(<)  => lt
+  generic :: operator(<=) => le
+
+endtype datetime
 ```
 
 [*datetime*](#datetime) components are initialized by default, so all arguments are optional.
 Arguments may be provided as positional arguments, in the order of their declaration,
 or as keyword arguments, in any order. If both positional and keyword arguments are used,
-no positional arguments may appear after a keyword argument. 
+no positional arguments may appear after a keyword argument.
 
 #### Example usage
 
 ```fortran
-USE datetime_module,ONLY:datetime
+use datetime_module, only:datetime
 
-TYPE(datetime) :: a
+type(datetime) :: a
 
 ! Initialize as default:
-a = datetime()                                      ! 0001-01-01 00:00:00
+a = datetime() ! 0001-01-01 00:00:00
 
 ! Components can be specified by position:
-a = datetime(1984,12,10)                            ! 1984-12-10 00:00:00
+a = datetime(1984, 12, 10) ! 1984-12-10 00:00:00
 
 ! Or by keyword:
-a = datetime(month=1,day=1,year=1970)               ! 1970-01-01 00:00:00
+a = datetime(month=1, day=1, year=1970) ! 1970-01-01 00:00:00
 
 ! Or combined:
-a = datetime(2013,2,minute=23,day=5)                ! 2013-02-05 00:23:00
+a = datetime(2013, 2, minute=23, day=5) ! 2013-02-05 00:23:00
 
 ! With timezone offset:
-a = datetime(2013,2,minute=23,day=5,tz=-4)          ! 2013-02-05 00:23:00 -0400
+a = datetime(2013, 2, minute=23, day=5, tz=-4) ! 2013-02-05 00:23:00 -0400
 
 ! Do not use positional after keyword arguments:
-a = datetime(year=2013,2,minute=23,day=5)  ! ILLEGAL
+a = datetime(year=2013, 2, minute=23, day=5) ! ILLEGAL
 ```
 
-Note that the current implementation of [*datetime*](#datetime) 
+Note that the current implementation of [*datetime*](#datetime)
 does not support daylight saving time (DST) information.
 
 #### See also
@@ -194,298 +217,92 @@ does not support daylight saving time (DST) information.
 
 <hr>
 
-### addMilliseconds<a id="addmilliseconds"></a>
+### getYear<a id="getyear"</a>
 
 ```fortran
-PURE ELEMENTAL SUBROUTINE addMilliseconds(self,ms)
-
-  ! ARGUMENTS:
-  CLASS(datetime),INTENT(INOUT) :: self
-  INTEGER,        INTENT(IN)    :: ms   ! Number of milliseconds to add
+pure elemental integer function getYear(self)
+  class(datetime),intent(in) :: self
 ```
+Returns the year of a `datetime` instance.
 
-Used internally by binary arithmetic operators + and - when 
-adding/subtracting a [timedelta](#timedelta) instance to/from a 
-[datetime](#datetime) instance. In general, there is no need to use 
-this method from external programs. However, it may be convenient
-and create less overhead if the operation needs to be performed
-on a large array of [datetime](#datetime) instances.
-
-#### Arguments
-
-`ms` Integer number of milliseconds to add. May be negative for subtraction.
-
-#### Return value
-
-None
-
-#### Example usage
+### getMonth<a id="getmonth"</a>
 
 ```fortran
-USE datetime_module,ONLY:datetime
-
-TYPE(datetime) :: a
-
-! Initialize:
-a = datetime(2013,1,1,0,0,0,0)           ! 2013-01-01 00:00:00.000
-
-! Add:
-CALL a%addMilliseconds(100)   ! a becomes: 2013-01-01 00:00:00.100
+pure elemental integer function getMonth(self)
+  class(datetime),intent(in) :: self
 ```
+Returns the month of a `datetime` instance.
 
-#### See also
-
-* [*addSeconds*](#addseconds)
-
-* [*addMinutes*](#addminutes)
-
-* [*addHours*](#addhours)
-
-* [*addDays*](#adddays)
-
-[Back to top](#top)
-
-<hr>
-
-### addSeconds<a id="addseconds"></a>
+### getDay<a id="getday"</a>
 
 ```fortran
-PURE ELEMENTAL SUBROUTINE addSeconds(self,s)
-
-  ! ARGUMENTS:
-  CLASS(datetime),INTENT(INOUT) :: self
-  INTEGER,        INTENT(IN)    :: s    ! Number of seconds to add
+pure elemental integer function getDay(self)
+  class(datetime),intent(in) :: self
 ```
+Returns the day of a `datetime` instance.
 
-Used internally by binary arithmetic operators + and - when
-adding/subtracting a [timedelta](#timedelta) instance to/from a
-[datetime](#datetime) instance. In general, there is no need to use
-this method from external programs. However, it may be convenient
-and create less overhead if the operation needs to be performed
-on a large array of [datetime](#datetime) instances.
-
-#### Arguments
-
-`s` Integer number of seconds to add. May be negative for subtraction.
-
-#### Return value
-
-None
-
-#### Example usage
+### getHour<a id="gethour"</a>
 
 ```fortran
-USE datetime_module,ONLY:datetime
-
-TYPE(datetime) :: a
-
-! Initialize:
-a = datetime(2013,1,1,0,0,0,0)           ! 2013-01-01 00:00:00.000
-
-! Add:
-CALL a%addSeconds(10)         ! a becomes: 2013-01-01 00:00:10.000
+pure elemental integer function getHour(self)
+  class(datetime),intent(in) :: self
 ```
-#### See also
+Returns the hour of a `datetime` instance.
 
-* [*addMilliseconds*](#addmilliseconds)
-
-* [*addMinutes*](#addminutes)
-
-* [*addHours*](#addhours)
-
-* [*addDays*](#adddays)
-
-[Back to top](#top)
-<hr>
-
-### addMinutes<a id="addminutes"></a>
+### getMinute<a id="getminute"</a>
 
 ```fortran
-PURE ELEMENTAL SUBROUTINE addMinutes(self,m)
-
-  ! ARGUMENTS:
-  CLASS(datetime),INTENT(INOUT) :: self
-  INTEGER,        INTENT(IN)    :: m    ! Number of minutes to add
+pure elemental integer function getMinute(self)
+  class(datetime),intent(in) :: self
 ```
-Used internally by binary arithmetic operators + and - when
-adding/subtracting a [timedelta](#timedelta) instance to/from a
-[datetime](#datetime) instance. In general, there is no need to use
-this method from external programs. However, it may be convenient
-and create less overhead if the operation needs to be performed
-on a large array of [datetime](#datetime) instances.
+Returns the minute of a `datetime` instance.
 
-#### Arguments
-
-`m` Integer number of minutes to add. May be negative for subtraction.
-
-#### Return value
-
-None
-
-#### Example usage
+### getSecond<a id="getsecond"</a>
 
 ```fortran
-USE datetime_module,ONLY:datetime
-
-TYPE(datetime) :: a
-
-! Initialize:
-a = datetime(2013,1,1,0,0,0,0)           ! 2013-01-01 00:00:00.000
-
-! Add:
-CALL a%addMinutes(10)         ! a becomes: 2013-01-01 00:10:00.000
+pure elemental integer function getSecond(self)
+  class(datetime),intent(in) :: self
 ```
+Returns the second of a `datetime` instance.
 
-#### See also
-
-[Back to top](#top)
-<hr>
-
-### addHours<a id="addhours"></a>
+### getMillisecond<a id="getmillisecond"</a>
 
 ```fortran
-PURE ELEMENTAL SUBROUTINE addHours(self,h)
-
-  ! ARGUMENTS:
-  CLASS(datetime),INTENT(INOUT) :: self
-  INTEGER,        INTENT(IN)    :: h    ! Number of hours to add
+pure elemental integer function getMillisecond(self)
+  class(datetime),intent(in) :: self
 ```
-
-Used internally by binary arithmetic operators + and - when
-adding/subtracting a [timedelta](#timedelta) instance to/from a
-[datetime](#datetime) instance. In general, there is no need to use
-this method from external programs. However, it may be convenient
-and create less overhead if the operation needs to be performed
-on a large array of [datetime](#datetime) instances.
-
-#### Arguments
-
-`h` Integer number of hours to add. May be negative for subtraction.
-
-#### Return value
-
-None
-
-#### Example usage
-
-```fortran
-USE datetime_module,ONLY:datetime
-
-TYPE(datetime) :: a
-
-! Initialize:
-a = datetime(2013,1,1,0,0,0,0)           ! 2013-01-01 00:00:00.000
-
-! Add:
-CALL a%addHours(12)           ! a becomes: 2013-01-01 12:00:00.000
-```
-
-#### See also
-
-* [*addMilliseconds*](#addmilliseconds)
-
-* [*addSeconds*](#addseconds)
-
-* [*addMinutes*](#addminutes)
-
-* [*addDays*](#adddays)
-
-[Back to top](#top)
-<hr>
-
-### addDays<a id="adddays"></a>
-
-```fortran
-PURE ELEMENTAL SUBROUTINE addDays(self,d)
-
-  ! ARGUMENTS:
-  CLASS(datetime),INTENT(INOUT) :: self
-  INTEGER,        INTENT(IN)    :: d    ! Number of days to add
-```
-
-Used internally by binary arithmetic operators + and - when
-adding/subtracting a [timedelta](#timedelta) instance to/from a
-[datetime](#datetime) instance. In general, there is no need to use
-this method from external programs. However, it may be convenient
-and create less overhead if the operation needs to be performed
-on a large array of [datetime](#datetime) instances.
-
-#### Arguments
-
-`d` Integer number of days to add. May be negative for subtraction.
-
-#### Return value
-
-None
-
-#### Example usage
-
-```fortran
-USE datetime_module,ONLY:datetime
-
-TYPE(datetime) :: a
-
-! Initialize:
-a = datetime(2013,1,1,0,0,0,0)           ! 2013-01-01 00:00:00.000
-
-! Add:
-CALL a%addDays(7)             ! a becomes: 2013-01-08 00:00:00.000
-```
-
-#### See also
-
-* [*addMilliseconds*](#addmilliseconds)
-
-* [*addSeconds*](#addseconds)
-
-* [*addMinutes*](#addminutes)
-
-* [*addHours*](#addhours)
-
-[Back to top](#top)
-<hr>
+Returns the millisecond of a `datetime` instance.
 
 ### isocalendar<a id="isocalendar"></a>
 
 ```fortran
-FUNCTION isocalendar(self)
-
-  ! ARGUMENTS:
-  CLASS(datetime),INTENT(IN) :: self
-  INTEGER,DIMENSION(3)       :: isocalendar
+function isocalendar(self)
+  class(datetime),intent(in) :: self
+  integer,dimension(3)       :: isocalendar
 ```
 
-Returns an array of 3 integers: year, week number, and week day, 
+Returns an array of 3 integers: year, week number, and week day,
 as defined by [ISO 8601 week date](http://en.wikipedia.org/wiki/ISO_week_date).
 The ISO calendar is a widely used variant of the Gregorian calendar.
-The ISO year consists of 52 or 53 full weeks. 
-A week starts on a Monday (1) and ends on a Sunday (7). 
-The first week of an ISO year is the first (Gregorian) calendar week 
-of a year containing a Thursday. 
-This is called week number 1, and the ISO year of that Thursday 
+The ISO year consists of 52 or 53 full weeks.
+A week starts on a Monday (1) and ends on a Sunday (7).
+The first week of an ISO year is the first (Gregorian) calendar week
+of a year containing a Thursday.
+This is called week number 1, and the ISO year of that Thursday
 is the same as its Gregorian year.
 
-[*datetime%isocalendar()*](#isocalendar) is equivalent to Python's 
+[*datetime%isocalendar()*](#isocalendar) is equivalent to Python's
 [*datetime.datetime.isocalendar()*](http://docs.python.org/2/library/datetime.html#datetime.datetime.isocalendar).
-
-#### Arguments
-
-None
-
-#### Return value
-
-`isocalendar` A rank 1 integer array of length 3. Contains year, week number
-and week day.
 
 #### Example usage
 
 ```fortran
-USE datetime_module,ONLY:datetime
+use datetime_module,only:datetime
 
-TYPE(datetime) :: a
+type(datetime) :: a
 
 a = datetime(2013,1,1)
-WRITE(*,*)a%isocalendar() ! Prints: 2013  1  2
+write(*,*)a % isocalendar() ! Prints: 2013  1  2
 ```
 
 #### See also
@@ -498,20 +315,18 @@ WRITE(*,*)a%isocalendar() ! Prints: 2013  1  2
 ### isoformat<a id="isoformat"></a>
 
 ```fortran
-PURE ELEMENTAL CHARACTER(LEN=23) FUNCTION isoformat(self,sep)
-
-  ! ARGUMENTS:
-  CLASS(datetime), INTENT(IN)          :: self
-  CHARACTER(LEN=1),INTENT(IN),OPTIONAL :: sep
+pure elemental character(len=23) function isoformat(self,sep)
+  class(datetime), intent(in)          :: self
+  character(len=1),intent(in),optional :: sep
 ```
 
-Returns a character string of length 23 that contains date and time in ISO 8601 
+Returns a character string of length 23 that contains date and time in ISO 8601
 format.
 
-[*datetime%isoformat()*](#isoformat) is equivalent to Python's 
+[*datetime%isoformat()*](#isoformat) is equivalent to Python's
 [*datetime.datetime.isoformat()*](http://docs.python.org/2/library/datetime.html#datetime.datetime.isoformat),
-with the only difference being that [*datetime%isoformat()*](#isoformat) returns the milliseconds 
-at the end of the string, where as 
+with the only difference being that [*datetime%isoformat()*](#isoformat) returns the milliseconds
+at the end of the string, where as
 [*datetime.datetime.isoformat()*](http://docs.python.org/2/library/datetime.html#datetime.datetime.isoformat)
 returns microseconds.
 
@@ -523,17 +338,17 @@ separate date and time entries. If ommited, defaults to `T`.
 #### Example usage
 
 ```fortran
-USE datetime_module,ONLY:datetime
+use datetime_module,only:datetime
 
-TYPE(datetime) :: a
+type(datetime) :: a
 
 a = datetime(1984,12,10,13,5,0)
 
 ! Without arguments:
-WRITE(*,*)a%isoformat()        ! Prints 1984-12-10T13:05:00.000
+write(*,*)a % isoformat() ! Prints 1984-12-10T13:05:00.000
 
 ! With a specified separator:
-WRITE(*,*)a%isoformat(' ')     ! Prints 1984-12-10 13:05:00.000
+write(*,*)a % isoformat(' ') ! Prints 1984-12-10 13:05:00.000
 ```
 
 #### See also
@@ -544,15 +359,13 @@ WRITE(*,*)a%isoformat(' ')     ! Prints 1984-12-10 13:05:00.000
 ### isValid<a id="isvalid"></a>
 
 ```fortran
-PURE ELEMENTAL LOGICAL FUNCTION isValid(self)
-  
-  ! ARGUMENTS:
-  CLASS(datetime),INTENT(IN) :: self
+pure elemental logical function isValid(self)
+  class(datetime),intent(in) :: self
 ```
 
-Returns `.TRUE.` if all [*datetime*](#datetime) instance components 
-have valid values, and .FALSE. otherwise. Components have valid values
-if they are within the range indicated in [*datetime*](#datetime) 
+Returns `.true.` if all [*datetime*](#datetime) instance components
+have valid values, and .false. otherwise. Components have valid values
+if they are within the range indicated in [*datetime*](#datetime)
 derived type description.
 
 Useful for debugging and validating user input.
@@ -560,17 +373,17 @@ Useful for debugging and validating user input.
 #### Example usage
 
 ```fortran
-USE datetime_module,ONLY:datetime
+use datetime_module,only:datetime
 
-TYPE(datetime) :: a
+type(datetime) :: a
 
 a = datetime(1984,12,10,13,5,0)
 
-WRITE(*,*)a%isValid()   ! .TRUE.
+write(*,*)a % isValid()! .true.
 
 a = datetime(1984,13,10,13,5,0)
 
-WRITE(*,*)a%isValid()   ! .FALSE.
+write(*,*)a % isValid() ! .false.
 ```
 
 #### See also
@@ -581,18 +394,12 @@ WRITE(*,*)a%isValid()   ! .FALSE.
 ### now<a id="now"></a>
 
 ```fortran
-TYPE(datetime) FUNCTION now(self)
-
-  ! ARGUMENTS:
-  CLASS(datetime),INTENT(IN) :: self
+type(datetime) function now(self)
+  class(datetime),intent(in) :: self
 ```
 
-Returns the [*datetime*](#datetime) instance representing 
+Returns the [*datetime*](#datetime) instance representing
 the current machine time. Does not support timezones.
-
-#### Arguments
-
-None.
 
 #### Return value
 
@@ -601,14 +408,12 @@ None.
 #### Example usage
 
 ```fortran
-USE datetime_module,ONLY:datetime
+use datetime_module,only:datetime
 
-TYPE(datetime) :: a
+type(datetime) :: a
 
-a = a%now()   ! Assigns current machine time to a
+a = a % now() ! Assigns current machine time to a
 ```
-
-#### See also
 
 [Back to top](#top)
 <hr>
@@ -616,63 +421,51 @@ a = a%now()   ! Assigns current machine time to a
 ### secondsSinceEpoch<a id="secondssinceepoch"></a>
 
 ```fortran
-INTEGER FUNCTION secondsSinceEpoch(self)
-
-  ! ARGUMENTS
-  CLASS(datetime),INTENT(IN) :: self
+integer function secondsSinceEpoch(self)
+  class(datetime),intent(in) :: self
 ```
 
-Returns an integer number of seconds since the 
+Returns an integer number of seconds since the
 UNIX Epoch, `1970-01-01 00:00:00 +0000` (UTC).
-
-#### Arguments
-
-None.
 
 #### Return value
 
-`secondsSinceEpoch` An `INTEGER` scalar containing number of seconds since 
+`secondsSinceEpoch` An `integer` scalar containing number of seconds since
 UNIX Epoch.
 
 #### Example usage
 
 ```fortran
-USE datetime_module,ONLY:datetime
+use datetime_module,only:datetime
 
-TYPE(datetime) :: a 
+type(datetime) :: a
 
 ! Initialize:
 a = datetime(2013,1,1)
 
-WRITE(*,*)a%secondsSinceEpoch() 
+write(*,*)a%secondsSinceEpoch()
 ```
-
-#### See also
 
 [Back to top](#top)
 <hr>
 
-
-
 ### strftime<a id="strfime"></a>
 
 ```fortran
-CHARACTER(LEN=MAXSTRLEN) FUNCTION strftime(self,format)
-
-  ! ARGUMENTS:
-  CLASS(datetime), INTENT(IN) :: self
-  CHARACTER(LEN=*),INTENT(IN) :: format
+character(len=maxstrlen) function strftime(self,format)
+  class(datetime), intent(in) :: self
+  character(len=*),intent(in) :: format
 ```
 
-A *datetime*-bound method that serves as a wrapper around the 
-C routine *strftime*. 
+A *datetime*-bound method that serves as a wrapper around the
+C routine *strftime*.
 `datetime%strftime` takes only the format string as argument,
-and returns the character string representation of the time 
+and returns the character string representation of the time
 information contained in the datetime instance. Thus, this function
 takes care of the conversion to `tm_struct` and calling the raw C *strftime*.
-Because Fortran does not allow assumed-length character strings as 
+Because Fortran does not allow assumed-length character strings as
 the type of the function result, a fixed length of `MAXSTRLEN` is used.
-`MAXSTRLEN` is currently set to `99`. It is assumed that the desired 
+`MAXSTRLEN` is currently set to `99`. It is assumed that the desired
 time string is shorter than this value.
 Any resulting string shorter than `MAXSTRLEN` is padded with spaces,
 so it is best to trim the result using the `TRIM` intrinsic function
@@ -686,19 +479,19 @@ Same as the format for the raw C [*strftime*](#c_strftime).
 
 #### Return value
 
-A `CHARACTER(LEN=MAXSTRLEN)` representation of *datetime* using `format`.
+A `character(len=maxstrlen)` representation of *datetime* using `format`.
 
 #### Example usage
 
 ```fortran
-USE datetime_module
+use datetime_module
 
-TYPE(datetime)  :: a
+type(datetime)  :: a
 
 a = a % now()
-WRITE(*,*)a%isoformat()
+write(*,*)a % isoformat()
 
-WRITE(*,*)TRIM(a%strftime("%Y %B %d"))
+write(*,*)trim(a % strftime("%Y %B %d"))
 ```
 
 #### See also
@@ -708,33 +501,30 @@ WRITE(*,*)TRIM(a%strftime("%Y %B %d"))
 [Back to top](#top)
 <hr>
 
-
 ### tm<a id="tm"></a>
 
 ```fortran
-PURE ELEMENTAL TYPE(tm_struct) FUNCTION tm(self)
-
-  ! ARGUMENTS:
-  CLASS(datetime),INTENT(IN) :: self
+pure elemental type(tm_struct) function tm(self)
+  CLASS(datetime),intent(in) :: self
 ```
 
-Returns a [*tm_struct*](#tm_struct) instance that matches the 
+Returns a [*tm_struct*](#tm_struct) instance that matches the
 time and date information in the caller [*datetime*](#datetime)
 instance.
 
 #### Example usage
 
 ```fortran
-USE datetime_module,ONLY:datetime
+use datetime_module,only:datetime
 
-TYPE(datetime)  :: a
-TYPE(tm_struct) :: tm
+type(datetime)  :: a
+type(tm_struct) :: tm
 
 ! Initialize:
 a = datetime(2013,1,1)
 
 ! Get tm_struct from datetime:
-tm = a%tm()
+tm = a % tm()
 ```
 
 #### See also
@@ -747,13 +537,11 @@ tm = a%tm()
 ### tzOffset
 
 ```fortran
-PURE ELEMENTAL CHARACTER(LEN=5) FUNCTION tzOffset(self)
-
-  ! ARGUMENTS:
-  CLASS(datetime),INTENT(IN) :: self
+pure elemental character(len=5) function tzOffset(self)
+  class(datetime),intent(in) :: self
 ```
 
-Given a [*datetime*](#datetime) instance, returns a character string with timezone 
+Given a [*datetime*](#datetime) instance, returns a character string with timezone
 offset in hours from UTC (Coordinated Universal Time), in format `+hhmm`
 or `-hhmm`, depending on the sign, where `hh` are hours and `mm` are minutes.
 
@@ -763,25 +551,23 @@ None.
 
 #### Return value
 
-`tzOffset` A `CHARACTER(LEN=5)` in the form `+hhmm`
+`tzOffset` A `character(len=5)` in the form `+hhmm`
 or `-hhmm`, depending on the sign.
 
 #### Example usage
 
 ```fortran
-USE datetime_module,ONLY:datetime
+use datetime_module,only:datetime
 
-TYPE(datetime)  :: a
-TYPE(tm_struct) :: tm
+type(datetime)  :: a
+type(tm_struct) :: tm
 
 ! Initialize a datetime instance with timezone offset of -4.75 hours:
 a = datetime(2013,1,1,tz=-4.75)
 
 ! Write tzOffset on screen:
-WRITE(*,*)a%tzOffset        ! -0445 (offset of 4 hours and 45 minutes)
+write(*,*)a % tzOffset ! -0445 (offset of 4 hours and 45 minutes)
 ```
-
-#### See also
 
 [Back to top](#top)
 <hr>
@@ -789,17 +575,11 @@ WRITE(*,*)a%tzOffset        ! -0445 (offset of 4 hours and 45 minutes)
 ### utc
 
 ```fortran
-PURE ELEMENTAL TYPE(datetime) FUNCTION utc(self)
-
-  ! ARGUMENTS:
-  CLASS(datetime),INTENT(IN) :: self
+pure elemental type(datetime) function utc(self)
+  class(datetime),intent(in) :: self
 ```
 
-Returns the datetime instance at Coordinated Universal Time (UTC). 
-
-#### Arguments
-
-None.
+Returns the datetime instance at Coordinated Universal Time (UTC).
 
 #### Return value
 
@@ -808,20 +588,20 @@ None.
 #### Example usage
 
 ```fortran
-USE datetime_module,ONLY:datetime
+use datetime_module,only:datetime
 
-TYPE(datetime)  :: a
-TYPE(tm_struct) :: tm
+type(datetime)  :: a
+type(tm_struct) :: tm
 
 ! Initialize a datetime instance with timezone offset of -4.75 hours:
 a = datetime(2013,1,1,tz=-4.75)
 
-WRITE(*,*)a%isoformat()//a%tzOffset() ! 2013-01-01T00:00:00.000-0445
+write(*,*)a % isoformat() // a % tzOffset() ! 2013-01-01T00:00:00.000-0445
 
 ! Convert a to UTC:
-a = a%utc()
+a = a % utc()
 
-WRITE(*,*)a%isoformat()//a%tzOffset() ! 2013-01-01T04:45:00.000+0000
+write(*,*)a % isoformat() // a % tzOffset() ! 2013-01-01T04:45:00.000+0000
 ```
 
 #### See also
@@ -834,26 +614,25 @@ WRITE(*,*)a%isoformat()//a%tzOffset() ! 2013-01-01T04:45:00.000+0000
 ### weekday<a id="weekday"></a>
 
 ```fortran
-PURE ELEMENTAL INTEGER FUNCTION weekday(self)
-
-  CLASS(datetime),INTENT(IN) :: self
+pure elemental integer function weekday(self)
+  class(datetime),intent(in) :: self
 ```
 
 A [*datetime*](#datetime)-bound method to calculate day of the week using
- [Zeller's congruence](http://en.wikipedia.org/wiki/Zeller%27s_congruence). 
+ [Zeller's congruence](http://en.wikipedia.org/wiki/Zeller%27s_congruence).
 Returns an integer scalar in the range of [0-6], starting from Sunday.
 
 #### Example usage
 
 ```fortran
-USE datetime_module,ONLY:datetime
+use datetime_module,only:datetime
 
-TYPE(datetime)  :: a
+type(datetime)  :: a
 
 ! Initialize:
 a = datetime(2013,1,1)
 
-WRITE(*,*)a%weekday()    ! 2
+write(*,*)a % weekday() ! 2
 ```
 
 #### See also
@@ -868,10 +647,8 @@ WRITE(*,*)a%weekday()    ! 2
 ### weekdayLong<a id="weekdaylong"></a>
 
 ```fortran
-PURE ELEMENTAL CHARACTER(LEN=9) FUNCTION weekdayLong(self)
-
-  CLASS(datetime),INTENT(IN) :: self
-
+pure elemental character(len=9) function weekdayLong(self)
+  class(datetime),intent(in) :: self
 ```
 
 Returns the full name of the day of the week.
@@ -879,14 +656,14 @@ Returns the full name of the day of the week.
 #### Example usage
 
 ```fortran
-USE datetime_module,ONLY:datetime
+use datetime_module,only:datetime
 
-TYPE(datetime)  :: a
+type(datetime)  :: a
 
 ! Initialize:
 a = datetime(2013,1,1)
 
-WRITE(*,*)a%weekdayLong()    ! Tuesday
+write(*,*)a % weekdayLong() ! Tuesday
 ```
 
 #### See also
@@ -901,10 +678,8 @@ WRITE(*,*)a%weekdayLong()    ! Tuesday
 ### weekdayShort<a id="weekdayshort"></a>
 
 ```fortran
-PURE ELEMENTAL CHARACTER(LEN=3) FUNCTION weekdayShort(self)
-
-  CLASS(datetime),INTENT(IN) :: self
-
+pure elemental character(len=3) function weekdayShort(self)
+  class(datetime),intent(in) :: self
 ```
 
 Returns the abbreviated (e.g. Mon) name of the day of the week.
@@ -912,14 +687,14 @@ Returns the abbreviated (e.g. Mon) name of the day of the week.
 #### Example usage
 
 ```fortran
-USE datetime_module,ONLY:datetime
+use datetime_module,only:datetime
 
-TYPE(datetime)  :: a
+type(datetime)  :: a
 
 ! Initialize:
 a = datetime(2013,1,1)
 
-WRITE(*,*)a%weekdayShort()    ! Tue
+write(*,*)a % weekdayShort() ! Tue
 ```
 
 #### See also
@@ -934,12 +709,11 @@ WRITE(*,*)a%weekdayShort()    ! Tue
 ### yearday<a id="yearday"></a>
 
 ```fortran
-PURE ELEMENTAL INTEGER FUNCTION yearday(self)
-
-  CLASS(datetime),INTENT(IN) :: self
+pure elemental integer function yearday(self)
+  class(datetime),intent(in) :: self
 ```
 
-[*datetime*](#datetime)-bound procedure. 
+[*datetime*](#datetime)-bound procedure.
 Returns integer day of the year (ordinal date).
 Equals to `1` for any January 1, `365` for a December 31 on a non-leap year,
 and `366` for a December 31 on a leap year.
@@ -947,14 +721,14 @@ and `366` for a December 31 on a leap year.
 #### Example usage
 
 ```fortran
-USE datetime_module,ONLY:datetime
+use datetime_module,only:datetime
 
-TYPE(datetime)  :: a
+type(datetime)  :: a
 
 ! Initialize:
 a = datetime(2013,5,1)
 
-WRITE(*,*)a%yearday()    ! 121 
+write(*,*)a % yearday() ! 121
 ```
 
 #### See also
@@ -970,26 +744,58 @@ Represents a duration of time, and a difference between
 two [*datetime*](#datetime) objects. It is defined as:
 
 ```fortran
-TYPE :: timedelta
+type :: timedelta
 
-  ! COMPONENTS:
-  INTEGER :: days         = 0
-  INTEGER :: hours        = 0
-  INTEGER :: minutes      = 0
-  INTEGER :: seconds      = 0
-  INTEGER :: milliseconds = 0
+  !! Class of objects that define difference between two datetime
+  !! instances.
 
-  CONTAINS
+  private
 
-  ! METHODS:
-  PROCEDURE :: total_seconds
+  integer :: days         = 0 !! number of days
+  integer :: hours        = 0 !! number of hours
+  integer :: minutes      = 0 !! number of minutes
+  integer :: seconds      = 0 !! number of seconds
+  integer :: milliseconds = 0 !! number of milliseconds
 
-ENDTYPE timedelta
+  contains
+
+  ! getter functions
+  procedure,pass(self),public :: getDays
+  procedure,pass(self),public :: getHours
+  procedure,pass(self),public :: getMinutes
+  procedure,pass(self),public :: getSeconds
+  procedure,pass(self),public :: getMilliseconds
+
+  ! public methods
+  procedure,public :: total_seconds
+
+  ! operator overloading procedures
+  procedure,private :: timedelta_plus_timedelta
+  procedure,private :: timedelta_minus_timedelta
+  procedure,private :: unary_minus_timedelta
+  procedure,private :: eq
+  procedure,private :: neq
+  procedure,private :: gt
+  procedure,private :: ge
+  procedure,private :: lt
+  procedure,private :: le
+
+  generic :: operator(+)  => timedelta_plus_timedelta
+  generic :: operator(-)  => timedelta_minus_timedelta,&
+                             unary_minus_timedelta
+  generic :: operator(==) => eq
+  generic :: operator(/=) => neq
+  generic :: operator(>)  => gt
+  generic :: operator(>=) => ge
+  generic :: operator(<)  => lt
+  generic :: operator(<=) => le
+
+endtype timedelta
 ```
 
-All arguments are optional and default to 0. 
+All arguments are optional and default to 0.
 Similarly to [*datetime*](#datetime) objects,
-[*timedelta*](#timedelta) instances can be initialized 
+[*timedelta*](#timedelta) instances can be initialized
 using positional and/or keyword arguments.
 In addition, a [*timedelta*](#timedelta) object is a result
 of subtraction between two [*datetime*](#datetime) objects.
@@ -997,16 +803,16 @@ of subtraction between two [*datetime*](#datetime) objects.
 #### Example usage
 
 ```fortran
-USE datetime_module
+use datetime_module
 
-TYPE(datetime)  :: a,b
-TYPE(timedelta) :: c
+type(datetime)  :: a,b
+type(timedelta) :: c
 
 ! Initialize as default
 c = timedelta()
 
 ! Positional arguments:
-c = timedelta(0,1,15,0,0)      ! 1 hour and 15 minutes
+c = timedelta(0,1,15,0,0) ! 1 hour and 15 minutes
 
 ! Keyword arguments:
 c = timedelta(days=1,hours=12) ! 1 day and 12 hours
@@ -1016,7 +822,7 @@ a = datetime(2013,5,12,22,0,0) ! 2013-05-12 22:00:00
 b = datetime(2012,9,18,14,0,0) ! 2012-09-18 14:00:00
 
 ! Subtract to get timedelta:
-c = a-b 
+c = a-b
 ```
 
 [Back to top](#top)
@@ -1025,36 +831,30 @@ c = a-b
 ### total_seconds<a id="totalseconds"></a>
 
 ```fortran
-PURE ELEMENTAL REAL(KIND=real_dp) FUNCTION total_seconds(self)
-
-  ! ARGUMENTS:
-  CLASS(timedelta),INTENT(IN) :: self
+pure elemental real(kind=real_dp) function total_seconds(self)
+  class(timedelta), intent(in) :: self
 ```
 
-A [*timedelta*](#timedelta)-bound method that returns a number 
-of seconds contained in the time interval defined by the 
+A [*timedelta*](#timedelta)-bound method that returns a number
+of seconds contained in the time interval defined by the
 [*timedelta*](#timedelta) instance. This method is equivalent
 to Python's [*datetime.timedelta.total_seconds*](http://docs.python.org/2/library/datetime.html#timedelta-objects) function.
 
-#### Arguments
-
-None
-
 #### Return value
 
-`total_seconds` A total number of seconds (of type `REAL(KIND=real_dp)`) 
+`total_seconds` A total number of seconds (of type `real(kind=real_dp)`)
 contained in the [*timedelta*](#timedelta) instance.
 
 #### Example usage
 
 ```fortran
-USE datetime_module,ONLY:timedelta
+use datetime_module,only:timedelta
 
-TYPE(timedelta) :: td
+type(timedelta) :: td
 
 td = timedelta(days=5,hours=12,minutes=15,seconds=7,milliseconds=123)
 
-WRITE(*,*)td%total_seconds()   ! 476107.12300000002
+write(*,*)td%total_seconds() ! 476107.12300000002
 ```
 
 [Back to top](#top)
@@ -1063,73 +863,73 @@ WRITE(*,*)td%total_seconds()   ! 476107.12300000002
 ### **clock**<a id="clock"></a>
 
 A generic clock object that contains start and stop times,
-tick increment and reset and tick methods. 
+tick increment and reset and tick methods.
 Most useful when needing to keep track of many [*datetime*](#datetime) instances
-that change at different rates, for example, physical models with different 
+that change at different rates, for example, physical models with different
 time steps.
 
 Definition:
 
 ```fortran
-TYPE :: clock
+type :: clock
 
-  ! COMPONENTS:
-  TYPE(datetime) :: startTime   = datetime()
-  TYPE(datetime) :: stopTime    = datetime()
-  TYPE(datetime) :: currentTime = datetime()
+  !! A clock object with a start, stop and current times, tick interval
+  !! and tick methods.
 
-  TYPE(timedelta) :: tickInterval = timedelta()
+  type(datetime) :: startTime
+  type(datetime) :: stopTime
+  type(datetime) :: currentTime
 
-  LOGICAL :: alarm = .FALSE.
+  type(timedelta) :: tickInterval
 
-  ! Clock status flags 
-  LOGICAL :: started = .FALSE.
-  LOGICAL :: stopped = .FALSE.
+  logical :: alarm = .false.
 
-  CONTAINS
+  ! Clock status flags
+  logical :: started = .false.
+  logical :: stopped = .false.
 
-  ! METHODS:
-  PROCEDURE :: reset
-  PROCEDURE :: tick
+  contains
 
-ENDTYPE clock
+  procedure :: reset
+  procedure :: tick
+
+endtype clock
 ```
 
-[*clock*](#clock) components are initialized by default, and all arguments
-are optional. However, a [*clock*](#clock) instance must be initialized
+[*clock*](#clock) instance must be initialized
 with some sane values of `clock%startTime`, `clock%stopTime` and `clock%tickIncrement`
 in order to be useful.
 
 #### Example usage
 
 ```fortran
-USE datetime_module
+use datetime_module
 
-TYPE(clock)    :: myClock
-TYPE(datetime) :: myTime
+type(clock)    :: myClock
+type(datetime) :: myTime
 
 ! Initialize myTime
 myTime = myTime%now()
 
 ! Initialize myClock
-! Starts from myTime, stops 1 hour later, 1 minute per tick 
+! Starts from myTime, stops 1 hour later, 1 minute per tick
 myClock = clock(startTime    = myTime,                   &
                 stopTime     = myTime+timedelta(hours=1),&
                 tickInterval = timedelta(minutes=1))
 
-DO
+do
 
-  CALL myClock % tick()
+  call myClock % tick()
 
   ! Report current time after each tick
-  WRITE(*,*)myClock % currentTime % isoformat(' ')
+  write(*,*)myClock % currentTime % isoformat(' ')
 
   ! If clock has reached stopTime, exit loop
-  IF(myClock % stopped)THEN
-    EXIT
-  ENDIF
+  if(myClock % stopped)THEN
+    exit
+  endif
 
-ENDDO
+enddo
 ```
 #### See also
 
@@ -1144,29 +944,17 @@ ENDDO
 ### reset
 
 ```fortran
-PURE ELEMENTAL SUBROUTINE reset(self)
-
-  ! ARGUMENTS:
-  CLASS(clock),INTENT(INOUT) :: self
+pure elemental subroutine reset(self)
+  class(clock),intent(inout) :: self
 ```
 
 Resets the clock to its start time.
 
-#### Arguments
-
-None
-
-#### Return value
-
-None
-
 #### Example usage
 
 ```fortran
-CALL myClock%reset() ! Resets myClock%currentTime to myClock%startTime
+call myClock%reset() ! Resets myClock%currentTime to myClock%startTime
 ```
-
-#### See also
 
 [Back to top](#top)
 <hr>
@@ -1174,23 +962,13 @@ CALL myClock%reset() ! Resets myClock%currentTime to myClock%startTime
 ### tick
 
 ```fortran
-PURE ELEMENTAL SUBROUTINE tick(self)
-
-  ! ARGUMENTS:
-  CLASS(clock),INTENT(INOUT) :: self
+pure elemental subroutine tick(self)
+  class(clock),intent(inout) :: self
 ```
 
 Increments the `currentTime` of the clock instance by one `tickInterval`.
 Sets the `clock%stopped` flag to `.TRUE.` if `clock%currentTime` equals
 or exceeds `clock%stopTime`.
-
-#### Arguments
-
-None
-
-#### Return value
-
-None
 
 #### Example usage
 
@@ -1201,30 +979,30 @@ See [*clock*](#clock) for an example.
 [Back to top](#top)
 <hr>
 
-
 ### **tm_struct**<a id="tm_struct"></a>
 
-Time object compatible with C/C++ *tm* struct. Available mainly 
-for the purpose of calling [*c_strftime*](#c_strftime) 
+Time object compatible with C/C++ *tm* struct. Available mainly
+for the purpose of calling [*c_strftime*](#c_strftime)
 and [*c_strptime*](#c_strptime) procedures.
 
 ```fortran
-TYPE,BIND(c) :: tm_struct
+type,bind(c) :: tm_struct
 
-  ! COMPONENTS:
-  INTEGER(KIND=c_int) :: tm_sec   ! Seconds      [0-60] (1 leap second)
-  INTEGER(KIND=c_int) :: tm_min   ! Minutes      [0-59]
-  INTEGER(KIND=c_int) :: tm_hour  ! Hours        [0-23]
-  INTEGER(KIND=c_int) :: tm_mday  ! Day          [1-31]
-  INTEGER(KIND=c_int) :: tm_mon   ! Month        [0-11]
-  INTEGER(KIND=c_int) :: tm_year  ! Year - 1900
-  INTEGER(KIND=c_int) :: tm_wday  ! Day of week  [0-6]
-  INTEGER(KIND=c_int) :: tm_yday  ! Days in year [0-365]
-  INTEGER(KIND=c_int) :: tm_isdst ! DST          [-1/0/1]
+  !! A derived type provided for compatibility with C/C++ time struct.
+  !! Allows for calling strftime and strptime procedures through the
+  !! iso_c_binding.
 
-  ! METHODS: None.
+  integer(kind=c_int) :: tm_sec   !! Seconds      [0-60] (1 leap second)
+  integer(kind=c_int) :: tm_min   !! Minutes      [0-59]
+  integer(kind=c_int) :: tm_hour  !! Hours        [0-23]
+  integer(kind=c_int) :: tm_mday  !! Day          [1-31]
+  integer(kind=c_int) :: tm_mon   !! Month        [0-11]
+  integer(kind=c_int) :: tm_year  !! Year - 1900
+  integer(kind=c_int) :: tm_wday  !! Day of week  [0-6]
+  integer(kind=c_int) :: tm_yday  !! Days in year [0-365]
+  integer(kind=c_int) :: tm_isdst !! DST          [-1/0/1]
 
-ENDTYPE tm_struct
+endtype tm_struct
 ```
 
 #### See also
@@ -1242,12 +1020,12 @@ ENDTYPE tm_struct
 
 ## Overloaded operators<a id="#operators"></a>
 
-The *datetime-fortran* library provides arithmetic and comparison operators
+*datetime-fortran* provides arithmetic and comparison operators
 for [*datetime*](#datetime) and [*timedelta*](#timedelta) objects.
 
 ### Arithmetic operators
 
-Addition (`+`) and subtraction (`-`) operators are available for 
+Addition (`+`) and subtraction (`-`) operators are available for
 the following combination of derived type pairs:
 
 * `datetime  + timedelta`, returns a `datetime` instance;
@@ -1262,74 +1040,72 @@ the following combination of derived type pairs:
 
 * `-timedelta` (unary minus), returns a `timedelta` instance.
 
-Note that `datetime  - datetime` operation accounts for timezone (`tz`) 
-offsets in each of the `datetime` instances. 
+Note that `datetime  - datetime` operation accounts for timezone (`tz`)
+offsets in each of the `datetime` instances.
 The resulting `timedelta`thus  includes the difference between timezones.
 
 ### Comparison operators
 
-*datetime-fortran* supports following binary comparison operators for 
+*datetime-fortran* supports following binary comparison operators for
 [*datetime*](#datetime) and [*timedelta*](#timedelta) objects:
 `==`, `/=`, `>`, `>=`, `<` and `<=`.
 
 Since version 1.0.5, all comparison operators respect the timezone
-parameter of the datetime instances, so the operands are first 
+parameter of the datetime instances, so the operands are first
 adjusted to UTC time before making the comparison.
 
 [Back to top](#top)
 <hr>
 
 ## Public procedures<a id="#public-procedures"></a>
-    
+
 ### c_strftime<a id="c_strftime"></a>
 
 ```fortran
-FUNCTION c_strftime(str,slen,format,tm)BIND(c,name='strftime')RESULT(rc)
-
-  ! ARGUMENTS:
-  CHARACTER(KIND=c_char),DIMENSION(*),INTENT(OUT) :: str   
-  INTEGER(KIND=c_int),VALUE,          INTENT(IN)  :: slen   
-  CHARACTER(KIND=c_char),DIMENSION(*),INTENT(IN)  :: format 
-  TYPE(tm_struct),                    INTENT(IN)  :: tm     
-  INTEGER(KIND=c_int)                             :: rc
+function c_strftime(str,slen,format,tm) bind(c,name='strftime') result(rc)
+  character(kind=c_char),dimension(*),intent(out) :: str   
+  integer(kind=c_int),value,          intent(in)  :: slen   
+  character(kind=c_char),dimension(*),intent(in)  :: format
+  type(tm_struct),                    intent(in)  :: tm     
+  integer(kind=c_int)                             :: rc
 ```
 
-An interface to a C/C++ standard library routine. 
-Copies into `str` the content of format, expanding its format specifiers 
-into the corresponding values that represent the time described in `tm`, 
+An interface to a C/C++ standard library routine.
+Copies into `str` the content of format, expanding its format specifiers
+into the corresponding values that represent the time described in `tm`,
 with a limit of `slen` characters.
 
-Note: This function was renamed from *strftime* to *c_strftime* in version 0.3.0 
+Note: This function was renamed from *strftime* to *c_strftime* in version 0.3.0
 to avoid name conflict with *datetime*-bound method [*strftime*](#strftime).
 If working with *datetime* instances, use [*datetime%strftime*](#strftime) instead.
 
 #### Arguments
 
-`str` is the destination character string with the requested date and time. 
+`str` is the destination character string with the requested date and time.
 
-`slen` is the maximum number of characters to be copied to `str`, 
-including the terminating null-character, `CHAR(0)`.
+`slen` is the maximum number of characters to be copied to `str`,
+including the terminating null-character, `char(0)`.
 
-`format` is the character string containing any combination of regular characters and special format specifiers. 
-These format specifiers are replaced by the function to the corresponding values to represent the time specified in `tm`. 
+`format` is the character string containing any combination of regular characters and special format specifiers.
+These format specifiers are replaced by the function to the corresponding values to represent the time specified in `tm`.
 For more information on format specifiers see http://www.cplusplus.com/reference/ctime/strftime/.
 
 `tm` is an instance of the type `tm_struct`, containing date and time values to be processed.
 
 #### Return value
 
-If the resulting string fits in less than `slen` characters including the terminating null-character, 
+If the resulting string fits in less than `slen` characters including the terminating null-character,
 the total number of characters copied to `str` (not including the terminating null-character) is returned.
 Otherwise, zero is returned and the contents of the array are indeterminate.
 
 #### Example usage
 
 ```fortran
-USE datetime_module
+use datetime_module
 
-TYPE(datetime)    :: a
-CHARACTER(LEN=20) :: res
-INTEGER           :: rc
+type(datetime)    :: a
+character(len=20) :: res
+integer           :: rc
 
 a = a % now()
 
@@ -1355,18 +1131,17 @@ rc = c_strftime(res,20,"%Y %B %d"//CHAR(0),a%tm())
 ### c_strptime<a id="c_strptime"></a>
 
 ```fortran
-FUNCTION c_strptime(str,format,tm)BIND(c,name='strptime')RESULT(rc)
-
-  CHARACTER(KIND=c_char),DIMENSION(*),INTENT(IN)  :: str
-  CHARACTER(KIND=c_char),DIMENSION(*),INTENT(IN)  :: format
-  TYPE(tm_struct),                    INTENT(OUT) :: tm
-  CHARACTER(KIND=c_char,LEN=1)                    :: rc
+function c_strptime(str,format,tm) bind(c,name='strptime') result(rc)
+  character(kind=c_char),dimension(*),intent(in)  :: str
+  character(kind=c_char),dimension(*),intent(in)  :: format
+  type(tm_struct),                    intent(out) :: tm
+  character(kind=c_char,len=1)                    :: rc
 ```
 
 An interface to a C/C++ standard library routine.
 Converts the character string `str` to values which are stored in `tm`, using the format specified by `format`.
 
-Note: This function was renamed from *strptime* to *c_strptime* in version 0.3.0 to avoid 
+Note: This function was renamed from *strptime* to *c_strptime* in version 0.3.0 to avoid
 name conflicts with [*strptime*](#strptime) which operates on *datetime* instances.
 If working with *datetime* instances, use [*strptime*](#strptime) instead.
 
@@ -1382,7 +1157,7 @@ of the [*c_strptime*](#c_strptime) function.
 
 #### Return value
 
-Upon successful completion, [*c_strptime*](#c_strptime) returns the character 
+Upon successful completion, [*c_strptime*](#c_strptime) returns the character
 following the last character parsed. Otherwise, a null character is returned.
 
 #### Example usage
@@ -1391,31 +1166,31 @@ Extracting time difference between two time strings using [*c_strptime*](#c_strp
 and [*tm2date*](#tm2date):
 
 ```fortran
-USE datetime_module
+use datetime_module
 
-TYPE(datetime)  :: date1,date2
-TYPE(tm_struct) :: ctime
-TYPE(timedelta) :: timediff
+type(datetime)  :: date1,date2
+type(tm_struct) :: ctime
+type(timedelta) :: timediff
 
 ! Return code for strptime
-CHARACTER(LEN=1) :: rc
+character(len=1) :: rc
 
 ! Example times in "YYYYMMDD hhmmss" format
-CHARACTER(LEN=15) :: str1 = "20130512 091519"
-CHARACTER(LEN=15) :: str2 = "20131116 120418"
+character(len=15) :: str1 = "20130512 091519"
+character(len=15) :: str2 = "20131116 120418"
 
 ! Get tm_struct instance from str1
-rc = c_strptime(str1,"%Y%m%d %H%M%S"//CHAR(0),ctime)
+rc = c_strptime(str1,"%Y%m%d %H%M%S"//char(0),ctime)
 date1 = tm2date(ctime)
 
 ! Get tm_struct instance from str2
-rc = c_strptime(str2,"%Y%m%d %H%M%S"//CHAR(0),ctime)
+rc = c_strptime(str2,"%Y%m%d %H%M%S"//char(0),ctime)
 date2 = tm2date(ctime)
 
 timediff = date2-date1
 
-WRITE(*,*)timediff
-WRITE(*,*)timediff%total_seconds()
+write(*,*)timediff
+write(*,*)timediff % total_seconds()
 ```
 
 This example outputs the following:
@@ -1434,14 +1209,11 @@ This example outputs the following:
 [Back to top](#top)
 <hr>
 
-
 ### date2num<a id="date2num"></a>
 
 ```fortran
-PURE ELEMENTAL REAL(KIND=real_dp) FUNCTION date2num(d)
-
-  ! ARGUMENTS:
-  TYPE(datetime),INTENT(IN) :: d
+pure elemental real(kind=real_dp) function date2num(d)
+  type(datetime),intent(in) :: d
 ```
 
 Returns the number of days since `0001-01-01 00:00:00 UTC`,
@@ -1456,7 +1228,7 @@ and MATLAB's [*datenum*](http://www.mathworks.com/help/matlab/ref/datenum.html)
 returns the number of days since `0000-01-01 00:00:00 UTC`.
 In *datetime-fortran*, we choose the reference time of `0001-01-01 00:00:00 UTC`
 as we consider it to be the least astonishing for the average user.
-Thus, MATLAB and Python users should be cautious when using 
+Thus, MATLAB and Python users should be cautious when using
 *datetime-fortran*'s [*date2num()*](#date2num) function.
 
 Since version 1.0.5, [date2num](#date2num) is timezone aware, i.e.
@@ -1464,7 +1236,7 @@ the datetime instance is first converted to UTC before calculating
 the number of days.
 
 [date2num](#date2num) is the inverse function of [num2date](#num2date),
-so by definition, `a % utc() == num2date(date2num(a))` evaluates as `.TRUE.`
+so by definition, `a % utc() == num2date(date2num(a))` evaluates as `.true.`
 for any `datetime` instance `a`.
 
 #### Arguments
@@ -1473,24 +1245,19 @@ for any `datetime` instance `a`.
 
 #### Return value
 
-`date2num` A `REAL(KIND=real_dp)` number of days since `0001-01-01 00:00:00 UTC`.
-`real_dp` is defined as:
-
-```fortran
-INTEGER,PARAMETER :: real_dp = KIND(1d0)
-```
+`date2num` A `REAL(KIND=real64)` number of days since `0001-01-01 00:00:00 UTC`.
 
 #### Example usage
 
 ```fortran
-USE datetime_module,ONLY:datetime,date2num
+use datetime_module,only:datetime,date2num
 
-TYPE(datetime)  :: a
+type(datetime)  :: a
 
 ! Initialize:
 a = datetime(2013,1,1,6)
 
-WRITE(*,*)date2num(a)   ! 734869.25000000000
+write(*,*)date2num(a) ! 734869.25000000000
 ```
 
 #### See also
@@ -1505,26 +1272,24 @@ WRITE(*,*)date2num(a)   ! 734869.25000000000
 ### datetimeRange<a id="datetimerange"></a>
 
 ```fortran
-PURE FUNCTION datetimeRange(d0,d1,t)
-
-  ! ARGUMENTS:
-  TYPE(datetime), INTENT(IN) :: d0
-  TYPE(datetime), INTENT(IN) :: d1
-  TYPE(timedelta),INTENT(IN) :: t
+pure function datetimeRange(d0,d1,t)
+  type(datetime), intent(in) :: d0
+  type(datetime), intent(in) :: d1
+  type(timedelta),intent(in) :: t
 ```
 
-Given start and end [*datetime*](#datetime) instances `d0` and `d1`, 
-and time increment as [*timedelta*](#timedelta) instance `t`, 
+Given start and end [*datetime*](#datetime) instances `d0` and `d1`,
+and time increment as [*timedelta*](#timedelta) instance `t`,
 returns an array of datetime instances.
-The number of elements is the number of whole time increments 
-contained between datetimes d0 and d1.
+The number of elements is the number of whole time increments
+contained between datetimes `d0` and `d1`.
 
 #### Arguments
 
 `d0` A [*datetime*](#datetime) instance with start time. Will be the first element
 of the resulting array.
 
-`d1` A [*datetime*](#datetime) instance with end time. Will be the equal to or greater than 
+`d1` A [*datetime*](#datetime) instance with end time. Will be the equal to or greater than
 the last element of the resulting array.
 
 `t` A [*timedelta*](#timedelta) instance being the time increment for the resulting array.
@@ -1532,15 +1297,15 @@ the last element of the resulting array.
 #### Return value
 
 `datetimeRange` An array of [*datetime*](#datetime) instances of length
- `FLOOR((d1-d0)/t)+1`
+ `floor((d1-d0)/t)+1`
 
 #### Example usage
 
 ```fortran
-TYPE(datetime)  :: a,b
-TYPE(timedelta) :: td
+type(datetime)  :: a,b
+type(timedelta) :: td
 
-TYPE(datetime),DIMENSION(:),ALLOCATABLE :: dtRange
+type(datetime),dimension(:),allocatable :: dtRange
 
 a  = datetime(2014,5,1)
 b  = datetime(2014,5,3)
@@ -1548,7 +1313,7 @@ td = timedelta(days=1)
 
 dtRange = datetimeRange(a,b,td)
 
-! Returns: 
+! Returns:
 !     
 ! dtRange = [datetime(2014,5,1),
 !            datetime(2014,5,2),
@@ -1560,7 +1325,7 @@ td = timedelta(hours=7)
 
 dtRange = datetimeRange(a,b,td)
 
-! Returns: 
+! Returns:
 !     
 ! dtRange = [datetime(2014,5,1,0),
 !            datetime(2014,5,1,7),
@@ -1583,15 +1348,13 @@ dtRange = datetimeRange(a,b,td)
 ### daysInMonth<a id="daysinmonth"></a>
 
 ```fortran
-PURE ELEMENTAL INTEGER FUNCTION daysInMonth(month,year)
-
-  ! ARGUMENTS:
-  INTEGER,INTENT(IN) :: month
-  INTEGER,INTENT(IN) :: year
+pure elemental integer function daysInMonth(month,year)
+  integer,intent(in) :: month
+  integer,intent(in) :: year
 ```
 
 Returns the number of days in month for a given month and year.
-This function is declared as `ELEMENTAL`, so it can be called
+This function is declared as `elemental`, so it can be called
 with scalar or n-dimensional array arguments.
 
 #### Arguments
@@ -1608,16 +1371,16 @@ Returns `0` if `month` is not in valid range.
 #### Example usage
 
 ```fortran
-USE datetime_module,ONLY:daysInMonth
+use datetime_module,only:daysInMonth
 
 ! January on leap year:
-WRITE(*,*)daysInMonth(1,2012)   ! 31
+write(*,*)daysInMonth(1,2012)   ! 31
 
 ! February on leap year:
-WRITE(*,*)daysInMonth(2,2012)   ! 29
+write(*,*)daysInMonth(2,2012)   ! 29
 
 ! February on non-leap year
-WRITE(*,*)daysInMonth(2,2013)   ! 28
+write(*,*)daysInMonth(2,2013)   ! 28
 ```
 
 #### See also
@@ -1630,10 +1393,8 @@ WRITE(*,*)daysInMonth(2,2013)   ! 28
 ### daysInYear<a id="daysinyear"></a>
 
 ```fortran
-PURE ELEMENTAL INTEGER FUNCTION daysInYear(year)
-
-  ! ARGUMENTS:
-  INTEGER,INTENT(IN) :: year
+pure elemental integer Function daysInYear(year)
+  integer,intent(in) :: year
 ```
 
 Given an integer `year`, returns an integer number of days in that year.
@@ -1641,22 +1402,22 @@ Calls the [*isLeapYear*](#isleapyear) function.
 
 #### Arguments
 
-`year` An `INTEGER` scalar or array containing the desired year number(s).
+`year` An `integer` scalar or array containing the desired year number(s).
 
 #### Return value
 
-`daysInYear` An `INTEGER` scalar or array. Represents the number of days in `year`. 
+`daysInYear` An `integer` scalar or array. Represents the number of days in `year`.
 
 #### Example usage
 
 ```fortran
-USE datetime_module,ONLY:daysInYear
+use datetime_module,only:daysInYear
 
 ! Leap year:
-WRITE(*,*)daysInYear(2012)   ! 366
+write(*,*)daysInYear(2012) ! 366
 
 ! Non-leap year:
-WRITE(*,*)daysInYear(2013)   ! 365
+write(*,*)daysInYear(2013) ! 365
 ```
 
 #### See also
@@ -1671,32 +1432,30 @@ WRITE(*,*)daysInYear(2013)   ! 365
 ### isLeapYear<a id="isleapyear"></a>
 
 ```fortran
-PURE ELEMENTAL LOGICAL FUNCTION isLeapYear(year)
-
-  ! ARGUMENTS:
-  INTEGER,INTENT(IN) :: year
+pure elemental logical function isLeapYear(year)
+  integer,intent(in) :: year
 ```
 
-Returns a `LOGICAL` value indicating whether the reqested year is a leap year.
+Returns a `logical` value indicating whether the reqested year is a leap year.
 
 #### Arguments
 
-`year` An `INTEGER` scalar or array representing year number.
+`year` An `integer` scalar or array representing year number.
 
 #### Return value
 
-`isLeapYear` A `LOGICAL` scalar or array indicating whether a given year is leap year.
+`isLeapYear` A `logical` scalar or array indicating whether a given year is leap year.
 
 #### Example usage
 
 ```fortran
-USE datetime_module,ONLY:isLeapYear
+use datetime_module,only:isLeapYear
 
 ! Leap year:
-WRITE(*,*)isLeapYear(2012)   ! .TRUE.
+write(*,*)isLeapYear(2012) ! .true.
 
 ! Non-leap year:
-WRITE(*,*)isLeapYear(2013)   ! .FALSE.
+write(*,*)isLeapYear(2013) ! .false.
 ```
 
 #### See also
@@ -1709,10 +1468,8 @@ WRITE(*,*)isLeapYear(2013)   ! .FALSE.
 ### num2date<a id="num2date"></a>
 
 ```fortran
-PURE ELEMENTAL TYPE(datetime) FUNCTION num2date(num)
-
-  ! ARGUMENTS:
-  REAL(KIND=real_dp),INTENT(IN) :: num
+pure elemental type(datetime) function num2date(num)
+  real(kind=real_dp),intent(in) :: num
 ```
 
 Given the number of days since `0001-01-01 00:00:00 UTC`, returns a
@@ -1722,10 +1479,10 @@ This function is similar to analogous function
 in Python ([*matplotlib.dates.num2date*](http://matplotlib.org/api/dates_api.html#matplotlib.dates.num2date)).
 
 [num2date](#num2date) is the inverse function of [date2num](#date2num),
-so by definition, `a == num2date(date2num(a))` evaluates as `.TRUE.`
+so by definition, `a == num2date(date2num(a))` evaluates as `.true.`
 for any `datetime` instance `a`.
-Similarly, `b == date2num(num2date(b))` evaluates as `.TRUE.`
-for any variable `b` of type `REAL(KIND=real_dp)`.
+Similarly, `b == date2num(num2date(b))` evaluates as `.true.`
+for any variable `b` of type `real(kind=real64)`.
 
 #### Arguments
 
@@ -1738,9 +1495,9 @@ for any variable `b` of type `REAL(KIND=real_dp)`.
 #### Example usage
 
 ```fortran
-USE datetime_module,ONLY:datetime,num2date
+use datetime_module,only:datetime,num2date
 
-TYPE(datetime)  :: a
+type(datetime)  :: a
 
 a = num2date(734869.25d0) ! a becomes datetime(2013,1,1,6,0,0,0)
 ```
@@ -1754,22 +1511,19 @@ a = num2date(734869.25d0) ! a becomes datetime(2013,1,1,6,0,0,0)
 [Back to top](#top)
 <hr>
 
-
 ### strptime<a id="strptime"></a>
 
 ```fortran
-TYPE(datetime) FUNCTION strptime(str,format)
-
-  ! ARGUMENTS:
-  CHARACTER(LEN=*),INTENT(IN) :: str
-  CHARACTER(LEN=*),INTENT(IN) :: format
+type(datetime) function strptime(str,format)
+  character(len=*),intent(in) :: str
+  character(len=*),intent(in) :: format
 ```
 
 A wrapper function around [*c_strptime*](#c_strptime).
-Given a character string `str` with the format `format`, returns 
+Given a character string `str` with the format `format`, returns
 an appropriate *datetime* instance containing that time information.
 This function is analogous to Python's *datetime.datetime.strptime()* function.
-Available since version 0.3.0. 
+Available since version 0.3.0.
 
 #### Arguments
 
@@ -1788,22 +1542,22 @@ instance corresponding to the time information contained in *str*.
 Extracting time difference between two time strings using [*strptime*](#strptime):
 
 ```fortran
-USE datetime_module
+use datetime_module
 
-TYPE(datetime)  :: date1,date2
-TYPE(timedelta) :: timediff
+type(datetime)  :: date1,date2
+type(timedelta) :: timediff
 
 ! Example times in "YYYYMMDD hhmmss" format
-CHARACTER(LEN=15) :: str1 = "20130512 091519"
-CHARACTER(LEN=15) :: str2 = "20131116 120418"
+character(len=15) :: str1 = "20130512 091519"
+character(len=15) :: str2 = "20131116 120418"
 
 date1 = strptime(str1,"%Y%m%d %H%M%S")
 date2 = strptime(str2,"%Y%m%d %H%M%S")
 
 timediff = date2-date1
 
-WRITE(*,*)timediff
-WRITE(*,*)timediff%total_seconds()
+write(*,*)timediff
+write(*,*)timediff%total_seconds()
 ```
 
 This example outputs the following:
@@ -1826,13 +1580,11 @@ necessary steps.
 ### tm2date
 
 ```fortran
-PURE ELEMENTAL TYPE(datetime) FUNCTION tm2date(ctime)
-
-  ! ARGUMENTS:
-  TYPE(tm_struct),INTENT(IN) :: ctime
+pure elemental type(datetime) function tm2date(ctime)
+  type(tm_struct),intent(in) :: ctime
 ```
 
-Given a [*tm_struct*](#tm_struct) instance, 
+Given a [*tm_struct*](#tm_struct) instance,
 returns a corresponding [*datetime*](#datetime) instance.
 Mostly useful for obtaining a *datetime* instance after a *tm_struct*
 is returned from [*strptime*](#strptime).
