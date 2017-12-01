@@ -217,7 +217,7 @@ does not support daylight saving time (DST) information.
 
 <hr>
 
-### getYear<a id="getyear"</a>
+### getYear<a id="getyear"></a>
 
 ```fortran
 pure elemental integer function getYear(self)
@@ -225,7 +225,10 @@ pure elemental integer function getYear(self)
 ```
 Returns the year of a `datetime` instance.
 
-### getMonth<a id="getmonth"</a>
+[Back to top](#top)
+<hr>
+
+### getMonth<a id="getmonth"></a>
 
 ```fortran
 pure elemental integer function getMonth(self)
@@ -233,7 +236,10 @@ pure elemental integer function getMonth(self)
 ```
 Returns the month of a `datetime` instance.
 
-### getDay<a id="getday"</a>
+[Back to top](#top)
+<hr>
+
+### getDay<a id="getday"></a>
 
 ```fortran
 pure elemental integer function getDay(self)
@@ -241,7 +247,10 @@ pure elemental integer function getDay(self)
 ```
 Returns the day of a `datetime` instance.
 
-### getHour<a id="gethour"</a>
+[Back to top](#top)
+<hr>
+
+### getHour<a id="gethour"></a>
 
 ```fortran
 pure elemental integer function getHour(self)
@@ -249,7 +258,10 @@ pure elemental integer function getHour(self)
 ```
 Returns the hour of a `datetime` instance.
 
-### getMinute<a id="getminute"</a>
+[Back to top](#top)
+<hr>
+
+### getMinute<a id="getminute"></a>
 
 ```fortran
 pure elemental integer function getMinute(self)
@@ -257,7 +269,10 @@ pure elemental integer function getMinute(self)
 ```
 Returns the minute of a `datetime` instance.
 
-### getSecond<a id="getsecond"</a>
+[Back to top](#top)
+<hr>
+
+### getSecond<a id="getsecond"></a>
 
 ```fortran
 pure elemental integer function getSecond(self)
@@ -265,13 +280,19 @@ pure elemental integer function getSecond(self)
 ```
 Returns the second of a `datetime` instance.
 
-### getMillisecond<a id="getmillisecond"</a>
+[Back to top](#top)
+<hr>
+
+### getMillisecond<a id="getmillisecond"></a>
 
 ```fortran
 pure elemental integer function getMillisecond(self)
   class(datetime),intent(in) :: self
 ```
 Returns the millisecond of a `datetime` instance.
+
+[Back to top](#top)
+<hr>
 
 ### isocalendar<a id="isocalendar"></a>
 
