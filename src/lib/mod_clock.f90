@@ -2,7 +2,7 @@
 ! datetime-fortran - A Fortran library for date and time manipulation
 ! Copyright (c) 2013-2017, Wavebit Scientific LLC
 ! All rights reserved.
-! 
+!
 ! Licensed under the BSD 3-clause license. See LICENSE for details.
 !
 module mod_clock
@@ -26,27 +26,27 @@ public :: clock
 
 type :: clock
 
-  !! A clock object with a start, stop and current times, tick interval 
-  !! and tick methods. 
+  !! A clock object with a start, stop and current times, tick interval
+  !! and tick methods.
 
-  type(datetime) :: startTime !  = datetime()
-  type(datetime) :: stopTime  !  = datetime()
-  type(datetime) :: currentTime! = datetime()
+  type(datetime) :: startTime
+  type(datetime) :: stopTime
+  type(datetime) :: currentTime
 
-  type(timedelta) :: tickInterval! = timedelta(0)
+  type(timedelta) :: tickInterval
 
-  ! May become Alarm class in some future release; 
+  ! May become Alarm class in some future release;
   ! for now, just a switch
   logical :: alarm = .false.
 
-  ! Clock status flags 
+  ! Clock status flags
   logical :: started = .false.
   logical :: stopped = .false.
 
   contains
 
   procedure :: reset
-  procedure :: tick 
+  procedure :: tick
 
 endtype clock
 !=======================================================================

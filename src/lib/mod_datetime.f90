@@ -37,7 +37,7 @@ public :: tm2date
 
 type :: datetime
 
-  !! A main datetime class for date and time representation.
+  !! Main datetime class for date and time representation.
 
   private
 
@@ -49,7 +49,7 @@ type :: datetime
   integer :: second      = 0 !! second in minute [0-59]
   integer :: millisecond = 0 !! milliseconds in second [0-999]
 
-  real(kind=real64) :: tz = 0 ! timezone offset from UTC [hours]
+  real(kind=real64) :: tz = 0 !! timezone offset from UTC [hours]
 
   contains
 
