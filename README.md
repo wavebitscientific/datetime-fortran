@@ -30,6 +30,9 @@ make check
 make install
 ```
 
+If you cloned the repo and the `configure` script is not present,
+run `autoreconf -i` first.
+
 ### Usage
 
 To start using datetime-fortran in your code by importing the module:
