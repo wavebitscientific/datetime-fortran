@@ -173,7 +173,7 @@ pure elemental real(kind=real64) function total_seconds(self)
 
   class(timedelta),intent(in) :: self !! `timedelta` instance
 
-  total_seconds = self % days*86400._real64& 
+  total_seconds = 1._real64*self % days*86400._real64& 
                 + self % hours*3600._real64&
                 + self % minutes*60._real64&
                 + self % seconds           &
