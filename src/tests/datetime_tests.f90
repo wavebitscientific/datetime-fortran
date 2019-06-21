@@ -1,9 +1,3 @@
-!
-! datetime-fortran - A Fortran library for time and date manipulation
-! Copyright (c) 2013-2017, Wavebit Scientific LLC
-! 
-! Licensed under the BSD-3 clause. See LICENSE for details.
-!
 MODULE datetime_tests
 !=======================================================================
 !
