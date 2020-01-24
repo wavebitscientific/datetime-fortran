@@ -1235,7 +1235,7 @@ pure elemental type(datetime) function num2date(num)
     num2date % minute = 0
     call num2date % addHours(1)
   endif
-  if(num2date % hour == 60)then
+  if(num2date % hour == 24)then
     num2date % hour = 0
     call num2date % addDays(1)
   endif
