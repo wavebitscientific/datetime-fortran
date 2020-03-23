@@ -1,14 +1,14 @@
-language: generic
+language: minimal
+
 addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
     packages:
       - gfortran-6
+
 before_script:
   - FC=gfortran-6 cmake .
-  - make
+  - cmake --build . --parallel
 script:
   - ctest
-notifications:
-  email: false
