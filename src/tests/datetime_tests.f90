@@ -5,7 +5,7 @@ MODULE datetime_tests
 !
 !=======================================================================
 USE datetime_module
-USE iso_fortran_env,ONLY:REAL64
+USE iso_fortran_env,ONLY:REAL64, stdout=>output_unit, stderr=>error_unit
 
 IMPLICIT NONE
 
@@ -13,9 +13,6 @@ PRIVATE
 
 PUBLIC :: assert
 PUBLIC :: test_datetime
-
-INTEGER,PARAMETER :: STDOUT = 6
-INTEGER,PARAMETER :: STDERR = 0
 
 CONTAINS
 
@@ -74,7 +71,7 @@ ENDSUBROUTINE initialize_tests
 SUBROUTINE report_tests(tests,test_failed)
 !=======================================================================
 !
-! Takes the test counter as input and reports the total number of test 
+! Takes the test counter as input and reports the total number of test
 ! passes and failures.
 !
 !=======================================================================
@@ -88,7 +85,7 @@ SUBROUTINE report_tests(tests,test_failed)
 
   nsuccess = 0
   nfailure = 0
-  DO n = 1,ntests  
+  DO n = 1,ntests
     IF(tests(n))THEN
       nsuccess = nsuccess + 1
     ELSE
@@ -136,7 +133,7 @@ SUBROUTINE test_datetime
 
   WRITE(UNIT=STDOUT,FMT='(A)')
 
-  ! Test counter; 
+  ! Test counter;
   ! modify if adding new tests
   ntests = 191
 
@@ -177,7 +174,7 @@ SUBROUTINE test_datetime
                  == datetime(2013,12,31,23,59,59,0),                  &
                  'datetime + timedelta(seconds = -1)')
   n = n+1
-                   
+
   ! Increment minutes
   tests(n) = assert(datetime(2014,1,1,0,0,0,0) + timedelta(minutes=1)&
                  == datetime(2014,1,1,0,1,0,0),                      &
@@ -195,7 +192,7 @@ SUBROUTINE test_datetime
                  == datetime(2014,1,1,1,0,0,0),                    &
                  'datetime + timedelta(hours = 1)')
   n = n+1
-             
+
   ! Decrement hours
   tests(n) = assert(datetime(2014,1,1,0,0,0,0) + timedelta(hours=-1)&
                  == datetime(2013,12,31,23,0,0,0),                  &
@@ -258,62 +255,62 @@ SUBROUTINE test_datetime
   ! Test subtracting into previous months:
   tests(n) = assert(datetime(2014,2, 1,0,0,0,0) + timedelta(days=-1)&
                  == datetime(2014,1,31,0,0,0,0),                    &
-                 'decrement datetime into January')  
+                 'decrement datetime into January')
   n = n+1
 
   tests(n) = assert(datetime(2014,3, 1,0,0,0,0) + timedelta(days=-1)&
                  == datetime(2014,2,28,0,0,0,0),                    &
-                 'decrement datetime into February')  
+                 'decrement datetime into February')
   n = n+1
-  
+
   tests(n) = assert(datetime(2014,4, 1,0,0,0,0) + timedelta(days=-1)&
                  == datetime(2014,3,31,0,0,0,0),                    &
-                 'decrement datetime into March')  
+                 'decrement datetime into March')
   n = n+1
-  
+
   tests(n) = assert(datetime(2014,5, 1,0,0,0,0) + timedelta(days=-1)&
                  == datetime(2014,4,30,0,0,0,0),                    &
-                 'decrement datetime into April')  
+                 'decrement datetime into April')
   n = n+1
-  
+
   tests(n) = assert(datetime(2014,6, 1,0,0,0,0) + timedelta(days=-1)&
                  == datetime(2014,5,31,0,0,0,0),                    &
-                 'decrement datetime into May')  
+                 'decrement datetime into May')
   n = n+1
-  
+
   tests(n) = assert(datetime(2014,7, 1,0,0,0,0) + timedelta(days=-1)&
                  == datetime(2014,6,30,0,0,0,0),                    &
-                 'decrement datetime into June')  
+                 'decrement datetime into June')
   n = n+1
-  
+
   tests(n) = assert(datetime(2014,8, 1,0,0,0,0) + timedelta(days=-1)&
                  == datetime(2014,7,31,0,0,0,0),                    &
-                 'decrement datetime into July')  
+                 'decrement datetime into July')
   n = n+1
-  
+
   tests(n) = assert(datetime(2014,9, 1,0,0,0,0) + timedelta(days=-1)&
                  == datetime(2014,8,31,0,0,0,0),                    &
-                 'decrement datetime into August')  
+                 'decrement datetime into August')
   n = n+1
-  
+
   tests(n) = assert(datetime(2014,10, 1,0,0,0,0) + timedelta(days=-1)&
                  == datetime(2014, 9,30,0,0,0,0),                    &
-                 'decrement datetime into September')  
+                 'decrement datetime into September')
   n = n+1
-  
+
   tests(n) = assert(datetime(2014,11, 1,0,0,0,0) + timedelta(days=-1)&
                  == datetime(2014,10,31,0,0,0,0),                    &
                  'decrement datetime into October')
   n = n+1
-  
+
   tests(n) = assert(datetime(2014,12, 1,0,0,0,0) + timedelta(days=-1)&
                  == datetime(2014,11,30,0,0,0,0),                    &
-                 'decrement datetime into November')  
+                 'decrement datetime into November')
   n = n+1
 
   tests(n) = assert(datetime(2015, 1, 1,0,0,0,0) + timedelta(days=-1)&
                  == datetime(2014,12,31,0,0,0,0),                    &
-                 'decrement datetime into December')  
+                 'decrement datetime into December')
   n = n+1
   !---------------------------------------------------------------------
 
@@ -381,7 +378,7 @@ SUBROUTINE test_datetime
                  >= datetime(2014,1,2,3,4,5,6),&
                  'datetime >= datetime (greater)')
   n = n+1
-   
+
   tests(n) = assert(datetime(2014,1,2,3,4,5,6) &
                  >= datetime(2014,1,2,3,4,5,6),&
                  'datetime >= datetime (equal)')
@@ -396,7 +393,7 @@ SUBROUTINE test_datetime
                  <= datetime(2014,1,2,4,4,5,6),&
                  'datetime <= datetime (less)')
   n = n+1
-   
+
   tests(n) = assert(datetime(2014,1,2,3,4,5,6) &
                  <= datetime(2014,1,2,3,4,5,6),&
                  'datetime <= datetime (equal)')
@@ -456,121 +453,121 @@ SUBROUTINE test_datetime
   a = datetime(2005,1,1)
   tests(n) = assert(ALL(a % isocalendar() == [2004,53,6]),&
                    'datetime(2005,1,1) % isocalendar() == [2004,53,6]')
-  n = n+1 
+  n = n+1
 
   a = datetime(2005,1,2)
   tests(n) = assert(ALL(a % isocalendar() == [2004,53,7]),&
                    'datetime(2005,1,2) % isocalendar() == [2004,53,7]')
-  n = n+1 
+  n = n+1
 
   a = datetime(2005,12,31)
   tests(n) = assert(ALL(a % isocalendar() == [2005,52,6]),&
                    'datetime(2005,12,31) % isocalendar() == [2005,52,6]')
-  n = n+1 
+  n = n+1
 
   a = datetime(2007,1,1)
   tests(n) = assert(ALL(a % isocalendar() == [2007,1,1]),&
                    'datetime(2007,1,1) % isocalendar() == [2007,1,1]')
-  n = n+1 
+  n = n+1
 
   a = datetime(2007,12,30)
   tests(n) = assert(ALL(a % isocalendar() == [2007,52,7]),&
                    'datetime(2007,12,30) % isocalendar() == [2007,52,7]')
-  n = n+1 
+  n = n+1
 
   a = datetime(2007,12,31)
   tests(n) = assert(ALL(a % isocalendar() == [2008,1,1]),&
                    'datetime(2007,12,31) % isocalendar() == [2008,1,1]')
-  n = n+1 
+  n = n+1
 
   a = datetime(2008,1,1)
   tests(n) = assert(ALL(a % isocalendar() == [2008,1,2]),&
                    'datetime(2008,1,1) % isocalendar() == [2008,1,2]')
-  n = n+1 
+  n = n+1
 
   a = datetime(2008,12,28)
   tests(n) = assert(ALL(a % isocalendar() == [2008,52,7]),&
                    'datetime(2008,12,28) % isocalendar() == [2008,52,7]')
-  n = n+1 
+  n = n+1
 
   a = datetime(2008,12,29)
   tests(n) = assert(ALL(a % isocalendar() == [2009,1,1]),&
                    'datetime(2008,12,29) % isocalendar() == [2009,1,1]')
-  n = n+1 
+  n = n+1
 
   a = datetime(2008,12,30)
   tests(n) = assert(ALL(a % isocalendar() == [2009,1,2]),&
                    'datetime(2008,12,30) % isocalendar() == [2009,1,2]')
-  n = n+1 
+  n = n+1
 
   a = datetime(2008,12,31)
   tests(n) = assert(ALL(a % isocalendar() == [2009,1,3]),&
                    'datetime(2008,12,31) % isocalendar() == [2009,1,3]')
-  n = n+1 
+  n = n+1
 
   a = datetime(2009,1,1)
   tests(n) = assert(ALL(a % isocalendar() == [2009,1,4]),&
                    'datetime(2009,1,1) % isocalendar() == [2009,1,4]')
-  n = n+1 
+  n = n+1
 
   a = datetime(2009,12,31)
   tests(n) = assert(ALL(a % isocalendar() == [2009,53,4]),&
                    'datetime(2009,12,31) % isocalendar() == [2009,53,4]')
-  n = n+1 
+  n = n+1
 
   a = datetime(2010,1,1)
   tests(n) = assert(ALL(a % isocalendar() == [2009,53,5]),&
                    'datetime(2010,1,1) % isocalendar() == [2009,53,5]')
-  n = n+1 
+  n = n+1
 
   a = datetime(2010,1,2)
   tests(n) = assert(ALL(a % isocalendar() == [2009,53,6]),&
                    'datetime(2010,1,2) % isocalendar() == [2009,53,6]')
-  n = n+1 
+  n = n+1
 
   a = datetime(2010,1,3)
   tests(n) = assert(ALL(a % isocalendar() == [2009,53,7]),&
                    'datetime(2010,1,3) % isocalendar() == [2009,53,7]')
-  n = n+1 
+  n = n+1
   !---------------------------------------------------------------------
 
   WRITE(UNIT=STDOUT,FMT='(71("-"))')
 
   !---------------------------------------------------------------------
   ! datetime % isValid()
-  
+
   a = datetime(1,1,1)
   tests(n) = assert(a % isValid(),'datetime(1,1,1) is valid')
   n = n+1
-  
+
   a = datetime(0,1,1)
   tests(n) = assert(.NOT. a % isValid(),'datetime(0,1,1) is not valid')
   n = n+1
-  
+
   a = datetime(-1,1,1)
   tests(n) = assert(.NOT. a % isValid(),'datetime(-1,1,1) is not valid')
   n = n+1
-  
+
   a = datetime(2014,1,1)
   tests(n) = assert(a % isValid(),'datetime(2014,1,1) is valid')
   n = n+1
-  
+
   a = datetime(2014,0,1)
   tests(n) = assert(.NOT. a % isValid(),'datetime(2014,0,1) is not valid')
   n = n+1
-  
+
   a = datetime(2014,1,0)
   tests(n) = assert(.NOT. a % isValid(),'datetime(2014,1,0) is not valid')
   n = n+1
-  
+
   a = datetime(2014,2,28)
   tests(n) = assert(a % isValid(),'datetime(2014,2,28) is valid')
   n = n+1
-  
+
   a = datetime(2014,2,29)
   tests(n) = assert(.NOT. a % isValid(),'datetime(2014,2,29) is not valid')
   n = n+1
-  
+
   a = datetime(2012,2,29)
   tests(n) = assert(a % isValid(),'datetime(2012,2,29) is valid')
   n = n+1
@@ -607,7 +604,7 @@ SUBROUTINE test_datetime
   WRITE(UNIT=STDOUT,FMT='(71("-"))')
 
   !---------------------------------------------------------------------
-  ! datetime % secondsSinceEpoch 
+  ! datetime % secondsSinceEpoch
   a = datetime(1970,1,1,0,0,0)
 
   ! First get local machine offset in seconds
@@ -628,7 +625,7 @@ SUBROUTINE test_datetime
   n = n+1
 
   !---------------------------------------------------------------------
-  
+
   WRITE(UNIT=STDOUT,FMT='(71("-"))')
 
   !---------------------------------------------------------------------
@@ -1033,7 +1030,7 @@ SUBROUTINE test_datetime
   n = n+1
 
   !---------------------------------------------------------------------
-    
+
   WRITE(UNIT=STDOUT,FMT='(71("-"))')
 
   !---------------------------------------------------------------------
@@ -1127,7 +1124,7 @@ SUBROUTINE test_datetime
   !---------------------------------------------------------------------
 
   WRITE(UNIT=STDOUT,FMT='(71("-"))')
-  
+
   !---------------------------------------------------------------------
   ! daysInYear
 
@@ -1146,7 +1143,7 @@ SUBROUTINE test_datetime
   !---------------------------------------------------------------------
 
   WRITE(UNIT=STDOUT,FMT='(71("-"))')
-  
+
   !---------------------------------------------------------------------
   ! daysInMonth
 
@@ -1192,7 +1189,7 @@ SUBROUTINE test_datetime
   !---------------------------------------------------------------------
 
   WRITE(UNIT=STDOUT,FMT='(71("-"))')
-  
+
   !---------------------------------------------------------------------
   ! clock tests
 
@@ -1204,15 +1201,15 @@ SUBROUTINE test_datetime
 
   tests(n) = assert(.NOT. c % started,'clock % started == F (before tick)')
   n = n+1
-  
+
   CALL c % tick()
 
   tests(n) = assert(c % started,'clock % started == T (after 1 tick)')
   n = n+1
-  
+
   tests(n) = assert(.NOT. c % stopped,'clock % stopped == F (after 1 tick)')
   n = n+1
-  
+
   ! Tick 23 times
   DO i = 1,23
     CALL c % tick()
@@ -1230,14 +1227,14 @@ SUBROUTINE test_datetime
 
   tests(n) = assert(.NOT. c % started,'clock % started == F (after reset)')
   n = n+1
-  
+
   tests(n) = assert(.NOT. c % started,'clock % stopped == F (after reset)')
   n = n+1
-  
+
   tests(n) = assert(c % currentTime == c % startTime,&
                     'clock % currentTime == clock % startTime (after reset)')
   n = n+1
-  
+
   !---------------------------------------------------------------------
   WRITE(UNIT=STDOUT,FMT='(71("-"))')
 
@@ -1262,7 +1259,7 @@ PROGRAM run_tests
 ! Unit test driver for datetime-fortran.
 !
 !=======================================================================
-USE datetime_tests 
+USE datetime_tests
 IMPLICIT NONE
 
 CALL test_datetime()
