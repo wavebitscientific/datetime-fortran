@@ -4,7 +4,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 project(datetime-fortran
 LANGUAGES Fortran
-VERSION 1.6.1)
+VERSION 1.6.2)
 enable_testing()
 
 # library to archive (libdatetime.a)
