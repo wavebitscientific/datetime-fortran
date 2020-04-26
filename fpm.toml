@@ -1,0 +1,19 @@
+name = "datetime-fortran"
+version = "1.7.0"
+license = "MIT"
+author = "Milan Curcic"
+maintainer = "caomaco@gmail.com"
+copyright = "2013-2020 datetime-fortran contributors"
+dependencies = []
+compiler = "gfortran"
+devel-options = ["-g", "-Wall", "-Wextra", "-pedantic"]
+release-options = ["-O3"]
+
+[library]
+source-dirs = "src"
+
+[tests.test-name]
+main = "datetime_tests.f90"
+source-dirs = "tests"
+linker-options = ["-Og"]
+dependencies = []
