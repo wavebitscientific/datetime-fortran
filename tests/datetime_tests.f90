@@ -114,7 +114,7 @@ SUBROUTINE test_datetime
 
   USE iso_c_binding
 
-  TYPE(datetime)  :: a
+  TYPE(datetime)  :: a, b
   TYPE(timedelta) :: td
   TYPE(clock)     :: c
 
