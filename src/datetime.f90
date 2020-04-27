@@ -164,15 +164,15 @@ module datetime_module
     ! Derived type for compatibility with C and C++ struct tm.
     ! Enables calling strftime and strptime using iso_c_binding.
     ! See http://www.cplusplus.com/reference/ctime/tm for reference.
-    integer(c_int) :: tm_sec ! Seconds [0-60] (1 leap second)
-    integer(c_int) :: tm_min ! Minutes [0-59]
-    integer(c_int) :: tm_hour ! Hours [0-23]
-    integer(c_int) :: tm_mday ! Day [1-31]
-    integer(c_int) :: tm_mon ! Month [0-11]
-    integer(c_int) :: tm_year ! Year - 1900
-    integer(c_int) :: tm_wday ! Day of week [0-6]
-    integer(c_int) :: tm_yday ! Days in year [0-365]
-    integer(c_int) :: tm_isdst ! DST [-1/0/1]
+    integer(c_int) :: tm_sec = 0 ! Seconds [0-60] (1 leap second)
+    integer(c_int) :: tm_min = 0 ! Minutes [0-59]
+    integer(c_int) :: tm_hour = 0 ! Hours [0-23]
+    integer(c_int) :: tm_mday = 0 ! Day [1-31]
+    integer(c_int) :: tm_mon = 0 ! Month [0-11]
+    integer(c_int) :: tm_year = 0 ! Year - 1900
+    integer(c_int) :: tm_wday = 0 ! Day of week [0-6]
+    integer(c_int) :: tm_yday = 0 ! Days in year [0-365]
+    integer(c_int) :: tm_isdst = 0 ! DST [-1/0/1]
   end type tm_struct
 
   interface
@@ -657,15 +657,15 @@ contains
   end function secondsSinceEpoch
 
 
-  function strftime(self,format)
+  function strftime(self, format)
     !! Wrapper around C and C++ `strftime` function.
-    class(datetime), intent(in)  :: self !! `datetime` instance
+    class(datetime), intent(in) :: self !! `datetime` instance
     character(*), intent(in)  :: format !! format string
     character(:), allocatable :: strftime
     integer :: n, rc
     character(MAXSTRLEN) :: resultString
     resultString = ""
-    rc = c_strftime(resultString,MAXSTRLEN,trim(format)//c_null_char,&
+    rc = c_strftime(resultString, MAXSTRLEN, trim(format) // c_null_char, &
                     self % tm())
     strftime = trim(resultString)
     n = len(strftime)
@@ -680,10 +680,10 @@ contains
     tm % tm_min = self % minute
     tm % tm_hour = self % hour
     tm % tm_mday = self % day
-    tm % tm_mon = self % month-1
-    tm % tm_year = self % year-1900
+    tm % tm_mon = self % month - 1
+    tm % tm_year = self % year - 1900
     tm % tm_wday = self % weekday()
-    tm % tm_yday = self % yearday()-1
+    tm % tm_yday = self % yearday() - 1
     tm % tm_isdst = -1
   end function tm
 
