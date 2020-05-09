@@ -8,7 +8,7 @@ VERSION 1.7.0)
 enable_testing()
 
 # library to archive (libdatetime.a)
-add_library(datetime src/lib/datetime.f90)
+add_library(datetime src/datetime_module.f90)
 target_include_directories(datetime INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/include)
 set_target_properties(datetime PROPERTIES
 Fortran_MODULE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include
