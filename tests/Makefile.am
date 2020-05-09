@@ -4,10 +4,8 @@ datetime_tests_SOURCES = datetime_tests.f90
 CLEANFILES = *.mod
 
 # Mostly unchanged from original upstream Makefile
-LIB = ../lib
-INCLUDE = ../lib
-
-
+LIB = ../src
+INCLUDE = ../src
 OBJ = datetime_tests.o
 
 .f90.o:

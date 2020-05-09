@@ -13,7 +13,7 @@ rm -f config.log config.status configure.scan
 
 rm -rf autom4te.cache
 
-clean_dir src/lib
-clean_dir src/tests
-rm -f src/tests/*log src/tests/*.trs
+clean_dir src
+clean_dir tests
+rm -f tests/*log tests/*.trs
 rm -f test-driver

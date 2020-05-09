@@ -1,0 +1,11 @@
+name = "libdatetime"
+version = "1.7.0"
+license = "MIT"
+author = "Milan Curcic"
+maintainer = "caomaco@gmail.com"
+copyright = "2013-2020 datetime-fortran contributors"
+
+[[test]]
+name = "datetime_tests"
+source-dir = "tests"
+main = "datetime_tests.f90"
