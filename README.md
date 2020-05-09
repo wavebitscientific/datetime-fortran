@@ -7,22 +7,41 @@ Date and time manipulation for modern Fortran.
 
 ## Getting started
 
-### Building with cmake
+First, get the code by cloning this repo:
 
 ```
 git clone https://github.com/wavebitscientific/datetime-fortran
 cd datetime-fortran
-mkdir build
-cd build
-cmake ..
-make
-ctest
 ```
 
-### Building with autotools
+or by downloading a [release tarball](https://github.com/wavebitscientific/datetime-fortran/releases).
+The latter is recommended if you want to build datetime-fortran with autotools and make. 
 
-Download and unpack a [release tarball](https://github.com/wavebitscientific/datetime-fortran/releases).
-In datetime-fortran source directory:
+You can build datetime-fortran with FPM, autotools, CMake, or by simply including 
+the source file (`src/datetime_module.f90`) in your project.
+
+### FPM
+
+As of version 1.7.0, datetime-fortran can be built using the 
+[Fortran Package Manager](https://github.com/fortran-lang/fpm).
+Follow the directions on that page to install FPM if you haven't already.
+
+To build, type:
+
+```
+fpm build
+```
+
+Library and module files will be built in `build/gfortran_debug/library`
+and tests will be built in `build/gfortran_debug/tests`.
+
+To run the tests, type:
+
+```
+fpm test
+```
+
+### Autotools
 
 ```
 ./configure
@@ -30,8 +49,18 @@ make check
 make install
 ```
 
-If you cloned the repo and the `configure` script is not present,
-run `autoreconf -i` first.
+If you cloned the repo instead of downloading a release tarball, 
+run `autoreconf -i` first to generate the `configure` script.
+
+### CMake
+
+```
+mkdir build
+cd build
+cmake ..
+make
+ctest
+```
 
 ### Usage
 
