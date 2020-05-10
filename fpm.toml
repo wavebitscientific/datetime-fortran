@@ -1,4 +1,4 @@
-name = "libdatetime"
+name = "datetime"
 version = "1.7.0"
 license = "MIT"
 author = "Milan Curcic"
