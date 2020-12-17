@@ -22,6 +22,12 @@ if(WIN32)
   target_link_libraries(datetime PRIVATE strptime)
 endif()
 
+if(MINGW)
+  # MinGW / MSYS2 GCC needs this for strftime to work
+  # https://sourceforge.net/p/mingw-w64/bugs/793/
+  target_link_libraries(datetime PRIVATE "ucrtbase")
+endif(MINGW)
+
 # tests
 if(BUILD_TESTING)
   add_executable(datetime_tests tests/datetime_tests.f90)

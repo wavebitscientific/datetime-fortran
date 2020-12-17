@@ -1,6 +1,6 @@
 module datetime_module
 
-  use, intrinsic :: iso_fortran_env, only: real32, real64
+  use, intrinsic :: iso_fortran_env, only: real32, real64, stderr=>error_unit
   use, intrinsic :: iso_c_binding, only: c_char, c_int, c_null_char
 
   implicit none
@@ -623,7 +623,7 @@ contains
     character(20) :: string
 
     rc = c_strftime(string, len(string), '%G %V %u' // c_null_char, self % tm())
-
+    if (rc == 0) write(stderr,*) "datetime:isocalendar:strftime failure"
     read(string(1:4), '(i4)') year
     read(string(6:7), '(i2)') week
     read(string(9:9), '(i1)') wday
