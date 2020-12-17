@@ -1,6 +1,6 @@
 module datetime_tests
   use datetime_module
-  use iso_fortran_env, only: real64
+  use, intrinsic :: iso_fortran_env, only: real64
 
   implicit none
 
@@ -37,7 +37,7 @@ contains
 
 
   subroutine report_tests(tests, test_failed)
-    ! Takes the test counter as input and reports 
+    ! Takes the test counter as input and reports
     ! the total number of test passes and failures.
     logical, intent(in) :: tests(:)
     logical, optional, intent(out) :: test_failed
@@ -69,8 +69,6 @@ contains
 
 
   subroutine test_datetime
-    use iso_c_binding
-
     type(datetime) :: a
     type(timedelta) :: td
     type(clock) :: c
