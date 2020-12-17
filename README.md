@@ -9,7 +9,7 @@ Date and time manipulation for modern Fortran.
 
 First, get the code by cloning this repo:
 
-```
+```sh
 git clone https://github.com/wavebitscientific/datetime-fortran
 cd datetime-fortran
 ```
@@ -18,7 +18,8 @@ or by downloading a [release tarball](https://github.com/wavebitscientific/datet
 The latter is recommended if you want to build datetime-fortran with autotools and make.
 
 You can build datetime-fortran with FPM, autotools, CMake, or by simply including
-the source file (`src/datetime_module.f90`) in your project.
+the source file "src/datetime_module.f90" in your project.
+NOTE: Windows additionally requires "src/strptime.cpp" in your project.
 
 ### FPM
 
@@ -28,16 +29,18 @@ Follow the directions on that page to install FPM if you haven't already.
 
 To build, type:
 
-```
+```sh
 fpm build
 ```
 
-Library and module files will be built in `build/gfortran_debug/library`
-and tests will be built in `build/gfortran_debug/tests`.
+binary artifacts are created in:
+
+* Library and module files: `build/gfortran_debug/library`
+* test executables: `build/gfortran_debug/tests`.
 
 To run the tests, type:
 
-```
+```sh
 fpm test
 ```
 
@@ -54,15 +57,32 @@ run `autoreconf -i` first to generate the `configure` script.
 
 ### CMake
 
-```
-mkdir build
-cd build
-cmake ..
-make
-ctest
+```sh
+cmake -B build
+cmake --build build
 ```
 
-### Usage
+binary artifacts are created in:
+
+* Library: `build/lib/libdatetime`
+* module: `build/include/datetime.mod`
+* test executable: `build/bin/datetime_tests`
+
+optionally, to install (replace "~/mylibs" with your desired install directory):
+
+```sh
+cmake -B build -DCMAKE_INSTALL_PREFIX=~/mylibs
+cmake --install build
+```
+
+optionally, to run self-tests:
+
+```sh
+cd build
+ctest -V
+```
+
+## Usage
 
 To start using datetime-fortran in your code by importing the module:
 
