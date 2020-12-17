@@ -1,3 +1,4 @@
+build*/
 *.o
 *.a
 *.mod
@@ -23,4 +24,3 @@ src/tests/test-suite.log
 src/tests/tests-env.sh.log
 src/tests/tests-env.sh.trs
 test-driver
-

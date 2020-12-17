@@ -1,6 +1,6 @@
 module datetime_tests
   use datetime_module
-  use iso_fortran_env, only: real64
+  use, intrinsic :: iso_fortran_env, only: real64
 
   implicit none
 
@@ -37,7 +37,7 @@ contains
 
 
   subroutine report_tests(tests, test_failed)
-    ! Takes the test counter as input and reports 
+    ! Takes the test counter as input and reports
     ! the total number of test passes and failures.
     logical, intent(in) :: tests(:)
     logical, optional, intent(out) :: test_failed
@@ -69,8 +69,6 @@ contains
 
 
   subroutine test_datetime
-    use iso_c_binding
-
     type(datetime) :: a
     type(timedelta) :: td
     type(clock) :: c
@@ -539,20 +537,17 @@ contains
     ! datetime % secondsSinceEpoch
     a = datetime(1970, 1, 1, 0, 0, 0)
 
-    ! First get local machine offset in seconds
-    tzOffset = a % secondsSinceEpoch()
-
-    tests(n) = assert(a % secondsSinceEpoch()-tzOffset == 0, &
+    tests(n) = assert(a % secondsSinceEpoch() == 0, &
                       'datetime % secondsSinceEpoch(),  0 seconds')
     n = n + 1
 
     a = datetime(1970, 1, 1, 1, 0, 0)
-    tests(n) = assert(a % secondsSinceEpoch()-tzOffset == 3600, &
+    tests(n) = assert(a % secondsSinceEpoch() == 3600, &
                       'datetime % secondsSinceEpoch(),  1 hour')
     n = n + 1
 
     a = datetime(1969, 12, 31, 23, 0, 0)
-    tests(n) = assert(a % secondsSinceEpoch()-tzOffset == -3600, &
+    tests(n) = assert(a % secondsSinceEpoch() == -3600, &
                       'datetime % secondsSinceEpoch(),  -1 hour')
     n = n + 1
 
