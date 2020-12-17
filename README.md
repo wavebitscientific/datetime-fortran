@@ -4,6 +4,7 @@
 [![GitHub issues](https://img.shields.io/github/issues/wavebitscientific/datetime-fortran.svg)](https://github.com/wavebitscientific/datetime-fortran/issues)
 
 Date and time manipulation for modern Fortran.
+The fundamental time step is one millisecond.
 
 ## Getting started
 

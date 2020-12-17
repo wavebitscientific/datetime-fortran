@@ -36,4 +36,6 @@ if(BUILD_TESTING)
   RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin
   LINKER_LANGUAGE Fortran)
   add_test(NAME datetime_tests COMMAND $<TARGET_FILE:datetime_tests>)
+
+  add_subdirectory(Examples)
 endif(BUILD_TESTING)
