@@ -34,7 +34,7 @@ module datetime_module
   real(real64), parameter :: s2h = one / h2s ! second -> hour
   real(real64), parameter :: m2s = 60._real64 ! minute -> second
   real(real64), parameter :: s2m = one / m2s ! second -> minute
- 
+
   integer, parameter :: MAXSTRLEN = 99 ! maximum string length for strftime
 
   type :: datetime
@@ -178,12 +178,12 @@ module datetime_module
   interface
 
     function c_strftime(str, slen, format, tm) bind(c, name='strftime') result(rc)
-      ! Returns a formatted time string, given input time struct and format. 
+      ! Returns a formatted time string, given input time struct and format.
       ! See https://www.cplusplus.com/reference/ctime/strftime for reference.
       import :: c_char, c_int, tm_struct
       character(kind=c_char), intent(out) :: str(*) ! result string
       integer(c_int), value, intent(in) :: slen ! string length
-      character(kind=c_char), intent(in) :: format(*) ! time format 
+      character(kind=c_char), intent(in) :: format(*) ! time format
       type(tm_struct), intent(in) :: tm ! tm_struct instance
       integer(c_int) :: rc ! return code
     end function c_strftime
@@ -623,7 +623,7 @@ contains
     character(20) :: string
 
     rc = c_strftime(string, len(string), '%G %V %u' // c_null_char, self % tm())
-    if (rc == 0) write(stderr,*) "datetime:isocalendar:strftime failure"
+
     read(string(1:4), '(i4)') year
     read(string(6:7), '(i2)') week
     read(string(9:9), '(i1)') wday
@@ -635,13 +635,18 @@ contains
 
   integer function secondsSinceEpoch(self)
     ! Returns an integer number of seconds since the UNIX Epoch,
-    ! `1970-01-01 00:00:00`. Note that this is a wrapper around C's
-    ! `strftime('%s')`, so the number of seconds will reflect the time
-    ! zone of the local machine on which the function is being called.
+    ! `1970-01-01 00:00:00`.
+    ! Since Windows does not have strftime('%s'), we implement this
+    ! using datetime itself
     class(datetime), intent(in) :: self
-    character(11) :: string
-    string = self % strftime('%s')
-    read(string, '(i10)') secondsSinceEpoch
+    type(timedelta) :: td
+    type(datetime) :: dummy
+
+    dummy = datetime(self%year, self%month, self%day, self%hour, self%minute, self%second)
+
+    td = datetime_minus_datetime(dummy, datetime(1970,1,1,0,0,0))
+    secondsSinceEpoch = td%total_seconds()
+
   end function secondsSinceEpoch
 
 
@@ -653,11 +658,10 @@ contains
     integer :: n, rc
     character(MAXSTRLEN) :: resultString
     resultString = ""
-    rc = c_strftime(resultString, MAXSTRLEN, trim(format) // c_null_char, &
+    rc = c_strftime(resultString, len(resultString), trim(format) // c_null_char, &
                     self % tm())
-    strftime = trim(resultString)
-    n = len(strftime)
-    strftime = strftime(1:n-1)
+    if (rc == 0) write(stderr,*) "datetime:strftime failure, format: ", trim(format)
+    strftime = resultString(1:len_trim(resultString)-1)  !< strip null
   end function strftime
 
 
@@ -681,7 +685,7 @@ contains
     ! in format +/-[hh][mm].
     class(datetime), intent(in) :: self
     integer :: hours,minutes
-  
+
     if (self % tz < 0) then
       tzOffset(1:1) = '-'
     else
@@ -1131,9 +1135,9 @@ contains
 
   pure elemental type(timedelta) function timedelta_constructor( &
     days, hours, minutes, seconds, milliseconds)
-    ! Constructor function for the `timedelta` class. 
+    ! Constructor function for the `timedelta` class.
     integer, intent(in), optional :: days, hours, minutes, seconds, milliseconds
-  
+
     timedelta_constructor % days = 0
     if (present(days)) timedelta_constructor % days = days
 
@@ -1188,10 +1192,10 @@ contains
 
 
   pure elemental real(real64) function total_seconds(self)
-    ! Returns a total number of seconds contained in a `timedelta` 
+    ! Returns a total number of seconds contained in a `timedelta`
     ! instance.
     class(timedelta), intent(in) :: self
-    total_seconds = self % days*86400._real64 & 
+    total_seconds = self % days*86400._real64 &
                   + self % hours*3600._real64 &
                   + self % minutes*60._real64 &
                   + self % seconds            &
@@ -1200,7 +1204,7 @@ contains
 
 
   pure elemental type(timedelta) function timedelta_plus_timedelta(t0,t1) result(t)
-    ! Adds two `timedelta` instances together and returns a `timedelta` 
+    ! Adds two `timedelta` instances together and returns a `timedelta`
     ! instance. Overloads the operator `+`.
     class(timedelta), intent(in) :: t0, t1
     t = timedelta(days         = t0 % days         + t1 % days,    &
@@ -1212,7 +1216,7 @@ contains
 
 
   pure elemental type(timedelta) function timedelta_minus_timedelta(t0,t1) result(t)
-    ! Subtracts a `timedelta` instance from another. Returns a 
+    ! Subtracts a `timedelta` instance from another. Returns a
     ! `timedelta` instance. Overloads the operator `-`.
     class(timedelta), intent(in) :: t0, t1
     t = t0 + (-t1)
@@ -1231,8 +1235,8 @@ contains
 
 
   pure elemental logical function timedelta_eq(td0,td1) result(res)
-    ! `timedelta` object comparison operator. Returns `.true.` if `td0` 
-    ! is equal to `td1` and `.false.` otherwise. Overloads the operator 
+    ! `timedelta` object comparison operator. Returns `.true.` if `td0`
+    ! is equal to `td1` and `.false.` otherwise. Overloads the operator
     ! `==`.
     class(timedelta), intent(in) :: td0, td1
     res = td0 % total_seconds() == td1 % total_seconds()
@@ -1240,8 +1244,8 @@ contains
 
 
   pure elemental logical function timedelta_neq(td0,td1) result(res)
-    ! `timedelta` object comparison operator. Returns `.true.` if `td0` 
-    ! is not equal to `td1` and `.false.` otherwise. Overloads the 
+    ! `timedelta` object comparison operator. Returns `.true.` if `td0`
+    ! is not equal to `td1` and `.false.` otherwise. Overloads the
     ! operator `/=`.
     class(timedelta), intent(in) :: td0, td1
     res = td0 % total_seconds() /= td1 % total_seconds()
@@ -1250,7 +1254,7 @@ contains
 
   pure elemental logical function timedelta_gt(td0,td1) result(res)
     ! `timedelta` object comparison operator. Returns `.true.` if
-    ! `td0` is greater than `td1` and `.false.` otherwise. Overloads the 
+    ! `td0` is greater than `td1` and `.false.` otherwise. Overloads the
     ! operator `>`.
     class(timedelta), intent(in) :: td0, td1
     res = td0 % total_seconds() > td1 % total_seconds()
@@ -1258,8 +1262,8 @@ contains
 
 
   pure elemental logical function timedelta_ge(td0,td1) result(res)
-    ! `timedelta` object comparison operator. Returns `.true.` if `td0` 
-    ! is greater than or equal to `td1` and `.false.` otherwise. 
+    ! `timedelta` object comparison operator. Returns `.true.` if `td0`
+    ! is greater than or equal to `td1` and `.false.` otherwise.
     ! Overloads the operator >=.
     class(timedelta), intent(in) :: td0, td1
     res = td0 % total_seconds() >= td1 % total_seconds()
@@ -1267,8 +1271,8 @@ contains
 
 
   pure elemental logical function timedelta_lt(td0,td1) result(res)
-    ! `timedelta` object comparison operator. Returns `.true.` if `td0` 
-    ! is less than `td1` and `.false.` otherwise. Overloads the operator 
+    ! `timedelta` object comparison operator. Returns `.true.` if `td0`
+    ! is less than `td1` and `.false.` otherwise. Overloads the operator
     ! `<`.
     class(timedelta), intent(in) :: td0, td1
     res = td0 % total_seconds() < td1 % total_seconds()
@@ -1276,8 +1280,8 @@ contains
 
 
   pure elemental logical function timedelta_le(td0,td1) result(res)
-    ! `timedelta` object comparison operator. Returns `.true.` if `td0` 
-    ! is less than or equal to `td1` and `.false.` otherwise. Overloads 
+    ! `timedelta` object comparison operator. Returns `.true.` if `td0`
+    ! is less than or equal to `td1` and `.false.` otherwise. Overloads
     ! the operator `<=`.
     class(timedelta), intent(in) :: td0, td1
     res = td0 % total_seconds() <= td1 % total_seconds()
