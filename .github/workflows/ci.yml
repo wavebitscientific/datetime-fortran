@@ -1,0 +1,51 @@
+name: ci
+
+on:
+  push:
+    paths:
+      - "**.f90"
+      - ".github/workflows/ci.yml"
+      - "CMakeLists.txt"
+  pull_request:
+      - "**.f90"
+      - ".github/workflows/ci.yml"
+      - "CMakeLists.txt"
+
+jobs:
+
+  windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - run: cmake -B build -G "MinGW Makefiles"
+    - run: cmake --build build
+
+    - run: ctest -V
+      working-directory: build
+
+  mac:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - run: cmake -B build
+      # MacOS has Clang masquerading as GCC, which fails without this specification
+      env:
+        FC: gfortran-10
+        CC: gcc-10
+    - run: cmake --build build
+
+    - run: ctest -V
+      working-directory: build
+
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - run: cmake -B build
+    - run: cmake --build build
+
+    - run: ctest -V
+      working-directory: build
