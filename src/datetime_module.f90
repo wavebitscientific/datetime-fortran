@@ -1,6 +1,6 @@
 module datetime_module
 
-  use, intrinsic :: iso_fortran_env, only: real32, real64, stderr=>error_unit
+  use, intrinsic :: iso_fortran_env, only: real32, real64, stderr => error_unit
   use, intrinsic :: iso_c_binding, only: c_char, c_int, c_null_char
 
   implicit none
