@@ -1,0 +1,65 @@
+name: ci
+
+on:
+  push:
+    paths:
+      - "**.f90"
+      - ".github/workflows/ci.yml"
+      - "CMakeLists.txt"
+  pull_request:
+    paths:
+      - "**.f90"
+      - ".github/workflows/ci.yml"
+      - "CMakeLists.txt"
+
+jobs:
+
+  windows:
+    needs: linux
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+    - uses: msys2/setup-msys2@v2
+      with:
+        update: true
+        install: >-
+          git
+          mingw-w64-x86_64-cmake
+          mingw-w64-x86_64-ninja
+          mingw-w64-x86_64-gcc-fortran
+    - uses: actions/checkout@v2
+
+    - run: cmake -B build -G Ninja
+    - run: cmake --build build
+
+    - run: ctest -V
+      working-directory: build
+
+  mac:
+    needs: linux
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - run: cmake -B build
+      # MacOS has Clang masquerading as GCC, which fails without this specification
+      env:
+        FC: gfortran-10
+        CC: gcc-10
+    - run: cmake --build build
+
+    - run: ctest -V
+      working-directory: build
+
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - run: cmake -B build
+    - run: cmake --build build
+
+    - run: ctest -V
+      working-directory: build

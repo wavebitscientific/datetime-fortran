@@ -1,6 +1,6 @@
 # datetime-fortran
 
-[![Build Status](https://travis-ci.org/wavebitscientific/datetime-fortran.svg?branch=master)](https://travis-ci.org/wavebitscientific/datetime-fortran)
+[![Actions Status](https://github.com/wavebitscientific/datetime-fortran/workflows/ci/badge.svg)](https://github.com/wavebitscientific/datetime-fortran/actions)
 [![GitHub issues](https://img.shields.io/github/issues/wavebitscientific/datetime-fortran.svg)](https://github.com/wavebitscientific/datetime-fortran/issues)
 
 Date and time manipulation for modern Fortran.
@@ -15,14 +15,14 @@ cd datetime-fortran
 ```
 
 or by downloading a [release tarball](https://github.com/wavebitscientific/datetime-fortran/releases).
-The latter is recommended if you want to build datetime-fortran with autotools and make. 
+The latter is recommended if you want to build datetime-fortran with autotools and make.
 
-You can build datetime-fortran with FPM, autotools, CMake, or by simply including 
+You can build datetime-fortran with FPM, autotools, CMake, or by simply including
 the source file (`src/datetime_module.f90`) in your project.
 
 ### FPM
 
-As of version 1.7.0, datetime-fortran can be built using the 
+As of version 1.7.0, datetime-fortran can be built using the
 [Fortran Package Manager](https://github.com/fortran-lang/fpm).
 Follow the directions on that page to install FPM if you haven't already.
 
@@ -49,7 +49,7 @@ make check
 make install
 ```
 
-If you cloned the repo instead of downloading a release tarball, 
+If you cloned the repo instead of downloading a release tarball,
 run `autoreconf -i` first to generate the `configure` script.
 
 ### CMake
@@ -119,7 +119,7 @@ use datetime_module, only: datetime, timedelta, clock
 ## Derived Types<a id="derived-types"></a>
 
 *datetime-fortran* library provides the following derived types:
-[*datetime*](#datetime), [*timedelta*](#timedelta),  
+[*datetime*](#datetime), [*timedelta*](#timedelta),
 [*clock*](#clock) and [*tm_struct*](#tm_struct).
 
 ### datetime <a id="datetime"></a>
@@ -1117,10 +1117,10 @@ adjusted to UTC time before making the comparison.
 
 ```fortran
 function c_strftime(str,slen,format,tm) bind(c,name='strftime') result(rc)
-  character(kind=c_char),dimension(*),intent(out) :: str   
-  integer(kind=c_int),value,          intent(in)  :: slen   
+  character(kind=c_char),dimension(*),intent(out) :: str
+  integer(kind=c_int),value,          intent(in)  :: slen
   character(kind=c_char),dimension(*),intent(in)  :: format
-  type(tm_struct),                    intent(in)  :: tm     
+  type(tm_struct),                    intent(in)  :: tm
   integer(kind=c_int)                             :: rc
 ```
 
@@ -1368,7 +1368,7 @@ td = timedelta(days=1)
 dtRange = datetimeRange(a,b,td)
 
 ! Returns:
-!     
+!
 ! dtRange = [datetime(2014,5,1),
 !            datetime(2014,5,2),
 !            datetime(2014,5,3)]
@@ -1380,7 +1380,7 @@ td = timedelta(hours=7)
 dtRange = datetimeRange(a,b,td)
 
 ! Returns:
-!     
+!
 ! dtRange = [datetime(2014,5,1,0),
 !            datetime(2014,5,1,7),
 !            datetime(2014,5,1,14),
