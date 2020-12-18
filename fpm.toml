@@ -1,5 +1,5 @@
 name = "datetime"
-version = "1.7.0"
+version = "1.7.1"
 license = "MIT"
 author = "Milan Curcic"
 maintainer = "caomaco@gmail.com"
