@@ -1,5 +1,5 @@
 AC_PREREQ([2.69])
-AC_INIT([datetime-fortran], [1.7.0])
+AC_INIT([datetime-fortran], [1.7.1])
 AC_CONFIG_SRCDIR([src/datetime_module.f90])
 
 # foreign flag tells that we are not conforming to the GNU standards
