@@ -1,6 +1,6 @@
 module datetime_tests
   use datetime_module
-  use, intrinsic :: iso_fortran_env, only: real64
+  use, intrinsic :: iso_fortran_env, only: int64, real64
 
   implicit none
 
@@ -83,7 +83,7 @@ contains
     print *
 
     ! Test counter; modify if adding new tests
-    ntests = 191
+    ntests = 192
 
     call initialize_tests(tests, ntests)
 
@@ -549,6 +549,11 @@ contains
     a = datetime(1969, 12, 31, 23, 0, 0)
     tests(n) = assert(a % secondsSinceEpoch() == -3600, &
                       'datetime % secondsSinceEpoch(),  -1 hour')
+    n = n + 1
+
+    a = datetime(2070, 1, 1)
+    tests(n) = assert(a % secondsSinceEpoch() == 3155760000_int64, &
+                      'datetime % secondsSinceEpoch(), 100 years')
     n = n + 1
 
     print '(71("-"))'
