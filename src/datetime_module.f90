@@ -656,7 +656,7 @@ contains
     class(datetime), intent(in) :: self
     character(*), intent(in)  :: format
     character(:), allocatable :: strftime
-    integer :: n, rc
+    integer :: rc
     character(MAXSTRLEN) :: resultString
     resultString = ""
     rc = c_strftime(resultString, len(resultString), trim(format) // c_null_char, &

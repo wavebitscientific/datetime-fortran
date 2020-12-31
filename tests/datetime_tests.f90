@@ -78,7 +78,7 @@ contains
     real(real64) :: eps = tiny(1._real64)
     logical, allocatable :: tests(:)
     logical :: test_failed
-    integer :: i, n, ntests, tzOffset
+    integer :: i, n, ntests
 
     print *
 
