@@ -37,5 +37,5 @@ if(BUILD_TESTING)
   LINKER_LANGUAGE Fortran)
   add_test(NAME datetime_tests COMMAND $<TARGET_FILE:datetime_tests>)
 
-  add_subdirectory(Examples)
+  add_subdirectory(examples)
 endif(BUILD_TESTING)
