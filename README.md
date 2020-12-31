@@ -83,13 +83,16 @@ cd build
 ctest -V
 ```
 
-## Usage
+## Use
 
-To start using datetime-fortran in your code by importing the module:
+Start using datetime-fortran in your code by importing derived types from the module:
 
 ```fortran
 use datetime_module, only: datetime, timedelta, clock
 ```
+
+See some basic examples [here](examples).
+
 <a id="top"></a>
 
 ## API
