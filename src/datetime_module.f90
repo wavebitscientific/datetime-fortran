@@ -639,14 +639,14 @@ contains
     ! Since Windows does not have strftime('%s'), we implement this using
     ! datetime itself.
     class(datetime), intent(in) :: self
-    type(timedelta) :: td
+    type(timedelta) :: delta
     type(datetime) :: this_time, unix_time
 
     this_time = datetime(self%year, self%month, self%day, &
                          self%hour, self%minute, self%second)
     unix_time = datetime(1970, 1, 1, 0, 0, 0)
-    td = datetime_minus_datetime(this_time, unix_time)
-    secondsSinceEpoch = td%total_seconds()
+    delta = this_time - unix_time
+    secondsSinceEpoch = delta%total_seconds()
 
   end function secondsSinceEpoch
 
