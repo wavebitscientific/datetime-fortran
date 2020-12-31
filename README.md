@@ -4,12 +4,13 @@
 [![GitHub issues](https://img.shields.io/github/issues/wavebitscientific/datetime-fortran.svg)](https://github.com/wavebitscientific/datetime-fortran/issues)
 
 Date and time manipulation for modern Fortran.
+The fundamental time step is one millisecond.
 
 ## Getting started
 
 First, get the code by cloning this repo:
 
-```
+```sh
 git clone https://github.com/wavebitscientific/datetime-fortran
 cd datetime-fortran
 ```
@@ -18,7 +19,8 @@ or by downloading a [release tarball](https://github.com/wavebitscientific/datet
 The latter is recommended if you want to build datetime-fortran with autotools and make.
 
 You can build datetime-fortran with FPM, autotools, CMake, or by simply including
-the source file (`src/datetime_module.f90`) in your project.
+the source file "src/datetime_module.f90" in your project.
+NOTE: Windows additionally requires "src/strptime.cpp" in your project.
 
 ### FPM
 
@@ -28,16 +30,18 @@ Follow the directions on that page to install FPM if you haven't already.
 
 To build, type:
 
-```
+```sh
 fpm build
 ```
 
-Library and module files will be built in `build/gfortran_debug/library`
-and tests will be built in `build/gfortran_debug/tests`.
+binary artifacts are created in:
+
+* Library and module files: `build/gfortran_debug/library`
+* test executables: `build/gfortran_debug/tests`.
 
 To run the tests, type:
 
-```
+```sh
 fpm test
 ```
 
@@ -54,21 +58,41 @@ run `autoreconf -i` first to generate the `configure` script.
 
 ### CMake
 
+```sh
+cmake -B build
+cmake --build build
 ```
-mkdir build
+
+binary artifacts are created in:
+
+* Library: `build/lib/libdatetime`
+* module: `build/include/datetime.mod`
+* test executable: `build/bin/datetime_tests`
+
+optionally, to install (replace "~/mylibs" with your desired install directory):
+
+```sh
+cmake -B build -DCMAKE_INSTALL_PREFIX=~/mylibs
+cmake --install build
+```
+
+optionally, to run self-tests:
+
+```sh
 cd build
-cmake ..
-make
-ctest
+ctest -V
 ```
 
-### Usage
+## Use
 
-To start using datetime-fortran in your code by importing the module:
+Start using datetime-fortran in your code by importing derived types from the module:
 
 ```fortran
 use datetime_module, only: datetime, timedelta, clock
 ```
+
+See some basic examples [here](examples).
+
 <a id="top"></a>
 
 ## API
@@ -356,7 +380,7 @@ use datetime_module,only:datetime
 type(datetime) :: a
 
 a = datetime(2013,1,1)
-write(*,*)a % isocalendar() ! Prints: 2013  1  2
+print *, a % isocalendar() ! Prints: 2013  1  2
 ```
 
 #### See also
@@ -399,10 +423,10 @@ type(datetime) :: a
 a = datetime(1984,12,10,13,5,0)
 
 ! Without arguments:
-write(*,*)a % isoformat() ! Prints 1984-12-10T13:05:00.000
+print *, a % isoformat() ! Prints 1984-12-10T13:05:00.000
 
 ! With a specified separator:
-write(*,*)a % isoformat(' ') ! Prints 1984-12-10 13:05:00.000
+print *, a % isoformat(' ') ! Prints 1984-12-10 13:05:00.000
 ```
 
 #### See also
@@ -433,11 +457,11 @@ type(datetime) :: a
 
 a = datetime(1984,12,10,13,5,0)
 
-write(*,*)a % isValid()! .true.
+print *, a % isValid()! .true.
 
 a = datetime(1984,13,10,13,5,0)
 
-write(*,*)a % isValid() ! .false.
+print *, a % isValid() ! .false.
 ```
 
 #### See also
@@ -497,7 +521,7 @@ type(datetime) :: a
 ! Initialize:
 a = datetime(2013,1,1)
 
-write(*,*)a%secondsSinceEpoch()
+print *, a%secondsSinceEpoch()
 ```
 
 [Back to top](#top)
@@ -543,9 +567,9 @@ use datetime_module
 type(datetime)  :: a
 
 a = a % now()
-write(*,*)a % isoformat()
+print *, a % isoformat()
 
-write(*,*)trim(a % strftime("%Y %B %d"))
+print *, trim(a % strftime("%Y %B %d"))
 ```
 
 #### See also
@@ -620,7 +644,7 @@ type(tm_struct) :: tm
 a = datetime(2013,1,1,tz=-4.75)
 
 ! Write tzOffset on screen:
-write(*,*)a % tzOffset ! -0445 (offset of 4 hours and 45 minutes)
+print *, a % tzOffset ! -0445 (offset of 4 hours and 45 minutes)
 ```
 
 [Back to top](#top)
@@ -650,12 +674,12 @@ type(tm_struct) :: tm
 ! Initialize a datetime instance with timezone offset of -4.75 hours:
 a = datetime(2013,1,1,tz=-4.75)
 
-write(*,*)a % isoformat() // a % tzOffset() ! 2013-01-01T00:00:00.000-0445
+print *, a % isoformat() // a % tzOffset() ! 2013-01-01T00:00:00.000-0445
 
 ! Convert a to UTC:
 a = a % utc()
 
-write(*,*)a % isoformat() // a % tzOffset() ! 2013-01-01T04:45:00.000+0000
+print *, a % isoformat() // a % tzOffset() ! 2013-01-01T04:45:00.000+0000
 ```
 
 #### See also
@@ -686,7 +710,7 @@ type(datetime)  :: a
 ! Initialize:
 a = datetime(2013,1,1)
 
-write(*,*)a % weekday() ! 2
+print *, a % weekday() ! 2
 ```
 
 #### See also
@@ -717,7 +741,7 @@ type(datetime)  :: a
 ! Initialize:
 a = datetime(2013,1,1)
 
-write(*,*)a % weekdayLong() ! Tuesday
+print *, a % weekdayLong() ! Tuesday
 ```
 
 #### See also
@@ -748,7 +772,7 @@ type(datetime)  :: a
 ! Initialize:
 a = datetime(2013,1,1)
 
-write(*,*)a % weekdayShort() ! Tue
+print *, a % weekdayShort() ! Tue
 ```
 
 #### See also
@@ -782,7 +806,7 @@ type(datetime)  :: a
 ! Initialize:
 a = datetime(2013,5,1)
 
-write(*,*)a % yearday() ! 121
+print *, a % yearday() ! 121
 ```
 
 #### See also
@@ -908,7 +932,7 @@ type(timedelta) :: td
 
 td = timedelta(days=5,hours=12,minutes=15,seconds=7,milliseconds=123)
 
-write(*,*)td%total_seconds() ! 476107.12300000002
+print *, td%total_seconds() ! 476107.12300000002
 ```
 
 [Back to top](#top)
@@ -976,7 +1000,7 @@ do
   call myClock % tick()
 
   ! Report current time after each tick
-  write(*,*)myClock % currentTime % isoformat(' ')
+  print *, myClock % currentTime % isoformat(' ')
 
   ! If clock has reached stopTime, exit loop
   if(myClock % stopped)THEN
@@ -1243,8 +1267,8 @@ date2 = tm2date(ctime)
 
 timediff = date2-date1
 
-write(*,*)timediff
-write(*,*)timediff % total_seconds()
+print *, timediff
+print *, timediff % total_seconds()
 ```
 
 This example outputs the following:
@@ -1311,7 +1335,7 @@ type(datetime)  :: a
 ! Initialize:
 a = datetime(2013,1,1,6)
 
-write(*,*)date2num(a) ! 734869.25000000000
+print *, date2num(a) ! 734869.25000000000
 ```
 
 #### See also
@@ -1428,13 +1452,13 @@ Returns `0` if `month` is not in valid range.
 use datetime_module,only:daysInMonth
 
 ! January on leap year:
-write(*,*)daysInMonth(1,2012)   ! 31
+print *, daysInMonth(1,2012)   ! 31
 
 ! February on leap year:
-write(*,*)daysInMonth(2,2012)   ! 29
+print *, daysInMonth(2,2012)   ! 29
 
 ! February on non-leap year
-write(*,*)daysInMonth(2,2013)   ! 28
+print *, daysInMonth(2,2013)   ! 28
 ```
 
 #### See also
@@ -1468,10 +1492,10 @@ Calls the [*isLeapYear*](#isleapyear) function.
 use datetime_module,only:daysInYear
 
 ! Leap year:
-write(*,*)daysInYear(2012) ! 366
+print *, daysInYear(2012) ! 366
 
 ! Non-leap year:
-write(*,*)daysInYear(2013) ! 365
+print *, daysInYear(2013) ! 365
 ```
 
 #### See also
@@ -1506,10 +1530,10 @@ Returns a `logical` value indicating whether the reqested year is a leap year.
 use datetime_module,only:isLeapYear
 
 ! Leap year:
-write(*,*)isLeapYear(2012) ! .true.
+print *, isLeapYear(2012) ! .true.
 
 ! Non-leap year:
-write(*,*)isLeapYear(2013) ! .false.
+print *, isLeapYear(2013) ! .false.
 ```
 
 #### See also
@@ -1610,8 +1634,8 @@ date2 = strptime(str2,"%Y%m%d %H%M%S")
 
 timediff = date2-date1
 
-write(*,*)timediff
-write(*,*)timediff%total_seconds()
+print *, timediff
+print *, timediff%total_seconds()
 ```
 
 This example outputs the following:
