@@ -1,6 +1,7 @@
 module datetime_module
 
-  use, intrinsic :: iso_fortran_env, only: real32, real64, stderr => error_unit
+  use, intrinsic :: iso_fortran_env, only: int64, real32, real64, &
+                                           stderr => error_unit
   use, intrinsic :: iso_c_binding, only: c_char, c_int, c_null_char
 
   implicit none
@@ -633,19 +634,19 @@ contains
   end function isocalendar
 
 
-  integer function secondsSinceEpoch(self)
-    ! Returns an integer number of seconds since the UNIX Epoch,
-    ! `1970-01-01 00:00:00`.
-    ! Since Windows does not have strftime('%s'), we implement this
-    ! using datetime itself
+  integer(int64) function secondsSinceEpoch(self)
+    ! Returns an integer number of seconds since the UNIX Epoch (1 Jan 1970).
+    ! Since Windows does not have strftime('%s'), we implement this using
+    ! datetime itself.
     class(datetime), intent(in) :: self
-    type(timedelta) :: td
-    type(datetime) :: dummy
+    type(timedelta) :: delta
+    type(datetime) :: this_time, unix_time
 
-    dummy = datetime(self%year, self%month, self%day, self%hour, self%minute, self%second)
-
-    td = datetime_minus_datetime(dummy, datetime(1970,1,1,0,0,0))
-    secondsSinceEpoch = td%total_seconds()
+    this_time = datetime(self%year, self%month, self%day, &
+                         self%hour, self%minute, self%second)
+    unix_time = datetime(1970, 1, 1, 0, 0, 0)
+    delta = this_time - unix_time
+    secondsSinceEpoch = delta%total_seconds()
 
   end function secondsSinceEpoch
 
@@ -655,7 +656,7 @@ contains
     class(datetime), intent(in) :: self
     character(*), intent(in)  :: format
     character(:), allocatable :: strftime
-    integer :: n, rc
+    integer :: rc
     character(MAXSTRLEN) :: resultString
     resultString = ""
     rc = c_strftime(resultString, len(resultString), trim(format) // c_null_char, &
