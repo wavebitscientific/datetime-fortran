@@ -7,6 +7,9 @@ LANGUAGES Fortran
 VERSION 1.7.0)
 include(CTest)
 
+SET(CMAKE_Fortran_ARCHIVE_CREATE "<CMAKE_AR> qcD <TARGET> <LINK_FLAGS> <OBJECTS>")
+SET(CMAKE_Fortran_ARCHIVE_FINISH "<CMAKE_RANLIB> -D <TARGET>")
+
 # library to archive (libdatetime.a)
 add_library(datetime src/datetime_module.f90)
 target_include_directories(datetime INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/include)
