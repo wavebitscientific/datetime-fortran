@@ -15,7 +15,6 @@ on:
 jobs:
 
   windows:
-    needs: linux
     runs-on: windows-latest
     defaults:
       run:
@@ -29,37 +28,25 @@ jobs:
           mingw-w64-x86_64-cmake
           mingw-w64-x86_64-ninja
           mingw-w64-x86_64-gcc-fortran
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - run: cmake -B build -G Ninja
     - run: cmake --build build
+    - run: ctest --test-dir build -V
 
-    - run: ctest -V
-      working-directory: build
+  core:
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
 
-  mac:
-    needs: linux
-    runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
-    - run: cmake -B build
-      # MacOS has Clang masquerading as GCC, which fails without this specification
-      env:
-        FC: gfortran-10
-        CC: gcc-10
-    - run: cmake --build build
-
-    - run: ctest -V
-      working-directory: build
-
-  linux:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
+    - name: macOS Gfortran setup
+      if: runner.os == 'macOS'
+      run: brew reinstall gcc
 
     - run: cmake -B build
     - run: cmake --build build
-
-    - run: ctest -V
-      working-directory: build
+    - run: ctest --test-dir build -V
