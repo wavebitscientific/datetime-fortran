@@ -30,12 +30,12 @@ target_link_libraries(datetime PRIVATE "$<$<BOOL:${MINGW}>:ucrtbase>")
 
 # tests
 if(BUILD_TESTING)
-  add_executable(datetime_tests tests/datetime_tests.f90)
+  add_executable(datetime_tests test/datetime_tests.f90)
   target_link_libraries(datetime_tests datetime)
   set_target_properties(datetime_tests PROPERTIES
   RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin
   LINKER_LANGUAGE Fortran)
   add_test(NAME datetime_tests COMMAND $<TARGET_FILE:datetime_tests>)
 
-  add_subdirectory(examples)
+  add_subdirectory(example)
 endif(BUILD_TESTING)
