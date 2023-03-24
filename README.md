@@ -297,6 +297,12 @@ pure elemental integer function getMonth(self)
 ```
 Returns the month of a `datetime` instance.
 
+#### See also
+
+* [*monthLong*](#monthLong)
+
+* [*monthShort*](#monthShort)
+
 [Back to top](#top)
 <hr>
 
