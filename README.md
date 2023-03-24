@@ -109,6 +109,8 @@ See some basic examples [here](examples).
         * [*isocalendar*](#isocalendar)
         * [*isoformat*](#isoformat)
         * [*isValid*](#isvalid)
+        * [*monthLong*](#monthlong)
+        * [*monthShort*](#monthshort)
         * [*now*](#now)
         * [*secondsSinceEpoch*](#secondssinceepoch)
         * [*strftime*](#strftime)
@@ -196,6 +198,8 @@ type :: datetime
   procedure,pass(self),public :: weekdayShort
   procedure,pass(self),public :: isoweekdayShort
   procedure,pass(self),public :: yearday
+  procedure,pass(self),public :: monthLong
+  procedure,pass(self),public :: monthShort
 
   ! private methods
   procedure,pass(self),private :: addMilliseconds
@@ -292,6 +296,12 @@ pure elemental integer function getMonth(self)
   class(datetime),intent(in) :: self
 ```
 Returns the month of a `datetime` instance.
+
+#### See also
+
+* [*monthLong*](#monthLong)
+
+* [*monthShort*](#monthShort)
 
 [Back to top](#top)
 <hr>
@@ -465,6 +475,68 @@ print *, a % isValid() ! .false.
 ```
 
 #### See also
+
+[Back to top](#top)
+<hr>
+
+### monthLong<a id="monthlong"></a>
+
+```fortran
+pure elemental character(len=9) function monthLong(self)
+  class(datetime),intent(in) :: self
+```
+
+Returns the full name of the month.
+
+#### Example usage
+
+```fortran
+use datetime_module,only:datetime
+
+type(datetime)  :: a
+
+! Initialize:
+a = datetime(2013,1,1)
+
+print *, a % monthLong() ! January
+```
+
+#### See also
+
+* [*getMonth*](#getmonth)
+
+* [*monthShort*](#monthshort)
+
+[Back to top](#top)
+<hr>
+
+### monthShort<a id="monthshort"></a>
+
+```fortran
+pure elemental character(len=3) function monthShort(self)
+  class(datetime),intent(in) :: self
+```
+
+Returns the short (3-letter) name of the month.
+
+#### Example usage
+
+```fortran
+use datetime_module,only:datetime
+
+type(datetime)  :: a
+
+! Initialize:
+a = datetime(2013,1,1)
+
+print *, a % monthShort() ! Jan
+```
+
+#### See also
+
+* [*getMonth*](#getmonth)
+
+* [*monthLong*](#monthLong)
 
 [Back to top](#top)
 <hr>
