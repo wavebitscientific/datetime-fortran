@@ -80,6 +80,8 @@ module datetime_module
     procedure, pass(self), public :: weekdayLong
     procedure, pass(self), public :: weekdayShort
     procedure, pass(self), public :: yearday
+    procedure, pass(self), public :: monthLong
+    procedure, pass(self), public :: monthShort
 
     ! private methods
     procedure, pass(self), private :: addMilliseconds
@@ -613,6 +615,25 @@ contains
     isoweekdayShort = days(self % isoweekday())
   end function isoweekdayShort
 
+  pure elemental character(9) function monthLong(self)
+    ! Returns the full name of the month.
+    class(datetime), intent(in) :: self
+    character(9), parameter :: &
+      months(*) = ['January  ', 'February ', 'March    ', 'April    ', &
+                   'May      ', 'June     ', 'July     ', 'August   ', &
+                   'September', 'October  ', 'November ', 'December ']
+    monthLong = months(self%getMonth())
+  end function monthLong
+
+  pure elemental character(3) function monthShort(self)
+    ! Returns the short (3-letter) name of the month.
+    class(datetime), intent(in) :: self
+    character(3), parameter :: &
+      months(*) = ['Jan', 'Feb', 'Mar', 'Apr', &
+                   'May', 'Jun', 'Jul', 'Aug', &
+                   'Sep', 'Oct', 'Nov', 'Dec']
+    monthShort = months(self%getMonth())
+  end function monthShort
 
   function isocalendar(self)
     ! Returns an array of 3 integers, year, week number, and week day,

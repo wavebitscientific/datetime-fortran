@@ -83,7 +83,7 @@ contains
     print *
 
     ! Test counter; modify if adding new tests
-    ntests = 192
+    ntests = 216
 
     call initialize_tests(tests, ntests)
 
@@ -877,6 +877,110 @@ contains
     a = datetime(2014, 12, 1)
     tests(n) = assert(a % yearday() == 335, &
                       'datetime(2014, 12, 1) % yearday() == 335')
+    n = n + 1
+
+    print '(71("-"))'
+
+    ! datetime % monthLong()
+
+    a = datetime(2014, 1, 1)
+    tests(n) = assert(a % monthLong() == 'January', 'datetime % monthLong(),  January')
+    n = n + 1
+
+    a = datetime(2014, 2, 1)
+    tests(n) = assert(a % monthLong() == 'February', 'datetime % monthLong(),  February')
+    n = n + 1
+
+    a = datetime(2014, 3, 1)
+    tests(n) = assert(a % monthLong() == 'March', 'datetime % monthLong(),  March')
+    n = n + 1
+
+    a = datetime(2014, 4, 1)
+    tests(n) = assert(a % monthLong() == 'April', 'datetime % monthLong(),  April')
+    n = n + 1
+
+    a = datetime(2014, 5, 1)
+    tests(n) = assert(a % monthLong() == 'May', 'datetime % monthLong(),  May')
+    n = n + 1
+
+    a = datetime(2014, 6, 1)
+    tests(n) = assert(a % monthLong() == 'June', 'datetime % monthLong(),  June')
+    n = n + 1
+
+    a = datetime(2014, 7, 1)
+    tests(n) = assert(a % monthLong() == 'July', 'datetime % monthLong(),  July')
+    n = n + 1
+
+    a = datetime(2014, 8, 1)
+    tests(n) = assert(a % monthLong() == 'August', 'datetime % monthLong(),  August')
+    n = n + 1
+
+    a = datetime(2014, 9, 1)
+    tests(n) = assert(a % monthLong() == 'September', 'datetime % monthLong(),  September')
+    n = n + 1
+
+    a = datetime(2014,10, 1)
+    tests(n) = assert(a % monthLong() == 'October', 'datetime % monthLong(),  October')
+    n = n + 1
+
+    a = datetime(2014,11, 1)
+    tests(n) = assert(a % monthLong() == 'November', 'datetime % monthLong(),  November')
+    n = n + 1
+
+    a = datetime(2014,12, 1)
+    tests(n) = assert(a % monthLong() == 'December', 'datetime % monthLong(),  December')
+    n = n + 1
+
+    print '(71("-"))'
+
+    ! datetime % monthShort()
+
+    a = datetime(2014, 1, 1)
+    tests(n) = assert(a % monthShort() == 'Jan', 'datetime % monthShort(),  January')
+    n = n + 1
+
+    a = datetime(2014, 2, 1)
+    tests(n) = assert(a % monthShort() == 'Feb', 'datetime % monthShort(),  February')
+    n = n + 1
+
+    a = datetime(2014, 3, 1)
+    tests(n) = assert(a % monthShort() == 'Mar', 'datetime % monthShort(),  March')
+    n = n + 1
+
+    a = datetime(2014, 4, 1)
+    tests(n) = assert(a % monthShort() == 'Apr', 'datetime % monthShort(),  April')
+    n = n + 1
+
+    a = datetime(2014, 5, 1)
+    tests(n) = assert(a % monthShort() == 'May', 'datetime % monthShort(),  May')
+    n = n + 1
+
+    a = datetime(2014, 6, 1)
+    tests(n) = assert(a % monthShort() == 'Jun', 'datetime % monthShort(),  June')
+    n = n + 1
+
+    a = datetime(2014, 7, 1)
+    tests(n) = assert(a % monthShort() == 'Jul', 'datetime % monthShort(),  July')
+    n = n + 1
+
+    a = datetime(2014, 8, 1)
+    tests(n) = assert(a % monthShort() == 'Aug', 'datetime % monthShort(),  August')
+    n = n + 1
+
+    a = datetime(2014, 9, 1)
+    tests(n) = assert(a % monthShort() == 'Sep', 'datetime % monthShort(),  September')
+    n = n + 1
+
+    a = datetime(2014,10, 1)
+    tests(n) = assert(a % monthShort() == 'Oct', 'datetime % monthShort(),  October')
+    n = n + 1
+
+    a = datetime(2014,11, 1)
+    tests(n) = assert(a % monthShort() == 'Nov', 'datetime % monthShort(),  November')
+    n = n + 1
+
+    a = datetime(2014,12, 1)
+    tests(n) = assert(a % monthShort() == 'Dec', 'datetime % monthShort(),  December')
     n = n + 1
 
     print '(71("-"))'
