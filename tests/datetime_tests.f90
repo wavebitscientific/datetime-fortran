@@ -83,7 +83,7 @@ contains
     print *
 
     ! Test counter; modify if adding new tests
-    ntests = 192
+    ntests = 197
 
     call initialize_tests(tests, ntests)
 
@@ -379,6 +379,14 @@ contains
                'strptime(datetime % strftime(fmt), fmt) == datetime')
     n = n + 1
 
+    block
+      type(tm_struct) :: tm
+      a = strptime("1970/1/1 0:0:0","%Y/%m/%d %H:%M*%S",tz=9.0_real64)
+      tests(n) = assert(a % getTz() == 9.0_real64, &
+                        'strptime with `tz`,  9.0_real64')
+      end block
+    n = n + 1
+
     print '(71("-"))'
 
     ! datetime % isocalendar: test all examples from
@@ -554,6 +562,49 @@ contains
     a = datetime(2070, 1, 1)
     tests(n) = assert(a % secondsSinceEpoch() == 3155760000_int64, &
                       'datetime % secondsSinceEpoch(), 100 years')
+    n = n + 1
+
+    a = datetime(1970, 1, 1, 0, 0, 0, 0, tz=9.0_real64)
+    tests(n) = assert(a % secondsSinceEpoch() == -32400_int64, &
+                      'datetime % secondsSinceEpoch(), with tz=9.0')
+    n = n + 1
+
+    block
+      type(tm_struct) :: tm
+      a = datetime(1970, 1, 1, 0, 0, 0, 0, tz=machinetimezone())
+      tm = a % tm()
+      tests(n) = assert(a % secondsSinceEpoch() == c_mktime(tm), &
+                        'secondsSinceEpoch equal to c_mktime (with your timezone)')
+    end block
+    n = n + 1
+
+    ! localtime(epoc_time)
+
+    print '(71("-"))'
+
+    block
+      type(tm_struct) :: tm
+      a = datetime(1970, 1, 1, 0, 0, 0, 0, tz=machinetimezone())
+      tm = a % tm()
+      tests(n) = assert(a == localtime(c_mktime(tm)), &
+                  "localtime from c_mktime's epoc (with your timezone)")
+    end block
+    n = n + 1
+
+    block
+      type(tm_struct) :: tm
+      type(datetime),allocatable :: b
+      td = timedelta(hours=int(machinetimezone()))
+      a = datetime(1970, 1, 1, 0, 0, 0, 0, tz=machinetimezone())
+      tm = a % tm()
+      allocate(b,source=gmtime(a%secondsSinceEpoch()))
+      a = a - td
+      !print *,"epoc",c_mktime(tm),a%secondsSinceEpoch()
+      !print*,"a",a%isoformat()
+      !print*,"g",b%isoformat(),b%getYear(),b%getDay()
+      tests(n) = assert(a%isoformat() == b%isoformat(), &
+                  "gmtime from c_mktime's epoc")
+    end block
     n = n + 1
 
     print '(71("-"))'

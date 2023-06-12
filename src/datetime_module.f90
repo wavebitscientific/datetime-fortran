@@ -2,7 +2,7 @@ module datetime_module
 
   use, intrinsic :: iso_fortran_env, only: int64, real32, real64, &
                                            stderr => error_unit
-  use, intrinsic :: iso_c_binding, only: c_char, c_int, c_null_char
+  use, intrinsic :: iso_c_binding, only: c_char, c_int, c_int64_t, c_null_char
 
   implicit none
 
@@ -15,11 +15,20 @@ module datetime_module
   public :: daysInYear
   public :: isLeapYear
   public :: num2date
+  public :: machinetimezone
   public :: strptime
+  public :: localtime
+  public :: gmtime
   public :: tm2date
   public :: tm_struct
   public :: c_strftime
   public :: c_strptime
+  !public :: c_localtime
+  !public :: c_gmtime
+  public :: c_localtime_r
+  public :: c_gmtime_r
+  public :: c_mktime
+  public :: c_tzset  ! this should be called before localtime_r
 
   real(real64), parameter :: zero = 0._real64, one = 1._real64
 
@@ -199,6 +208,43 @@ module datetime_module
       type(tm_struct), intent(out) :: tm ! result tm_struct
       integer(c_int) :: rc ! return code
     end function c_strptime
+
+   !function c_localtime(timep) bind(c,name='localtime') result(statictm)
+   !  import :: c_int64_t, tm_struct
+   !  integer(kind=c_int64_t), intent(in) :: timep ! input epoc time
+   !  type(tm_struct) :: statictm ! return internal tm_struct
+   !end function c_localtime
+
+    function c_localtime_r(t_epoc, tm) bind(c,name='localtime_r') result(rc)
+      import :: c_int64_t, c_int, tm_struct
+      integer(kind=c_int64_t), intent(in) :: t_epoc ! input epoc time
+      type(tm_struct) :: tm ! return user  tm_struct
+      integer(c_int) :: rc ! return code
+    end function c_localtime_r
+
+   !function c_gmtime(timep) bind(c,name='gmtime') result(tm)
+   !  import :: c_int64_t, tm_struct
+   !  integer(kind=c_int64_t), intent(in) :: timep ! input epoc time
+   !  type(tm_struct) :: tm ! return internal tm_struct
+   !end function c_gmtime
+
+    function c_gmtime_r(timep, tm) bind(c,name='gmtime_r') result(rc)
+      import :: c_int, c_int64_t, tm_struct
+      integer(kind=c_int64_t), intent(in) :: timep ! input epoc time
+      type(tm_struct) :: tm ! return user  tm_struct
+      integer(c_int) :: rc ! return code
+    end function c_gmtime_r
+
+    function c_mktime(tm) bind(c,name='mktime') result(t_epoc)
+      ! after applying `mktime`, t_epoc is represented as UTC time
+      import :: c_int64_t, tm_struct
+      type(tm_struct), intent(in) :: tm ! return internal tm_struct
+      integer(kind=c_int64_t) :: t_epoc ! epoc time
+    end function c_mktime
+
+    subroutine c_tzset() bind(c,name='tzset')
+      ! this should be called before call c_localtime_r
+    end subroutine c_tzset
 
   end interface
 
@@ -641,12 +687,33 @@ contains
     class(datetime), intent(in) :: self
     type(timedelta) :: delta
     type(datetime) :: this_time, unix_time
+    integer :: sign, hours, minutes, tzsec
 
     this_time = datetime(self%year, self%month, self%day, &
                          self%hour, self%minute, self%second)
     unix_time = datetime(1970, 1, 1, 0, 0, 0)
     delta = this_time - unix_time
     secondsSinceEpoch = delta%total_seconds()
+
+    if(self % tz == 0_real64) return
+
+    ! affect timezone information
+    if(self % tz < 0_real64) then
+      sign = -1
+    else
+      sign =  1
+    end if
+
+    hours = int(abs(self % tz))
+    minutes = nint((abs(self % tz) - hours) * 60)
+
+    if (minutes == 60) then
+      minutes = 0
+      hours = hours + 1
+    end if
+
+    tzsec = sign * (hours * h2s + minutes)
+    secondsSinceEpoch = secondsSinceEpoch - tzsec
 
   end function secondsSinceEpoch
 
@@ -1095,21 +1162,67 @@ contains
   end function num2date
 
 
-  type(datetime) function strptime(str,format)
+  real(real64) function machinetimezone()
+    ! Return a real value instance of local machine's timezone.
+    character(len=5) :: zone
+    integer :: values(8)
+    integer :: hour, minute
+
+    ! Obtain local machine time zone information
+    call date_and_time(zone=zone, values=values)
+
+    read(zone(1:3), '(i3)') hour
+    read(zone(4:5), '(i2)') minute
+
+    machinetimezone = hour + minute * m2h
+
+  end function machinetimezone
+
+
+  type(datetime) function strptime(str,format,tz)
     ! A wrapper function around C/C++ strptime function.
     ! Returns a `datetime` instance.
     character(*), intent(in) :: str, format
+    real(real64), intent(in), optional :: tz
     integer :: rc
     type(tm_struct) :: tm
     rc = c_strptime(trim(str) // c_null_char, trim(format) // c_null_char, tm)
-    strptime = tm2date(tm)
+    strptime = tm2date(tm,tz)
   end function strptime
 
 
-  pure elemental type(datetime) function tm2date(ctime)
+  type(datetime) function localtime(epoc)
+    ! A wrapper function around C/C++ localtime_r function.
+    ! Returns a `datetime` instance.
+    integer(c_int64_t),intent(in) :: epoc
+    type(tm_struct) :: tm
+    real(real64) :: tz
+    integer :: rc
+    rc = c_localtime_r(epoc, tm)
+    tz = machinetimezone()
+    localtime = tm2date(tm,tz)
+  end function localtime
+
+
+  type(datetime) function gmtime(epoc)
+    ! A wrapper function around C/C++ gmtime_r function.
+    ! Returns a `datetime` instance.
+    integer(int64) :: epoc
+    type(tm_struct) :: tm
+    integer :: rc
+    !print *,epoc,gmtime%isoformat()
+    rc = c_gmtime_r(epoc, tm)
+    gmtime = tm2date(tm, tz = 0.0_real64)
+    !print '(9i4)', tm
+    !print *,epoc,gmtime%isoformat()
+  end function gmtime
+
+
+  pure elemental type(datetime) function tm2date(ctime, tz)
     ! Given a `tm_struct` instance, returns a corresponding `datetime`
     ! instance.
     type(tm_struct), intent(in) :: ctime
+    real(real64), intent(in), optional :: tz ! time zone
 
     tm2date % millisecond = 0
     tm2date % second      = ctime % tm_sec
@@ -1118,7 +1231,17 @@ contains
     tm2date % day         = ctime % tm_mday
     tm2date % month       = ctime % tm_mon+1
     tm2date % year        = ctime % tm_year+1900
-    tm2date % tz          = 0
+
+    ! tm_struct have no information of timze zone.
+    ! but if you run this library with C language's time.h,
+    ! localtime function deals system's timezone.
+    ! So, if you want to similar way, you can set tz value with
+    ! this library's `machinetimezone` function.
+    if(present(tz))then
+      tm2date % tz        = tz
+    else
+      tm2date % tz        = 0.0_real64
+    end if
 
   end function tm2date
 
