@@ -2,7 +2,7 @@ module datetime_module
 
   use, intrinsic :: iso_fortran_env, only: int64, real32, real64, &
                                            stderr => error_unit
-  use, intrinsic :: iso_c_binding, only: c_char, c_int, c_null_char
+  use, intrinsic :: iso_c_binding, only: c_char, c_int, c_null_char, c_associated, C_PTR
 
   implicit none
 
@@ -178,18 +178,17 @@ module datetime_module
 
   interface
 
-    function c_strftime(str, slen, format, tm) bind(c, name='strftime') result(rc)
+    type(C_PTR) function c_strftime(str, slen, format, tm) bind(c, name='strftime')
       ! Returns a formatted time string, given input time struct and format.
       ! See https://www.cplusplus.com/reference/ctime/strftime for reference.
-      import :: c_char, c_int, tm_struct
+      import :: c_char, c_int, tm_struct, C_PTR
       character(kind=c_char), intent(out) :: str(*) ! result string
       integer(c_int), value, intent(in) :: slen ! string length
       character(kind=c_char), intent(in) :: format(*) ! time format
       type(tm_struct), intent(in) :: tm ! tm_struct instance
-      integer(c_int) :: rc ! return code
     end function c_strftime
 
-    function c_strptime(str,format,tm) bind(c,name='strptime') result(rc)
+    integer(c_int) function c_strptime(str,format,tm) bind(c,name='strptime')
       ! Interface to POSIX strptime.
       ! Returns a time struct object based on the input time string str and format.
       ! See http://man7.org/linux/man-pages/man3/strptime.3.html for reference.
@@ -197,7 +196,6 @@ module datetime_module
       character(kind=c_char), intent(in) :: str(*) ! input string
       character(kind=c_char), intent(in) :: format(*) ! time format
       type(tm_struct), intent(out) :: tm ! result tm_struct
-      integer(c_int) :: rc ! return code
     end function c_strptime
 
   end interface
@@ -620,10 +618,15 @@ contains
     ! `strftime` function.
     class(datetime), intent(in) :: self
     integer :: isocalendar(3)
-    integer :: year, week, wday, rc
+    integer :: year, week, wday
+    type(C_PTR) :: rc
     character(20) :: string
 
     rc = c_strftime(string, len(string), '%G %V %u' // c_null_char, self % tm())
+    if (.not. c_associated(rc)) then
+      write(stderr,*) "ERROR:datetime:strftime: format: %G %V %u"
+      return
+    endif
 
     read(string(1:4), '(i4)') year
     read(string(6:7), '(i2)') week
@@ -656,12 +659,12 @@ contains
     class(datetime), intent(in) :: self
     character(*), intent(in)  :: format
     character(:), allocatable :: strftime
-    integer :: rc
+    type(C_PTR) :: rc
     character(MAXSTRLEN) :: resultString
     resultString = ""
     rc = c_strftime(resultString, len(resultString), trim(format) // c_null_char, &
                     self % tm())
-    if (rc == 0) write(stderr,*) "datetime:strftime failure, format: ", trim(format)
+    if (.not. c_associated(rc)) write(stderr, '(a)') "ERROR:datetime:strftime: format: " // trim(format)
     strftime = resultString(1:len_trim(resultString)-1)  !< strip null
   end function strftime
 
@@ -1102,6 +1105,10 @@ contains
     integer :: rc
     type(tm_struct) :: tm
     rc = c_strptime(trim(str) // c_null_char, trim(format) // c_null_char, tm)
+    if (rc == 0) then
+      write(stderr, *) "ERROR:datetime:strptime: failed to parse string: ", str
+      return
+    endif
     strptime = tm2date(tm)
   end function strptime
 
