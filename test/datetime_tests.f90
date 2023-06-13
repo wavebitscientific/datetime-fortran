@@ -584,10 +584,12 @@ contains
 
     block
       type(tm_struct) :: tm
+      integer(int64) :: epoc
       a = datetime(1970, 1, 1, 0, 0, 0, 0, tz=machinetimezone())
       tm = a % tm()
-      tests(n) = assert(a == localtime(c_mktime(tm)), &
-                  "localtime from c_mktime's epoc (with your timezone)")
+      epoc = a % secondsSinceEpoch()
+      tests(n) = assert(a == localtime(epoc), &
+                  "localtime from epoc (with your timezone)")
     end block
     n = n + 1
 
@@ -603,7 +605,7 @@ contains
       !print*,"a",a%isoformat()
       !print*,"g",b%isoformat(),b%getYear(),b%getDay()
       tests(n) = assert(a%isoformat() == b%isoformat(), &
-                  "gmtime from c_mktime's epoc")
+                  "gmtime")
     end block
     n = n + 1
 

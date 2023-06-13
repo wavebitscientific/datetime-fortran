@@ -17,18 +17,14 @@ module datetime_module
   public :: num2date
   public :: machinetimezone
   public :: strptime
+  public :: epocdatetime
   public :: localtime
   public :: gmtime
   public :: tm2date
   public :: tm_struct
   public :: c_strftime
   public :: c_strptime
-  !public :: c_localtime
-  !public :: c_gmtime
-  public :: c_localtime_r
-  public :: c_gmtime_r
   public :: c_mktime
-  public :: c_tzset  ! this should be called before localtime_r
 
   real(real64), parameter :: zero = 0._real64, one = 1._real64
 
@@ -207,31 +203,6 @@ module datetime_module
       type(tm_struct), intent(out) :: tm ! result tm_struct
     end function c_strptime
 
-   !function c_localtime(timep) bind(c,name='localtime') result(statictm)
-   !  import :: c_int64_t, tm_struct
-   !  integer(kind=c_int64_t), intent(in) :: timep ! input epoc time
-   !  type(tm_struct) :: statictm ! return internal tm_struct
-   !end function c_localtime
-
-    function c_localtime_r(t_epoc, tm) bind(c,name='localtime_r') result(rc)
-      import :: c_int64_t, c_int, tm_struct
-      integer(kind=c_int64_t), intent(in) :: t_epoc ! input epoc time
-      type(tm_struct) :: tm ! return user  tm_struct
-      integer(c_int) :: rc ! return code
-    end function c_localtime_r
-
-   !function c_gmtime(timep) bind(c,name='gmtime') result(tm)
-   !  import :: c_int64_t, tm_struct
-   !  integer(kind=c_int64_t), intent(in) :: timep ! input epoc time
-   !  type(tm_struct) :: tm ! return internal tm_struct
-   !end function c_gmtime
-
-    function c_gmtime_r(timep, tm) bind(c,name='gmtime_r') result(rc)
-      import :: c_int, c_int64_t, tm_struct
-      integer(kind=c_int64_t), intent(in) :: timep ! input epoc time
-      type(tm_struct) :: tm ! return user  tm_struct
-      integer(c_int) :: rc ! return code
-    end function c_gmtime_r
 
     function c_mktime(tm) bind(c,name='mktime') result(t_epoc)
       ! after applying `mktime`, t_epoc is represented as UTC time
@@ -240,9 +211,6 @@ module datetime_module
       integer(kind=c_int64_t) :: t_epoc ! epoc time
     end function c_mktime
 
-    subroutine c_tzset() bind(c,name='tzset')
-      ! this should be called before call c_localtime_r
-    end subroutine c_tzset
 
   end interface
 
@@ -1198,30 +1166,50 @@ contains
   end function strptime
 
 
+  pure elemental type(datetime) function epocdatetime()
+      epocdatetime = datetime(1970,1,1,0,0,0,0,tz=zero)
+  end function epocdatetime
+
+
   type(datetime) function localtime(epoc)
-    ! A wrapper function around C/C++ localtime_r function.
-    ! Returns a `datetime` instance.
-    integer(c_int64_t),intent(in) :: epoc
-    type(tm_struct) :: tm
-    real(real64) :: tz
-    integer :: rc
-    rc = c_localtime_r(epoc, tm)
-    tz = machinetimezone()
-    localtime = tm2date(tm,tz)
+    ! Returns a `datetime` instance from epoc.
+    integer(int64),intent(in) :: epoc
+    type(datetime) :: datetime_from_epoc
+    type(timedelta) :: td
+    character(5) :: zone
+    integer :: day, hour, minute, sec
+    integer :: values(8)
+    integer(int64) :: localminutes
+
+    ! Obtain local machine time zone information
+    call date_and_time(zone=zone, values=values)
+
+    read(zone(1:3), '(i3)') hour
+    read(zone(4:5), '(i2)') minute
+
+    datetime_from_epoc = epocdatetime()
+    localminutes = int(hour * h2s + minute * m2s , kind=int64) + epoc
+    !suppress overflow
+    day = floor(localminutes/d2s, kind=real32)
+    sec = localminutes - day * d2s
+    td = timedelta(days=day, seconds=sec)
+    datetime_from_epoc % tz = machinetimezone()
+    localtime = datetime_from_epoc + td
   end function localtime
 
 
-  type(datetime) function gmtime(epoc)
-    ! A wrapper function around C/C++ gmtime_r function.
-    ! Returns a `datetime` instance.
-    integer(int64) :: epoc
-    type(tm_struct) :: tm
-    integer :: rc
-    !print *,epoc,gmtime%isoformat()
-    rc = c_gmtime_r(epoc, tm)
-    gmtime = tm2date(tm, tz = 0.0_real64)
-    !print '(9i4)', tm
-    !print *,epoc,gmtime%isoformat()
+  pure elemental type(datetime) function gmtime(epoc)
+    ! Returns a `datetime` instance from epoc.
+    integer(int64),intent(in) :: epoc
+    type(datetime) :: datetime_from_epoc
+    type(timedelta) :: td
+    integer :: day, sec
+    datetime_from_epoc = epocdatetime()
+    !suppress overflow
+    day = floor(epoc/d2s, kind=real32)
+    sec = epoc - day * d2s
+    td = timedelta(days=day, seconds=sec)
+    gmtime = datetime_from_epoc + td
   end function gmtime
 
 
