@@ -83,7 +83,7 @@ contains
     print *
 
     ! Test counter; modify if adding new tests
-    ntests = 197
+    ntests = 196
 
     call initialize_tests(tests, ntests)
 
@@ -569,16 +569,7 @@ contains
                       'datetime % secondsSinceEpoch(), with tz=9.0')
     n = n + 1
 
-    block
-      type(tm_struct) :: tm
-      a = datetime(1970, 1, 1, 0, 0, 0, 0, tz=machinetimezone())
-      tm = a % tm()
-      tests(n) = assert(a % secondsSinceEpoch() == c_mktime(tm), &
-                        'secondsSinceEpoch equal to c_mktime (with your timezone)')
-    end block
-    n = n + 1
-
-    ! localtime(epoc_time)
+    ! localtime(epoc_time, tz)
 
     print '(71("-"))'
 
@@ -588,24 +579,22 @@ contains
       a = datetime(1970, 1, 1, 0, 0, 0, 0, tz=machinetimezone())
       tm = a % tm()
       epoc = a % secondsSinceEpoch()
-      tests(n) = assert(a == localtime(epoc), &
+      tests(n) = assert(a == localtime(epoc, machinetimezone()), &
                   "localtime from epoc (with your timezone)")
     end block
     n = n + 1
 
     block
       type(tm_struct) :: tm
-      type(datetime),allocatable :: b
+      type(datetime) :: b
       td = timedelta(hours=int(machinetimezone()))
       a = datetime(1970, 1, 1, 0, 0, 0, 0, tz=machinetimezone())
       tm = a % tm()
-      allocate(b,source=gmtime(a%secondsSinceEpoch()))
+      b = gmtime(a % secondsSinceEpoch())
       a = a - td
-      !print *,"epoc",c_mktime(tm),a%secondsSinceEpoch()
       !print*,"a",a%isoformat()
       !print*,"g",b%isoformat(),b%getYear(),b%getDay()
-      tests(n) = assert(a%isoformat() == b%isoformat(), &
-                  "gmtime")
+      tests(n) = assert(a%isoformat() == b%isoformat(), "gmtime")
     end block
     n = n + 1
 

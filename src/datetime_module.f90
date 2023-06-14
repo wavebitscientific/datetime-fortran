@@ -17,14 +17,14 @@ module datetime_module
   public :: num2date
   public :: machinetimezone
   public :: strptime
-  public :: epocdatetime
+  public :: epochdatetime
   public :: localtime
   public :: gmtime
   public :: tm2date
   public :: tm_struct
   public :: c_strftime
   public :: c_strptime
-  public :: c_mktime
+  !public :: c_mktime
 
   real(real64), parameter :: zero = 0._real64, one = 1._real64
 
@@ -204,12 +204,12 @@ module datetime_module
     end function c_strptime
 
 
-    function c_mktime(tm) bind(c,name='mktime') result(t_epoc)
-      ! after applying `mktime`, t_epoc is represented as UTC time
-      import :: c_int64_t, tm_struct
-      type(tm_struct), intent(in) :: tm ! return internal tm_struct
-      integer(kind=c_int64_t) :: t_epoc ! epoc time
-    end function c_mktime
+    !function c_mktime(tm) bind(c,name='mktime') result(t_epoch)
+    !  ! after applying `mktime`, t_epoch is represented as UTC time
+    !  import :: c_int64_t, tm_struct
+    !  type(tm_struct), intent(in) :: tm ! return internal tm_struct
+    !  integer(kind=c_int64_t) :: t_epoch ! epoch time
+    !end function c_mktime
 
 
   end interface
@@ -1141,12 +1141,14 @@ contains
 
     ! Obtain local machine time zone information
     call date_and_time(zone=zone, values=values)
-
     read(zone(1:3), '(i3)') hour
     read(zone(4:5), '(i2)') minute
 
-    machinetimezone = hour + minute * m2h
-
+    if(hour<0)then
+      machinetimezone = real(hour, kind=real64) - real(minute, kind=real64) * m2h
+    else
+      machinetimezone = real(hour, kind=real64) + real(minute, kind=real64) * m2h
+    end if
   end function machinetimezone
 
 
@@ -1166,50 +1168,45 @@ contains
   end function strptime
 
 
-  pure elemental type(datetime) function epocdatetime()
-      epocdatetime = datetime(1970,1,1,0,0,0,0,tz=zero)
-  end function epocdatetime
+  pure elemental type(datetime) function epochdatetime()
+      epochdatetime = datetime(1970,1,1,0,0,0,0,tz=zero)
+  end function epochdatetime
 
 
-  type(datetime) function localtime(epoc)
-    ! Returns a `datetime` instance from epoc.
-    integer(int64),intent(in) :: epoc
-    type(datetime) :: datetime_from_epoc
+  pure elemental type(datetime) function localtime(epoch, tz)
+    ! Returns a `datetime` instance from epoch.
+    ! tz can be obtained from `machinetimezone`
+    integer(int64),intent(in) :: epoch
+    real(real64),intent(in) :: tz !! local machine time zone information
+    type(datetime) :: datetime_from_epoch
     type(timedelta) :: td
-    character(5) :: zone
-    integer :: day, hour, minute, sec
-    integer :: values(8)
-    integer(int64) :: localminutes
+    integer :: day, sec
+    integer(int64) :: localseconds
 
-    ! Obtain local machine time zone information
-    call date_and_time(zone=zone, values=values)
+    datetime_from_epoch = epochdatetime()
 
-    read(zone(1:3), '(i3)') hour
-    read(zone(4:5), '(i2)') minute
-
-    datetime_from_epoc = epocdatetime()
-    localminutes = int(hour * h2s + minute * m2s , kind=int64) + epoc
+    localseconds = nint(tz * h2s) + epoch
     !suppress overflow
-    day = floor(localminutes/d2s, kind=real32)
-    sec = localminutes - day * d2s
+    day = floor(localseconds/d2s, kind=real32)
+    sec = localseconds - day * d2s
     td = timedelta(days=day, seconds=sec)
-    datetime_from_epoc % tz = machinetimezone()
-    localtime = datetime_from_epoc + td
+    datetime_from_epoch % tz = tz
+    localtime = datetime_from_epoch + td
   end function localtime
 
 
-  pure elemental type(datetime) function gmtime(epoc)
-    ! Returns a `datetime` instance from epoc.
-    integer(int64),intent(in) :: epoc
-    type(datetime) :: datetime_from_epoc
+  pure elemental type(datetime) function gmtime(epoch)
+    ! Returns a `datetime` instance from epoch.
+    integer(int64),intent(in) :: epoch
+    type(datetime) :: datetime_from_epoch
     type(timedelta) :: td
     integer :: day, sec
-    datetime_from_epoc = epocdatetime()
+    datetime_from_epoch = epochdatetime()
     !suppress overflow
-    day = floor(epoc/d2s, kind=real32)
-    sec = epoc - day * d2s
+    day = floor(epoch/d2s, kind=real32)
+    sec = epoch - day * d2s
     td = timedelta(days=day, seconds=sec)
-    gmtime = datetime_from_epoc + td
+    gmtime = datetime_from_epoch + td
   end function gmtime
 
 
