@@ -6,7 +6,7 @@ endif()
 
 project(datetime-fortran
 LANGUAGES Fortran
-VERSION 1.7.0)
+VERSION 1.8.0)
 include(CTest)
 
 include(cmake/check_strptime.cmake)

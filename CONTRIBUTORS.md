@@ -12,3 +12,4 @@
 * [Stefano Zaghi](https://github.com/szaghi)
 * [Tom Canich](https://github.com/tcanich)
 * [Wadud Miah](https://github.com/wadudmiah)
+* [Yuichiro Sakamoto](https://github.com/sakamoti)
