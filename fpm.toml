@@ -1,6 +1,6 @@
 name = "datetime"
-version = "1.7.1"
+version = "1.8.0"
 license = "MIT"
 author = "Milan Curcic"
 maintainer = "caomaco@gmail.com"
-copyright = "2013-2020 datetime-fortran contributors"
+copyright = "2013-2023 datetime-fortran contributors"
