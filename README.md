@@ -1658,6 +1658,7 @@ necessary steps.
 * [*tm2date*](#tm2date)
 
 [Back to top](#top)
+<hr>
 
 ### tm2date
 
@@ -1697,7 +1698,7 @@ See example usage for [*strptime*](#strptime).
 real(real64) function machinetimezone()
 ```
 
-returns a machine's timezone in hour.
+returns the machine's time zone in hours.
 
 #### Arguments
 
@@ -1709,13 +1710,12 @@ None
 
 #### Example usage
 
-Extracting timezone informatin  of your machine.
+Extracting your local machine's time zone information.
 
 ```fortran
-type(datetime) :: day
-day = datetime(year = 1970, month = 1, day = 1, tz = machinetimezone())
+type(datetime) :: date
+date = datetime(1970, 1, 1, tz=machinetimezone())
 ```
-
 
 #### See also
 
@@ -1726,14 +1726,15 @@ day = datetime(year = 1970, month = 1, day = 1, tz = machinetimezone())
 * [*gmtime*](#gmtime)
 
 [Back to top](#top)
+<hr>
 
 ### epochdatetime
 
 ```fortran
 pure elemental type(datetime) function epochdatetime()
-    epochdatetime = datetime(1970,1,1,0,0,0,0,tz=zero)
+    epochdatetime = datetime(1970,1,1,0,0,0,0,tz=0.)
 ```
-returns a *datetime* which indicate epoch = 0 seconds.
+returns a `datetime` that corresponds to the UNIX epoch.
 
 #### Arguments
 
@@ -1744,8 +1745,6 @@ None
 `type(datetime)` A `datetime(1970,1,1,0,0,0,0,tz=0.0)` value.
 
 #### Example usage
-
-Extracting *datetime* type which indicating the day 1970/1/1.
 
 ```fortran
 type(datetime) :: epochday
@@ -1761,7 +1760,7 @@ epochday = epochdatetime()
 * [*gmtime*](#gmtime)
 
 [Back to top](#top)
-
+<hr>
 
 ### localtime
 
@@ -1789,11 +1788,11 @@ Generating a *datetime* type from epoch and timezone.
 Convert the epoch seconds to an expression in your machine's time zone.
 
 ```fortran
-integer(int64) :: epoch = 3600
+integer(int64), parameter :: epoch = 3600
 real(real64) :: tz
-type(datetime) :: day
+type(datetime) :: date
 tz = machinetimezone()
-day = localtime(epoch, tz)
+date = localtime(epoch, tz)
 ```
 
 #### See also
@@ -1804,6 +1803,8 @@ day = localtime(epoch, tz)
 
 * [*gmtime*](#gmtime)
 
+[Back to top](#top)
+<hr>
 
 ### gmtime
 
@@ -1817,7 +1818,6 @@ Generating a *datetime* type from epoch.
 #### Arguments
 
 `epoch` A epoch time (second)
-
 
 #### Return value
 
@@ -1842,5 +1842,5 @@ day = gmtime(epoch)
 
 * [*localtime*](#localtime)
 
-
+[Back to top](#top)
 <hr>
