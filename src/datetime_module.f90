@@ -24,7 +24,6 @@ module datetime_module
   public :: tm_struct
   public :: c_strftime
   public :: c_strptime
-  !public :: c_mktime
 
   real(real64), parameter :: zero = 0._real64, one = 1._real64
 
@@ -183,7 +182,7 @@ module datetime_module
 
   interface
 
-    type(C_PTR) function c_strftime(str, slen, format, tm) bind(c, name='strftime')
+    type(c_ptr) function c_strftime(str, slen, format, tm) bind(c, name='strftime')
       ! Returns a formatted time string, given input time struct and format.
       ! See https://www.cplusplus.com/reference/ctime/strftime for reference.
       import :: c_char, c_int, tm_struct, C_PTR
@@ -202,15 +201,6 @@ module datetime_module
       character(kind=c_char), intent(in) :: format(*) ! time format
       type(tm_struct), intent(out) :: tm ! result tm_struct
     end function c_strptime
-
-
-    !function c_mktime(tm) bind(c,name='mktime') result(t_epoch)
-    !  ! after applying `mktime`, t_epoch is represented as UTC time
-    !  import :: c_int64_t, tm_struct
-    !  type(tm_struct), intent(in) :: tm ! return internal tm_struct
-    !  integer(kind=c_int64_t) :: t_epoch ! epoch time
-    !end function c_mktime
-
 
   end interface
 
